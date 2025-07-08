@@ -1,18 +1,67 @@
-# Build and Release Folders
-bin-debug/
-bin-release/
-[Oo]bj/
-[Bb]in/
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
 
-# Other files and folders
-.settings/
+# Environment files
+.env
+.env.*
 
-# Executables
-*.swf
-*.air
-*.ipa
-*.apk
+# Streamlit cache and logs
+.streamlit/
+.stcache/
+.stcache/*
 
-# Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
-# should NOT be excluded as they contain compiler settings and other important
-# information for Eclipse / Flash Builder.
+# VSCode and other IDE config
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Model files
+*.sav
+*.h5
+*.keras
+*.pkl
+
+# Logs
+*.log
+
+# Jupyter checkpoints (if used)
+.ipynb_checkpoints/
+
+# OS-generated files
+ehthumbs.db
+Desktop.ini
+
+# Virtual environment folders
+venv/
+env/
+.venv/
+.env/
+dvenv/
+dataset/
+
+# Python egg metadata
+*.egg-info/
+dist/
+build/
+
+# Compiled Cython files
+*.so
+
+# Temporary files
+*.bak
+*.tmp
+*.swp
+
+# Others
+__init__.pyc
+
+# Node-related (if ever used frontend/npm modules)
+node_modules/
+package-lock.json
