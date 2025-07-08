@@ -17,6 +17,7 @@ __pycache__/
 .idea/
 *.sublime-project
 *.sublime-workspace
+.saved_models/
 
 # System files
 .DS_Store
