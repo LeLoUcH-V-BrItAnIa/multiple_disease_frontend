@@ -54,7 +54,7 @@ if selected == 'AI-Based Health Assistant':
             }
             with st.spinner("Getting AI Suggestions ..."):
                 try:
-                    res = requests.post("https://multiple-desease-backend.onrender.com/", json=payload)
+                    res = requests.post("https://multiple-desease-backend.onrender.com/recommend", json=payload,timeout=20)
                     if res.status_code == 200:
                         result = res.json()
                         st.success("✅ Gemini AI Suggestions")
