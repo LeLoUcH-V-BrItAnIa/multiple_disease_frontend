@@ -1,0 +1,17 @@
+[theme]
+primaryColor = "#4CAF50"
+backgroundColor = "#f0f2f6"
+secondaryBackgroundColor = "#ffffff"
+textColor = "#262730"
+font = "sans serif"
+
+[server]
+maxUploadSize = 50
+
+[client]
+toolbarMode = "minimal"
+
+[general]
+email = "kaustavmondal60@gmail.com"
+pageTitle = "Neo HealthMate+"
+favicon = "static/favicon.ico"
