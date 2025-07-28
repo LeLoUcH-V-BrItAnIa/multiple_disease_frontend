@@ -1,5 +1,6 @@
 scikit-learn
 streamlit==1.29.0
 streamlit-option-menu==0.3.6
+streamlit_lottie
 dotenv
 google-generativeai
