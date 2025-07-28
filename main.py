@@ -70,7 +70,7 @@ if st.session_state.page == "home":
         margin-bottom: 20px;
         overflow: hidden; /* Ensures rounded edges clip the animation */
     }
-.animated-title {
+    .animated-title {
             font-family: 'Poppins', sans-serif;
             font-size: 45px;
             font-weight: bold;
@@ -81,15 +81,14 @@ if st.session_state.page == "home":
             -webkit-text-fill-color: transparent;
             animation: gradientMove 5s ease infinite;
         }
-@keyframes gradientMove {
-    0% {background-position: 0% 50%;}
-    50% {background-position: 100% 50%;}
-    100% {background-position: 0% 50%;}
-<style>
-    /* Import a clean Google Font */
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Quicksand:wght@400;500&family=Exo+2:wght@500&family=Nunito:wght@400&family=Audiowide&family=Karla:wght@400&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Raleway:wght@500&display=swap');
-    /* Common Card Styling */
+        @keyframes gradientMove {
+        0% {background-position: 0% 50%;}
+        50% {background-position: 100% 50%;}
+        100% {background-position: 0% 50%;}
+        /* Import a clean Google Font */
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Quicksand:wght@400;500&family=Exo+2:wght@500&family=Nunito:wght@400&family=Audiowide&family=Karla:wght@400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Raleway:wght@500&display=swap');
+        /* Common Card Styling */
         .disease-card {
             background: rgba(255,255,255,0.08);
             border-radius: 18px;
@@ -103,7 +102,6 @@ if st.session_state.page == "home":
         .disease-card:hover {
             transform: scale(1.04);
         }
-
         /* Diabetes Column */
         .diabetes-title {
             font-family: 'Orbitron', sans-serif;
@@ -145,16 +143,16 @@ if st.session_state.page == "home":
             color: #fff;
             text-shadow: 1px 1px 6px rgba(0,0,0,0.5);
         }
-    /* Title Styling */
-    .homepage-title {
-        font-family: 'Poppins', sans-serif;
-        font-size: 3rem;
-        text-align: center;
-        color: #ffffff;
-        text-shadow: 2px 2px 15px rgba(0,0,0,0.6);
-        animation: fadeIn 2s ease-in-out;
-    }
-    @keyframes fadeIn {
+        /* Title Styling */
+            .homepage-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 3rem;
+            text-align: center;
+            color: #ffffff;
+            text-shadow: 2px 2px 15px rgba(0,0,0,0.6);
+            animation: fadeIn 2s ease-in-out;
+        }
+        @keyframes fadeIn {
             0% { opacity: 0; transform: translateY(30px); }
             100% { opacity: 1; transform: translateY(0); }
         }
