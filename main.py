@@ -75,11 +75,11 @@ if st.session_state.page == "home":
             font-size: 45px;
             font-weight: bold;
             text-align: center;
-            background: linear-gradient(270deg, #FF4B4B, #4CAF50, #2196F3);
-            background-size: 600% 600%;
+            background: white;
+            # background-size: 600% 600%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: gradientMove 5s ease infinite;
+            # animation: gradientMove 5s ease infinite;
         }
         @keyframes gradientMove {
         0% {background-position: 0% 50%;}
@@ -180,7 +180,7 @@ if st.session_state.page == "home":
 """, unsafe_allow_html=True)
 
     # 🏥 Title
-    st.markdown("<h1 class='animated-title'>🏥 CareIQ: Predict Prevent Personalize 🧠</h1>", unsafe_allow_html=True)
+    st.markdown("<h1>🏥 CareIQ: Predict Prevent Personalize 🧠</h1>", unsafe_allow_html=True)
     st.markdown('<div class="fade-subheading">🧠An AI-powered health diagnostic and advisory system 🤖💊 that predicts Diabetes, Heart Disease, and Parkinson’s Disease based on clinical parameters.</div>',unsafe_allow_html=True)
 
     # Animation
