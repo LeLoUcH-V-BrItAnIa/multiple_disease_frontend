@@ -292,7 +292,7 @@ if st.session_state.page == "app":
                 }
                 with st.spinner("Getting AI Suggestions ..."):
                     try:
-                        res = requests.post("http://localhost:5000/recommend", json=payload)
+                        res = requests.post("https://multiple-desease-backend.onrender.com/recommend", json=payload)
                         if res.status_code == 200:
                             result = res.json()
                             st.success("✅ Gemini AI Suggestions")
