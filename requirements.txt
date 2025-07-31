@@ -5,3 +5,5 @@ streamlit_lottie
 dotenv
 google-generativeai
 plotly
+pandas
+numpy
