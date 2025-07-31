@@ -394,15 +394,19 @@ if st.session_state.page == "app":
                 st.session_state.prediction_log.append(("Diabetes", "Diabetic"))
 
             user_data = {
-            "Pregnancies": float(Pregnancies),
-            "Glucose": float(Glucose),
-            "BloodPressure": float(BloodPressure),
-            "BMI": float(BMI),
-            "Age": float(Age)
+                "Pregnancies": float(Pregnancies or 0),
+                "Glucose": float(Glucose or 0),
+                "BloodPressure": float(BloodPressure or 0),
+                "BMI": float(BMI or 0),
+                "Age": float(Age or 0)
             }
+
             df = pd.DataFrame(list(user_data.items()), columns=['Feature', 'Value'])
-            st.subheader("📊 User Input Summary")
-            st.plotly_chart(px.bar(df, x='Feature', y='Value', color='Feature', title="Diabetes Input Overview"))
+
+            if not df.empty:
+                st.subheader("📊 User Input Summary")
+                st.plotly_chart(px.bar(df, x='Feature', y='Value', color='Feature', title="Diabetes Input Overview"))
+            
             user_inputs_dict_for_diab = {
                 "Pregnancies": Pregnancies,
                 "Glucose": Glucose,
