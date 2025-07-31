@@ -401,11 +401,21 @@ if st.session_state.page == "app":
                 "Age": float(Age or 0)
             }
 
-            df = pd.DataFrame([user_data])
+            df = pd.DataFrame(list(user_data.items()), columns=['Feature', 'Value'])
 
-            if not df.empty:
-                st.subheader("📊 User Input Summary")
-                st.bar_chart(df)
+            fig = px.bar(
+                df,
+                x='Feature',
+                y='Value',
+                color='Feature',
+                title="Diabetes Input Overview",
+                template="plotly_white"
+            )
+
+            fig.update_traces(marker_line_width=1.5, marker_line_color="black")
+
+            st.subheader("📊 User Input Summary")
+            st.plotly_chart(fig, use_container_width=True, config={"staticPlot": False})
 
             user_inputs_dict_for_diab = {
                 "Pregnancies": Pregnancies,
