@@ -1,5 +1,5 @@
 import pandas as pd
-import plotly.express as px
+import matplotlib.pyplot as plt
 import os
 import pickle
 import streamlit as st
@@ -253,40 +253,42 @@ if st.session_state.page == "home":
         """)
     st.subheader("📈 Sample Health Data Insights")
 
-# 🔹 Sample Diabetes Prediction Distribution
+    # 🔹 Sample Diabetes Data (Pie Chart using matplotlib)
     diabetes_data = pd.DataFrame({
         "Result": ["Diabetic", "Non-Diabetic"],
         "Count": [45, 120]
     })
-    fig_diabetes = px.pie(diabetes_data, names='Result', values='Count', 
-                        title="Diabetes Prediction Distribution",
-                        color_discrete_sequence=px.colors.qualitative.Pastel)
+    fig1, ax1 = plt.subplots()
+    ax1.pie(diabetes_data["Count"], labels=diabetes_data["Result"], autopct='%1.1f%%',
+            startangle=90, colors=['#FF6B6B', '#6BCB77'])
+    ax1.axis('equal')
 
-    # 🔹 Sample Heart Disease Bar Chart
+    # 🔹 Sample Heart Disease Data (Bar Chart)
     heart_data = pd.DataFrame({
         "Feature": ["Age", "Cholesterol", "BP", "Max Heart Rate"],
         "Average": [52, 240, 130, 150]
     })
-    fig_heart = px.bar(heart_data, x='Feature', y='Average', color='Feature',
-                    title="Average Heart Disease Patient Data")
 
-    # 🔹 Sample Parkinson's Line Chart
+    # 🔹 Sample Parkinson's Data (Line Chart)
     parkinsons_data = pd.DataFrame({
         "Sample": list(range(1, 11)),
         "Fo": [120, 125, 123, 119, 122, 121, 124, 126, 125, 123]
     })
-    fig_parkinsons = px.line(parkinsons_data, x='Sample', y='Fo',
-                            title="Parkinson's Voice Frequency Trend",
-                            markers=True)
 
-    # 🔹 Display charts in 3 columns
+    # 🔹 Display in 3 columns
     col1, col2, col3 = st.columns(3)
+
     with col1:
-        st.plotly_chart(fig_diabetes, use_container_width=True)
+        st.subheader("📊 Diabetes Distribution")
+        st.pyplot(fig1)
+
     with col2:
-        st.plotly_chart(fig_heart, use_container_width=True)
+        st.subheader("❤️ Heart Disease Data")
+        st.bar_chart(heart_data.set_index("Feature"))
+
     with col3:
-        st.plotly_chart(fig_parkinsons, use_container_width=True)
+        st.subheader("🧠 Parkinson's Frequency Trend")
+        st.line_chart(parkinsons_data.set_index("Sample"))
 
     st.info("💡 Use this Button to test predictions and explore features!")
 
@@ -480,26 +482,20 @@ if st.session_state.page == "app":
                 st.success('✅ The person does not have any heart disease')
                 st.session_state.prediction_log.append(("Heart Disease", "Negative"))
              # ✅ Create summary chart
-                user_data_heart = {
-                    "Age": float(age),
-                    "Sex": float(sex),
-                    "Chest Pain": float(cp),
-                    "Resting BP": float(trestbps),
-                    "Cholesterol": float(chol),
-                    "Fasting BS": float(fbs),
-                    "RestECG": float(restecg),
-                    "Max Heart Rate": float(thalach),
-                    "Exercise Angina": float(exang),
-                    "Oldpeak": float(oldpeak),
-                    "Slope": float(slope),
-                    "CA": float(ca),
-                    "Thal": float(thal)
-                }
-                df_heart = pd.DataFrame(list(user_data_heart.items()), columns=['Feature', 'Value'])
+            heart_data = {
+                "Age": float(age or 0),
+                "Sex": float(sex or 0),
+                "Chest Pain": float(cp or 0),
+                "Cholesterol": float(chol or 0),
+                "Max HR": float(thalach or 0),
+                "Oldpeak": float(oldpeak or 0)
+            }
 
-                st.subheader("📊 Heart Disease Input Summary")
-                st.plotly_chart(px.bar(df_heart, x='Feature', y='Value', color='Feature',
-                                    title="Heart Disease Input Overview"), use_container_width=True)
+            heart_df = pd.DataFrame(list(heart_data.items()), columns=['Feature', 'Value'])
+            heart_df = heart_df.set_index('Feature')
+
+            st.subheader("📊 Heart Disease Input Summary")
+            st.bar_chart(heart_df)
             user_inputs_dict_for_heart = {
                         "age": age,
                         "sex": sex,
@@ -590,35 +586,22 @@ if st.session_state.page == "app":
                 st.success("✅ The person does not have Parkinson's disease")
                 st.session_state.prediction_log.append(("Parkinson's", "Negative"))
             # chart
-            user_data_parkinsons = {
-                "Fo": float(fo),
-                "Fhi": float(fhi),
-                "Flo": float(flo),
-                "Jitter %": float(Jitter_percent),
-                "Jitter Abs": float(Jitter_Abs),
-                "RAP": float(RAP),
-                "PPQ": float(PPQ),
-                "DDP": float(DDP),
-                "Shimmer": float(Shimmer),
-                "Shimmer dB": float(Shimmer_dB),
-                "APQ3": float(APQ3),
-                "APQ5": float(APQ5),
-                "APQ": float(APQ),
-                "DDA": float(DDA),
-                "NHR": float(NHR),
-                "HNR": float(HNR),
-                "RPDE": float(RPDE),
-                "DFA": float(DFA),
-                "Spread1": float(spread1),
-                "Spread2": float(spread2),
-                "D2": float(D2),
-                "PPE": float(PPE)
+            parkinsons_data = {
+                "Fo": float(fo or 0),
+                "Fhi": float(fhi or 0),
+                "Flo": float(flo or 0),
+                "Jitter(%)": float(Jitter_percent or 0),
+                "Shimmer": float(Shimmer or 0),
+                "HNR": float(HNR or 0),
+                "RPDE": float(RPDE or 0),
+                "PPE": float(PPE or 0)
             }
-            df_parkinsons = pd.DataFrame(list(user_data_parkinsons.items()), columns=['Feature', 'Value'])
+
+            parkinsons_df = pd.DataFrame(list(parkinsons_data.items()), columns=['Feature', 'Value'])
+            parkinsons_df = parkinsons_df.set_index('Feature')
 
             st.subheader("📊 Parkinson's Input Summary")
-            st.plotly_chart(px.bar(df_parkinsons, x='Feature', y='Value', color='Feature',
-                                title="Parkinson's Input Overview"), use_container_width=True)
+            st.bar_chart(parkinsons_df)
             user_inputs_dict_for_parkinsons = {
         "fo": fo,
         "fhi": fhi,
@@ -735,26 +718,36 @@ if st.session_state.page == "app":
     elif selected == "📊 Dashboard":
         st.title("📊 Prediction Dashboard")
 
-        if len(st.session_state.prediction_log) == 0:
-            st.info("No predictions yet. Run some tests first!")
-        else:
-            df = pd.DataFrame(st.session_state.prediction_log, columns=["Disease", "Result"])
+    if "prediction_log" not in st.session_state or len(st.session_state.prediction_log) == 0:
+        st.info("No predictions yet. Run some tests first!")
+    else:
+        df = pd.DataFrame(st.session_state.prediction_log, columns=["Disease", "Result"])
 
-            # Pie Chart
-            pie_fig = px.pie(df, names="Result", title="Prediction Result Distribution")
-            st.plotly_chart(pie_fig)
+        # ✅ Pie Chart for Prediction Result Distribution
+        result_counts = df["Result"].value_counts()
+        fig1, ax1 = plt.subplots()
+        ax1.pie(result_counts.values, labels=result_counts.index, autopct='%1.1f%%', startangle=90, 
+                colors=['#FF6B6B', '#6BCB77'])
+        ax1.axis('equal')
+        st.subheader("📌 Prediction Result Distribution")
+        st.pyplot(fig1)
 
-            # Bar Chart by Disease
-            count_fig = px.bar(df.groupby("Disease").size().reset_index(name="Count"),
-                            x="Disease", y="Count", title="Predictions Per Disease")
-            st.plotly_chart(count_fig)
+        # ✅ Bar Chart: Predictions Per Disease
+        disease_counts = df["Disease"].value_counts().reset_index()
+        disease_counts.columns = ["Disease", "Count"]
+        st.subheader("📌 Predictions Per Disease")
+        st.bar_chart(disease_counts.set_index("Disease"))
 
-            # Summary Metrics
+        # ✅ Summary Metrics
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
             st.metric("Total Predictions", len(df))
-            st.metric("Diabetes Cases", len(df[df["Disease"]=="Diabetes"]))
-            st.metric("Heart Disease Cases", len(df[df["Disease"]=="Heart Disease"]))
-            st.metric("Parkinson's Cases", len(df[df["Disease"]=="Parkinson's"]))
-                        
+        with col2:
+            st.metric("Diabetes Cases", len(df[df["Disease"] == "Diabetes"]))
+        with col3:
+            st.metric("Heart Disease Cases", len(df[df["Disease"] == "Heart Disease"]))
+        with col4:
+            st.metric("Parkinson's Cases", len(df[df["Disease"] == "Parkinson's"]))
 
     # Footer
     if selected != "AI Chat Assistant":
