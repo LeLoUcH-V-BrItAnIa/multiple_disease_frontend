@@ -10,6 +10,8 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 if "page" not in st.session_state:
     st.session_state.page = "home"
+if "prediction_log" not in st.session_state:
+    st.session_state["prediction_log"] = []
 # Set page configuration
 st.set_page_config(page_title="Health Assistant",
                    layout="wide",
@@ -168,29 +170,29 @@ if st.session_state.page == "home":
 """, unsafe_allow_html=True)
 
     # 🏥 Title 🏥 CareIQ: Predict Prevent Personalize 🧠
-    # st.markdown("<h1 class='animated-title'>🏥 CareIQ: Predict Prevent Personalize 🧠</h1>", unsafe_allow_html=True)
-    st.markdown("""
-    <h1 style="
-        background: linear-gradient(270deg, #FF4B4B, #4CAF50, #2196F3);
-        background-size: 600% 600%;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation: gradientMove 8s ease infinite;
-        text-align: center;
-        font-size: 50px;
-        font-weight: 800;
-    ">
-        🏥 Multiple Disease Prediction System
-    </h1>
+    st.markdown("<h1 class='animated-title'>🏥 CareIQ: Predict Prevent Personalize 🧠</h1>", unsafe_allow_html=True)
+#     st.markdown("""
+#     <h1 style="
+#         background: linear-gradient(270deg, #FF4B4B, #4CAF50, #2196F3);
+#         background-size: 600% 600%;
+#         -webkit-background-clip: text;
+#         -webkit-text-fill-color: transparent;
+#         animation: gradientMove 8s ease infinite;
+#         text-align: center;
+#         font-size: 50px;
+#         font-weight: 800;
+#     ">
+#         🏥 Multiple Disease Prediction System
+#     </h1>
 
-    <style>
-    @keyframes gradientMove {
-        0% {background-position: 0% 50%;}
-        50% {background-position: 100% 50%;}
-        100% {background-position: 0% 50%;}
-    }
-    </style>
-""", unsafe_allow_html=True)
+#     <style>
+#     @keyframes gradientMove {
+#         0% {background-position: 0% 50%;}
+#         50% {background-position: 100% 50%;}
+#         100% {background-position: 0% 50%;}
+#     }
+#     </style>
+# """, unsafe_allow_html=True)
 
     st.markdown('<div class="fade-subheading">🧠An AI-powered health diagnostic and advisory system 🤖💊 that predicts Diabetes, Heart Disease, and Parkinson’s Disease based on clinical parameters.</div>',unsafe_allow_html=True)
 
@@ -314,7 +316,7 @@ if st.session_state.page == "app":
         icons=['activity', 'heart', 'person', 'robot','chat-dots-fill','info-circle'],
         default_index=0
     )
-
+    
 # AI-Based Health Assistant Page
     if selected == 'AI-Based Health Assistant':
         st.title("🧠 AI-Based Health Assistant")
@@ -326,8 +328,7 @@ if st.session_state.page == "app":
         symptoms = st.multiselect("Select Symptoms", [
             "Fatigue", "Headache", "Nausea", "Blurred Vision", "Frequent Urination",
             "Weight Loss", "Thirst", "Sweating", "Palpitations", "Body Pain"])
-        if "prediction_log" not in st.session_state:
-            st.session_state.prediction_log = []
+        
         if st.button("Get AI Health Recommendations"):
             if not symptoms or not age:
                 st.warning("Please fill all required fields.")
@@ -353,7 +354,7 @@ if st.session_state.page == "app":
                     except Exception as e:
                         st.error(f"❌ Request failed: {str(e)}")
                     
-      # Will store tuples like (disease, result)
+
     # Diabetes Prediction Page
     elif selected == 'Diabetes Prediction':
         st.title('Diabetes Prediction using ML')
