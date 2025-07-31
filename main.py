@@ -401,12 +401,12 @@ if st.session_state.page == "app":
                 "Age": float(Age or 0)
             }
 
-            df = pd.DataFrame(list(user_data.items()), columns=['Feature', 'Value'])
+            df = pd.DataFrame([user_data])
 
             if not df.empty:
                 st.subheader("📊 User Input Summary")
                 st.bar_chart(df)
-                
+
             user_inputs_dict_for_diab = {
                 "Pregnancies": Pregnancies,
                 "Glucose": Glucose,
