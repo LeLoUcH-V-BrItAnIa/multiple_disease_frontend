@@ -7,4 +7,4 @@ google-generativeai
 plotly
 pandas
 numpy
-kaleido
+matplotlib
