@@ -405,8 +405,8 @@ if st.session_state.page == "app":
 
             if not df.empty:
                 st.subheader("📊 User Input Summary")
-                st.plotly_chart(px.bar(df, x='Feature', y='Value', color='Feature', title="Diabetes Input Overview"))
-            
+                st.bar_chart(df)
+                
             user_inputs_dict_for_diab = {
                 "Pregnancies": Pregnancies,
                 "Glucose": Glucose,
