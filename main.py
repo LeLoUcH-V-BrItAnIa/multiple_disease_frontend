@@ -1,3 +1,5 @@
+import pandas as pd
+import plotly.express as px
 import os
 import pickle
 import streamlit as st
@@ -70,25 +72,10 @@ if st.session_state.page == "home":
         margin-bottom: 20px;
         overflow: hidden; /* Ensures rounded edges clip the animation */
     }
-    .animated-title {
-            font-family: 'Poppins', sans-serif;
-            font-size: 45px;
-            font-weight: bold;
-            text-align: center;
-            background: white;
-            # background-size: 600% 600%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            # animation: gradientMove 5s ease infinite;
-        }
-        @keyframes gradientMove {
-        0% {background-position: 0% 50%;}
-        50% {background-position: 100% 50%;}
-        100% {background-position: 0% 50%;}
-        /* Import a clean Google Font */
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Quicksand:wght@400;500&family=Exo+2:wght@500&family=Nunito:wght@400&family=Audiowide&family=Karla:wght@400&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Raleway:wght@500&display=swap');
-        /* Common Card Styling */
+    /* Import a clean Google Font */
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Quicksand:wght@400;500&family=Exo+2:wght@500&family=Nunito:wght@400&family=Audiowide&family=Karla:wght@400&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Raleway:wght@500&display=swap');
+    /* Common Card Styling */
         .disease-card {
             background: rgba(255,255,255,0.08);
             border-radius: 18px;
@@ -102,6 +89,7 @@ if st.session_state.page == "home":
         .disease-card:hover {
             transform: scale(1.04);
         }
+
         /* Diabetes Column */
         .diabetes-title {
             font-family: 'Orbitron', sans-serif;
@@ -143,16 +131,16 @@ if st.session_state.page == "home":
             color: #fff;
             text-shadow: 1px 1px 6px rgba(0,0,0,0.5);
         }
-        /* Title Styling */
-            .homepage-title {
-            font-family: 'Poppins', sans-serif;
-            font-size: 3rem;
-            text-align: center;
-            color: #ffffff;
-            text-shadow: 2px 2px 15px rgba(0,0,0,0.6);
-            animation: fadeIn 2s ease-in-out;
-        }
-        @keyframes fadeIn {
+    /* Title Styling */
+    .homepage-title {
+        font-family: 'Poppins', sans-serif;
+        font-size: 3rem;
+        text-align: center;
+        color: #ffffff;
+        text-shadow: 2px 2px 15px rgba(0,0,0,0.6);
+        animation: fadeIn 2s ease-in-out;
+    }
+    @keyframes fadeIn {
             0% { opacity: 0; transform: translateY(30px); }
             100% { opacity: 1; transform: translateY(0); }
         }
@@ -179,8 +167,31 @@ if st.session_state.page == "home":
     </style>
 """, unsafe_allow_html=True)
 
-    # 🏥 Title
-    st.markdown("<h1>🏥 CareIQ: Predict Prevent Personalize 🧠</h1>", unsafe_allow_html=True)
+    # 🏥 Title 🏥 CareIQ: Predict Prevent Personalize 🧠
+    # st.markdown("<h1 class='animated-title'>🏥 CareIQ: Predict Prevent Personalize 🧠</h1>", unsafe_allow_html=True)
+    st.markdown("""
+    <h1 style="
+        background: linear-gradient(270deg, #FF4B4B, #4CAF50, #2196F3);
+        background-size: 600% 600%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: gradientMove 8s ease infinite;
+        text-align: center;
+        font-size: 50px;
+        font-weight: 800;
+    ">
+        🏥 Multiple Disease Prediction System
+    </h1>
+
+    <style>
+    @keyframes gradientMove {
+        0% {background-position: 0% 50%;}
+        50% {background-position: 100% 50%;}
+        100% {background-position: 0% 50%;}
+    }
+    </style>
+""", unsafe_allow_html=True)
+
     st.markdown('<div class="fade-subheading">🧠An AI-powered health diagnostic and advisory system 🤖💊 that predicts Diabetes, Heart Disease, and Parkinson’s Disease based on clinical parameters.</div>',unsafe_allow_html=True)
 
     # Animation
@@ -238,6 +249,42 @@ if st.session_state.page == "home":
         - PPE & DFA metrics  
         Suggests **early interventions & exercises**.
         """)
+    st.subheader("📈 Sample Health Data Insights")
+
+# 🔹 Sample Diabetes Prediction Distribution
+    diabetes_data = pd.DataFrame({
+        "Result": ["Diabetic", "Non-Diabetic"],
+        "Count": [45, 120]
+    })
+    fig_diabetes = px.pie(diabetes_data, names='Result', values='Count', 
+                        title="Diabetes Prediction Distribution",
+                        color_discrete_sequence=px.colors.qualitative.Pastel)
+
+    # 🔹 Sample Heart Disease Bar Chart
+    heart_data = pd.DataFrame({
+        "Feature": ["Age", "Cholesterol", "BP", "Max Heart Rate"],
+        "Average": [52, 240, 130, 150]
+    })
+    fig_heart = px.bar(heart_data, x='Feature', y='Average', color='Feature',
+                    title="Average Heart Disease Patient Data")
+
+    # 🔹 Sample Parkinson's Line Chart
+    parkinsons_data = pd.DataFrame({
+        "Sample": list(range(1, 11)),
+        "Fo": [120, 125, 123, 119, 122, 121, 124, 126, 125, 123]
+    })
+    fig_parkinsons = px.line(parkinsons_data, x='Sample', y='Fo',
+                            title="Parkinson's Voice Frequency Trend",
+                            markers=True)
+
+    # 🔹 Display charts in 3 columns
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.plotly_chart(fig_diabetes, use_container_width=True)
+    with col2:
+        st.plotly_chart(fig_heart, use_container_width=True)
+    with col3:
+        st.plotly_chart(fig_parkinsons, use_container_width=True)
 
     st.info("💡 Use this Button to test predictions and explore features!")
 
@@ -254,7 +301,7 @@ if st.session_state.page == "home":
             © 2025 Kaustav Mondal | For educational & research purposes only
         </div>
     """, unsafe_allow_html=True)
-
+    
     st.stop()
 
 # Sidebar
@@ -262,7 +309,7 @@ if st.session_state.page == "app":
     with st.sidebar:
         selected = option_menu(
         'Multi-Disease Diagnostic AI',
-        ['Diabetes Prediction', 'Heart Disease Prediction', 'Parkinsons Prediction', 'AI-Based Health Assistant','AI Chat Assistant','About & Developer'],
+        ['Diabetes Prediction', 'Heart Disease Prediction', 'Parkinsons Prediction', 'AI-Based Health Assistant','📊 Dashboard','AI Chat Assistant','About & Developer'],
         menu_icon='hospital-fill',
         icons=['activity', 'heart', 'person', 'robot','chat-dots-fill','info-circle'],
         default_index=0
@@ -279,7 +326,8 @@ if st.session_state.page == "app":
         symptoms = st.multiselect("Select Symptoms", [
             "Fatigue", "Headache", "Nausea", "Blurred Vision", "Frequent Urination",
             "Weight Loss", "Thirst", "Sweating", "Palpitations", "Body Pain"])
-
+        if "prediction_log" not in st.session_state:
+            st.session_state.prediction_log = []
         if st.button("Get AI Health Recommendations"):
             if not symptoms or not age:
                 st.warning("Please fill all required fields.")
@@ -305,7 +353,7 @@ if st.session_state.page == "app":
                     except Exception as e:
                         st.error(f"❌ Request failed: {str(e)}")
                     
-
+      # Will store tuples like (disease, result)
     # Diabetes Prediction Page
     elif selected == 'Diabetes Prediction':
         st.title('Diabetes Prediction using ML')
@@ -338,10 +386,22 @@ if st.session_state.page == "app":
             if diab_prediction[0] == 0:
                 diab_diagnosis = '✅ The person is not diabetic'
                 st.success(diab_diagnosis)
+                st.session_state.prediction_log.append(("Diabetes", "Non-Diabetic"))
             else:
                 diab_diagnosis = "⚠️ The person is diabetic"
                 st.warning(diab_diagnosis)
+                st.session_state.prediction_log.append(("Diabetes", "Diabetic"))
 
+            user_data = {
+            "Pregnancies": float(Pregnancies),
+            "Glucose": float(Glucose),
+            "BloodPressure": float(BloodPressure),
+            "BMI": float(BMI),
+            "Age": float(Age)
+            }
+            df = pd.DataFrame(list(user_data.items()), columns=['Feature', 'Value'])
+            st.subheader("📊 User Input Summary")
+            st.plotly_chart(px.bar(df, x='Feature', y='Value', color='Feature', title="Diabetes Input Overview"))
             user_inputs_dict_for_diab = {
                 "Pregnancies": Pregnancies,
                 "Glucose": Glucose,
@@ -352,6 +412,7 @@ if st.session_state.page == "app":
                 "DiabetesPedigreeFunction": DiabetesPedigreeFunction,
                 "Age": Age
             }
+
 
             with st.spinner("Fetching health suggestions..."):
                 ai_response = get_remedies(user_inputs_dict_for_diab, diab_prediction[0],disease="diabetes")
@@ -401,9 +462,32 @@ if st.session_state.page == "app":
             heart_prediction = heart_disease_model.predict([user_input])
 
             if heart_prediction[0] == 1:
-                st.warning('⚠️The person is having heart disease')
+                st.warning('⚠️ The person is having heart disease')
+                st.session_state.prediction_log.append(("Heart Disease", "Positive"))
             else:
-                st.success('✅The person does not have any heart disease')
+                st.success('✅ The person does not have any heart disease')
+                st.session_state.prediction_log.append(("Heart Disease", "Negative"))
+             # ✅ Create summary chart
+                user_data_heart = {
+                    "Age": float(age),
+                    "Sex": float(sex),
+                    "Chest Pain": float(cp),
+                    "Resting BP": float(trestbps),
+                    "Cholesterol": float(chol),
+                    "Fasting BS": float(fbs),
+                    "RestECG": float(restecg),
+                    "Max Heart Rate": float(thalach),
+                    "Exercise Angina": float(exang),
+                    "Oldpeak": float(oldpeak),
+                    "Slope": float(slope),
+                    "CA": float(ca),
+                    "Thal": float(thal)
+                }
+                df_heart = pd.DataFrame(list(user_data_heart.items()), columns=['Feature', 'Value'])
+
+                st.subheader("📊 Heart Disease Input Summary")
+                st.plotly_chart(px.bar(df_heart, x='Feature', y='Value', color='Feature',
+                                    title="Heart Disease Input Overview"), use_container_width=True)
             user_inputs_dict_for_heart = {
                         "age": age,
                         "sex": sex,
@@ -488,9 +572,41 @@ if st.session_state.page == "app":
             parkinsons_prediction = parkinsons_model.predict([user_input])
 
             if parkinsons_prediction[0] == 1:
-                st.warning("⚠️The person has Parkinson's disease")
+                st.warning("⚠️ The person has Parkinson's disease")
+                st.session_state.prediction_log.append(("Parkinson's", "Positive"))
             else:
-                st.success("✅The person does not have Parkinson's disease")
+                st.success("✅ The person does not have Parkinson's disease")
+                st.session_state.prediction_log.append(("Parkinson's", "Negative"))
+            # chart
+            user_data_parkinsons = {
+                "Fo": float(fo),
+                "Fhi": float(fhi),
+                "Flo": float(flo),
+                "Jitter %": float(Jitter_percent),
+                "Jitter Abs": float(Jitter_Abs),
+                "RAP": float(RAP),
+                "PPQ": float(PPQ),
+                "DDP": float(DDP),
+                "Shimmer": float(Shimmer),
+                "Shimmer dB": float(Shimmer_dB),
+                "APQ3": float(APQ3),
+                "APQ5": float(APQ5),
+                "APQ": float(APQ),
+                "DDA": float(DDA),
+                "NHR": float(NHR),
+                "HNR": float(HNR),
+                "RPDE": float(RPDE),
+                "DFA": float(DFA),
+                "Spread1": float(spread1),
+                "Spread2": float(spread2),
+                "D2": float(D2),
+                "PPE": float(PPE)
+            }
+            df_parkinsons = pd.DataFrame(list(user_data_parkinsons.items()), columns=['Feature', 'Value'])
+
+            st.subheader("📊 Parkinson's Input Summary")
+            st.plotly_chart(px.bar(df_parkinsons, x='Feature', y='Value', color='Feature',
+                                title="Parkinson's Input Overview"), use_container_width=True)
             user_inputs_dict_for_parkinsons = {
         "fo": fo,
         "fhi": fhi,
@@ -604,8 +720,29 @@ if st.session_state.page == "app":
         st.markdown("---")
         st.markdown("💡 _Built with dedication and the goal of making healthcare smarter through AI._")
                 
+    elif selected == "📊 Dashboard":
+        st.title("📊 Prediction Dashboard")
 
-                    
+        if len(st.session_state.prediction_log) == 0:
+            st.info("No predictions yet. Run some tests first!")
+        else:
+            df = pd.DataFrame(st.session_state.prediction_log, columns=["Disease", "Result"])
+
+            # Pie Chart
+            pie_fig = px.pie(df, names="Result", title="Prediction Result Distribution")
+            st.plotly_chart(pie_fig)
+
+            # Bar Chart by Disease
+            count_fig = px.bar(df.groupby("Disease").size().reset_index(name="Count"),
+                            x="Disease", y="Count", title="Predictions Per Disease")
+            st.plotly_chart(count_fig)
+
+            # Summary Metrics
+            st.metric("Total Predictions", len(df))
+            st.metric("Diabetes Cases", len(df[df["Disease"]=="Diabetes"]))
+            st.metric("Heart Disease Cases", len(df[df["Disease"]=="Heart Disease"]))
+            st.metric("Parkinson's Cases", len(df[df["Disease"]=="Parkinson's"]))
+                        
 
     # Footer
     if selected != "AI Chat Assistant":
