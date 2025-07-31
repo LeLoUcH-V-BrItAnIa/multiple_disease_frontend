@@ -400,22 +400,19 @@ if st.session_state.page == "app":
                 "BMI": float(BMI or 0),
                 "Age": float(Age or 0)
             }
+            user_data = {
+                "Pregnancies": float(Pregnancies or 0),
+                "Glucose": float(Glucose or 0),
+                "BloodPressure": float(BloodPressure or 0),
+                "BMI": float(BMI or 0),
+                "Age": float(Age or 0)
+            }
 
             df = pd.DataFrame(list(user_data.items()), columns=['Feature', 'Value'])
-
-            fig = px.bar(
-                df,
-                x='Feature',
-                y='Value',
-                color='Feature',
-                title="Diabetes Input Overview",
-                template="plotly_white"
-            )
-
-            fig.update_traces(marker_line_width=1.5, marker_line_color="black")
+            df = df.set_index('Feature')  # st.bar_chart needs an index
 
             st.subheader("📊 User Input Summary")
-            st.plotly_chart(fig, use_container_width=True, config={"staticPlot": False})
+            st.bar_chart(df)
 
             user_inputs_dict_for_diab = {
                 "Pregnancies": Pregnancies,
