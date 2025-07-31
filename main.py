@@ -718,36 +718,36 @@ if st.session_state.page == "app":
     elif selected == "📊 Dashboard":
         st.title("📊 Prediction Dashboard")
 
-    if "prediction_log" not in st.session_state or len(st.session_state.prediction_log) == 0:
-        st.info("No predictions yet. Run some tests first!")
-    else:
-        df = pd.DataFrame(st.session_state.prediction_log, columns=["Disease", "Result"])
+        if "prediction_log" not in st.session_state or len(st.session_state.prediction_log) == 0:
+            st.info("No predictions yet. Run some tests first!")
+        else:
+            df = pd.DataFrame(st.session_state.prediction_log, columns=["Disease", "Result"])
 
-        # ✅ Pie Chart for Prediction Result Distribution
-        result_counts = df["Result"].value_counts()
-        fig1, ax1 = plt.subplots()
-        ax1.pie(result_counts.values, labels=result_counts.index, autopct='%1.1f%%', startangle=90, 
-                colors=['#FF6B6B', '#6BCB77'])
-        ax1.axis('equal')
-        st.subheader("📌 Prediction Result Distribution")
-        st.pyplot(fig1)
+            # ✅ Pie Chart for Prediction Result Distribution
+            result_counts = df["Result"].value_counts()
+            fig1, ax1 = plt.subplots()
+            ax1.pie(result_counts.values, labels=result_counts.index, autopct='%1.1f%%', startangle=90, 
+                    colors=['#FF6B6B', '#6BCB77'])
+            ax1.axis('equal')
+            st.subheader("📌 Prediction Result Distribution")
+            st.pyplot(fig1)
 
-        # ✅ Bar Chart: Predictions Per Disease
-        disease_counts = df["Disease"].value_counts().reset_index()
-        disease_counts.columns = ["Disease", "Count"]
-        st.subheader("📌 Predictions Per Disease")
-        st.bar_chart(disease_counts.set_index("Disease"))
+            # ✅ Bar Chart: Predictions Per Disease
+            disease_counts = df["Disease"].value_counts().reset_index()
+            disease_counts.columns = ["Disease", "Count"]
+            st.subheader("📌 Predictions Per Disease")
+            st.bar_chart(disease_counts.set_index("Disease"))
 
-        # ✅ Summary Metrics
-        col1, col2, col3, col4 = st.columns(4)
-        with col1:
-            st.metric("Total Predictions", len(df))
-        with col2:
-            st.metric("Diabetes Cases", len(df[df["Disease"] == "Diabetes"]))
-        with col3:
-            st.metric("Heart Disease Cases", len(df[df["Disease"] == "Heart Disease"]))
-        with col4:
-            st.metric("Parkinson's Cases", len(df[df["Disease"] == "Parkinson's"]))
+            # ✅ Summary Metrics
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.metric("Total Predictions", len(df))
+            with col2:
+                st.metric("Diabetes Cases", len(df[df["Disease"] == "Diabetes"]))
+            with col3:
+                st.metric("Heart Disease Cases", len(df[df["Disease"] == "Heart Disease"]))
+            with col4:
+                st.metric("Parkinson's Cases", len(df[df["Disease"] == "Parkinson's"]))
 
     # Footer
     if selected != "AI Chat Assistant":
