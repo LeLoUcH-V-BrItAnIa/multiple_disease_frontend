@@ -170,7 +170,7 @@ if st.session_state.page == "home":
 """, unsafe_allow_html=True)
 
     # 🏥 Title 🏥 CareIQ: Predict Prevent Personalize 🧠
-    st.markdown("<h1 style='text-align: center;background-size: 600% 600%;font-size: 50px;font-weight: 800;'>🏥 CareIQ: Predict Prevent Personalize 🧠</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center;background-size: 600% 600%;font-size: 50px;font-weight: 800;animation: fadeIn 1.5s ease-in-out forwards;animation-delay: 0.6s;opacity: 0;'>🏥 CareIQ: Predict Prevent Personalize 🧠</h1>", unsafe_allow_html=True)
 #     st.markdown("""
 #     <h1 style="
 #         background: linear-gradient(270deg, #FF4B4B, #4CAF50, #2196F3);
