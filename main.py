@@ -419,10 +419,19 @@ if st.session_state.page == "app":
                 margin-top: 15px;
                 font-weight: 600;
             }
-            ul {
-                margin-left: 20px;
-                padding-left: 10px;
+            ul { margin-left: 20px; padding-left: 10px; list-style-type: disc; }
+
+            ul li {
+                opacity: 0;
+                animation: fadeIn 0.6s forwards;
             }
+
+            /* Staggered delay */
+            ul li:nth-child(1) { animation-delay: 0.3s; }
+            ul li:nth-child(2) { animation-delay: 0.6s; }
+            ul li:nth-child(3) { animation-delay: 0.9s; }
+            ul li:nth-child(4) { animation-delay: 1.2s; }
+            ul li:nth-child(5) { animation-delay: 1.5s; }
             </style>
         """, unsafe_allow_html=True)
 
