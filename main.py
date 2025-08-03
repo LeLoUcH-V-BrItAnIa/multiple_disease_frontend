@@ -293,15 +293,15 @@ if st.session_state.page == "home":
         Suggests <b>early interventions & exercises</b>.</p>
         </div>
         """, unsafe_allow_html=True)
-
+    if st.button("Explore More"):
+        st.session_state.page = "app"  # ✅ Switch to main app
     # 🔹 Sample Health Insights Title
     st.markdown("""
     <h3 style='text-align:left; color:#FFD700; animation: fadeIn 1.2s ease-in-out; padding-top:50px;'>
     📈 Sample Health Data Insights
     </h3>
     """, unsafe_allow_html=True)
-    if st.button("Explore More"):
-        st.session_state.page = "app"  # ✅ Switch to main app
+
     # 🔹 Sample Diabetes Data (Pie Chart using matplotlib)
     diabetes_data = pd.DataFrame({
         "Result": ["Diabetic", "Non-Diabetic"],
