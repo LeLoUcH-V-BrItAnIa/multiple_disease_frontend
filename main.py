@@ -300,7 +300,8 @@ if st.session_state.page == "home":
     📈 Sample Health Data Insights
     </h3>
     """, unsafe_allow_html=True)
-
+    if st.button("Explore More"):
+        st.session_state.page = "app"  # ✅ Switch to main app
     # 🔹 Sample Diabetes Data (Pie Chart using matplotlib)
     diabetes_data = pd.DataFrame({
         "Result": ["Diabetic", "Non-Diabetic"],
