@@ -225,8 +225,6 @@ if st.session_state.page == "home":
 # """, unsafe_allow_html=True)
 
     st.markdown('<div class="fade-subheading">🧠An AI-powered health diagnostic and advisory system 🤖💊 that predicts Diabetes, Heart Disease, and Parkinson’s Disease based on clinical parameters.</div>',unsafe_allow_html=True)
-    if st.button("Explore More"):
-        st.session_state.page = "app"  # ✅ Switch to main app
     # Animation
     with st.container():
         st.markdown('<div class="lottie-container">', unsafe_allow_html=True)
