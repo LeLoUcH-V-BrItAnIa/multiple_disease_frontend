@@ -659,7 +659,8 @@ if st.session_state.page == "app":
                 # ✅ Convert Heart AI suggestions into animated HTML lists
                 heart_diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
                 heart_lifestyle_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("lifestyle_tips", [])])
-                heart_notes_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("notes", [])])
+                # heart_notes_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("notes", [])])
+                heart_notes_list = ai_response.get("notes", [])
 
                 # ✅ Render animated card for Heart
                 heart_card_html = f"""
