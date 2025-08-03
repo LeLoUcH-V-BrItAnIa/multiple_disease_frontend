@@ -27,6 +27,13 @@ st.markdown("""
         animation: gradientBG 12s ease infinite;
         color: white !important;
     }
+    /* Animate the gradient */
+    @keyframes gradientBG {
+        0% {background-position: 0% 50%;}
+        50% {background-position: 100% 50%;}
+        100% {background-position: 0% 50%;}
+    }
+
 
 """, unsafe_allow_html=True)
 
