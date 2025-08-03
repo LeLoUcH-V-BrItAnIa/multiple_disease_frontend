@@ -233,55 +233,73 @@ if st.session_state.page == "home":
         st.markdown('</div>', unsafe_allow_html=True)
 
     # Project Overview
+    # 🌟 Animated Project Overview Title
     st.markdown("""
-    ### 🔬 **Project Overview**
-    This AI-powered health assistant can predict:
-    - 🩸 **Diabetes**
-    - ❤️ **Heart Disease**
-    - 🧠 **Parkinson’s Disease**
+    <h2 style='text-align:center; color:#00FFAA; animation: fadeIn 1s ease-in-out;'>
+    🔬 Project Overview
+    </h2>
+    <p style='text-align:center; color:#f1f1f1; font-size:18px; animation: fadeInText 1.5s ease-in-out;'>
+    This AI-powered health assistant can predict:<br>
+    🩸 <b>Diabetes</b> | ❤️ <b>Heart Disease</b> | 🧠 <b>Parkinson’s Disease</b><br><br>
+    It also provides <b>Gemini AI-powered diet & lifestyle recommendations</b>.
+    </p>
+    <style>
+    @keyframes fadeIn {
+        0% {opacity:0; transform: translateY(-20px);}
+        100% {opacity:1; transform: translateY(0);}
+    }
+    @keyframes fadeInText {
+        0% {opacity:0; transform: translateY(10px);}
+        100% {opacity:1; transform: translateY(0);}
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
-    It also gives **Gemini AI-powered diet & lifestyle recommendations** based on predictions.
-    """)
-
-    # 🏗️ 3 Columns Section
+    # 🏗️ 3 Animated Columns Section
     col1, col2, col3 = st.columns(3)
 
     with col1:
         if diabetes_animation:
             st_lottie(diabetes_animation, height=200, key="diabetes")
         st.markdown("""
-        ### 🩸 **Diabetes**
-        Detects diabetes using:
-        - Glucose levels  
-        - BMI & Insulin  
-        - Pregnancies count  
-        Provides **AI-based diet & lifestyle suggestions**.
-        """)
+        <div style='animation: fadeInCard 1s ease-in-out; background: rgba(255,255,255,0.05); padding:10px; border-radius:12px;'>
+        <h3 style='color:#FF6B6B;'>🩸 Diabetes</h3>
+        <p style='color:#ddd;'>Detects diabetes using:<br>
+        • Glucose levels<br>• BMI & Insulin<br>• Pregnancies count<br><br>
+        Provides <b>AI-based diet & lifestyle suggestions</b>.</p>
+        </div>
+        """, unsafe_allow_html=True)
 
     with col2:
         if heart_animation:
             st_lottie(heart_animation, height=200, key="heart")
         st.markdown("""
-        ### ❤️ **Heart Disease**
-        Predicts heart disease using:
-        - Cholesterol & BP  
-        - ECG & Heart Rate  
-        - Age, gender & chest pain type  
-        Offers **personalized heart-health recommendations**.
-        """)
+        <div style='animation: fadeInCard 1.2s ease-in-out; background: rgba(255,255,255,0.05); padding:10px; border-radius:12px;'>
+        <h3 style='color:#FF4B4B;'>❤️ Heart Disease</h3>
+        <p style='color:#ddd;'>Predicts heart disease using:<br>
+        • Cholesterol & BP<br>• ECG & Heart Rate<br>• Age, gender & chest pain type<br><br>
+        Offers <b>personalized heart-health recommendations</b>.</p>
+        </div>
+        """, unsafe_allow_html=True)
 
     with col3:
         if parkinsons_animation:
             st_lottie(parkinsons_animation, height=200, key="parkinsons")
         st.markdown("""
-        ### 🧠 **Parkinson's**
-        Analyzes voice patterns like:
-        - Jitter & Shimmer  
-        - HNR & RPDE  
-        - PPE & DFA metrics  
-        Suggests **early interventions & exercises**.
-        """)
-    st.subheader("📈 Sample Health Data Insights")
+        <div style='animation: fadeInCard 1.4s ease-in-out; background: rgba(255,255,255,0.05); padding:10px; border-radius:12px;'>
+        <h3 style='color:#4CAF50;'>🧠 Parkinson's</h3>
+        <p style='color:#ddd;'>Analyzes voice patterns like:<br>
+        • Jitter & Shimmer<br>• HNR & RPDE<br>• PPE & DFA metrics<br><br>
+        Suggests <b>early interventions & exercises</b>.</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # 🔹 Sample Health Insights Title
+    st.markdown("""
+    <h3 style='text-align:left; color:#FFD700; animation: fadeIn 1.2s ease-in-out; padding-top:50px;'>
+    📈 Sample Health Data Insights
+    </h3>
+    """, unsafe_allow_html=True)
 
     # 🔹 Sample Diabetes Data (Pie Chart using matplotlib)
     diabetes_data = pd.DataFrame({
@@ -342,7 +360,7 @@ if st.session_state.page == "home":
 if st.session_state.page == "app":
     with st.sidebar:
         selected = option_menu(
-        'Multi-Disease Diagnostic AI',
+        'CareIQ Hub 🧠',
         ['Diabetes Prediction', 'Heart Disease Prediction', 'Parkinsons Prediction', 'AI-Based Health Assistant','📊 Dashboard','AI Chat Assistant','About & Developer'],
         menu_icon='hospital-fill',
         icons=['activity', 'heart', 'person', 'robot','chat-dots-fill','info-circle'],
@@ -952,20 +970,35 @@ if st.session_state.page == "app":
                     st.markdown(message.parts[0].text)
 
             # Chat input
-            user_prompt = st.chat_input("Ask your health question...")
-            if user_prompt:
-                st.chat_message("user").markdown(user_prompt)
-                try:
-                    gemini_response = st.session_state.chat_session.send_message(
-                        f"You are a medical assistant. Answer the following in health-expert tone:\n{user_prompt}"
-                    )
-                    if gemini_response and hasattr(gemini_response, "text"):
-                        with st.chat_message("assistant"):
-                            st.markdown(gemini_response.text)
-                    else:
-                        st.error("⚠️ No valid response received.")
-                except Exception as e:
-                    st.error(f"❌ API response error: {e}")
+            user_prompt = st.chat_input("💬 Ask your health question...")
+        if user_prompt:
+            # User message bubble
+            st.markdown(f"""
+                <div style='background:#4CAF50; color:white; padding:10px 15px; border-radius:15px; 
+                            max-width:70%; margin:10px 0; float:right;'>
+                    {user_prompt}
+                </div>
+                <div style='clear:both;'></div>
+            """, unsafe_allow_html=True)
+
+            try:
+                gemini_response = st.session_state.chat_session.send_message(
+                    f"You are a medical assistant. Answer the following in health-expert tone:\n{user_prompt}"
+                )
+
+                if gemini_response and hasattr(gemini_response, "text"):
+                    # Assistant message bubble
+                    st.markdown(f"""
+                        <div style='background:#222; color:#FFD700; padding:10px 15px; border-radius:15px; 
+                                    max-width:70%; margin:10px 0; float:left;'>
+                            {gemini_response.text}
+                        </div>
+                        <div style='clear:both;'></div>
+                    """, unsafe_allow_html=True)
+                else:
+                    st.error("⚠️ No valid response received.")
+            except Exception as e:
+                st.error(f"❌ API response error: {e}")
         
     # About & Developer Page
     elif selected == "About & Developer":
