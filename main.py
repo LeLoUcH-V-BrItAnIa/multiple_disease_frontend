@@ -16,6 +16,19 @@ if "prediction_log" not in st.session_state:
 st.set_page_config(page_title="Health Assistant",
                    layout="wide",
                    page_icon="🧑‍⚕️")
+st.markdown("""
+    <style>
+    
+    /* Full-page gradient background */
+                
+    .stApp {
+        background: linear-gradient(-45deg, #0D1B2A, #1B263B, #415A77, #0A1128);
+        background-size: 500% 500%;
+        animation: gradientBG 12s ease infinite;
+        color: white !important;
+    }
+
+""", unsafe_allow_html=True)
 
 # Get current working directory
 working_dir = os.path.dirname(os.path.abspath(__file__))
@@ -360,6 +373,51 @@ if st.session_state.page == "app":
     # Diabetes Prediction Page
     elif selected == 'Diabetes Prediction':
         st.title('Diabetes Prediction using ML')
+        st.markdown("""
+            <style>
+            @keyframes fadeIn {
+                0% { opacity: 0; transform: translateY(20px); }
+                100% { opacity: 1; transform: translateY(0); }
+            }
+
+            @keyframes glowPulse {
+                0% { box-shadow: 0 0 10px #FF4B4B, 0 0 20px #4CAF50, 0 0 30px #2196F3; }
+                50% { box-shadow: 0 0 20px #FF4B4B, 0 0 30px #4CAF50, 0 0 40px #2196F3; }
+                100% { box-shadow: 0 0 10px #FF4B4B, 0 0 20px #4CAF50, 0 0 30px #2196F3; }
+            }
+
+            .ai-card {
+                background: rgba(0, 0, 0, 0.45);
+                border-radius: 18px;
+                padding: 22px;
+                margin-top: 20px;
+                color: #fff;
+                animation: fadeIn 1s ease-in-out, glowPulse 3s infinite alternate;
+                border: 2px solid rgba(255,255,255,0.2);
+            }
+
+            .ai-title {
+                text-align: center;
+                background: linear-gradient(270deg, #FF4B4B, #4CAF50, #2196F3);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                font-size: 24px;
+                font-weight: bold;
+                text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+            }
+
+            .tip-title {
+                font-size: 18px;
+                color: #00FFEA;
+                margin-top: 15px;
+                font-weight: 600;
+            }
+            ul {
+                margin-left: 20px;
+                padding-left: 10px;
+            }
+            </style>
+        """, unsafe_allow_html=True)
 
         col1, col2, col3 = st.columns(3)
         with col1:
@@ -431,10 +489,24 @@ if st.session_state.page == "app":
             with st.spinner("Fetching health suggestions..."):
                 ai_response = get_remedies(user_inputs_dict_for_diab, diab_prediction[0],disease="diabetes")
 
-            st.subheader("💡 AI-Powered Health Suggestions")
-            st.write("**🍽 Diet Tips:**", ai_response.get("diet_tips", []))
-            st.write("**🏃 Lifestyle Tips:**", ai_response.get("lifestyle_tips", []))
-            st.write("**🧘 Notes:**", ai_response.get("notes", []))
+            # Build the HTML content for the card
+            diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
+            lifestyle_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("lifestyle_tips", [])])
+            notes_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("notes", [])])
+
+            card_html = f"""
+            <div class="ai-card">
+                <div class="ai-title">💡 AI-Powered Health Suggestions</div>
+                <div class="tip-title">🍽 Diet Tips:</div>
+                <ul>{diet_list}</ul>
+                <div class="tip-title">🏃 Lifestyle Tips:</div>
+                <ul>{lifestyle_list}</ul>
+                <div class="tip-title">🧘 Notes:</div>
+                <ul>{notes_list}</ul>
+            </div>
+            """
+
+            st.markdown(card_html, unsafe_allow_html=True)
 
     # Heart Disease Prediction Page
     elif selected == 'Heart Disease Prediction':
