@@ -527,7 +527,60 @@ if st.session_state.page == "app":
     # Heart Disease Prediction Page
     elif selected == 'Heart Disease Prediction':
         st.title('Heart Disease Prediction using ML')
+        st.markdown("""
+            <style>
+            @keyframes fadeIn {
+                0% { opacity: 0; transform: translateY(20px); }
+                100% { opacity: 1; transform: translateY(0); }
+            }
 
+            @keyframes glowPulse {
+                0% { box-shadow: 0 0 10px #FF4B4B, 0 0 20px #4CAF50, 0 0 30px #2196F3; }
+                50% { box-shadow: 0 0 20px #FF4B4B, 0 0 30px #4CAF50, 0 0 40px #2196F3; }
+                100% { box-shadow: 0 0 10px #FF4B4B, 0 0 20px #4CAF50, 0 0 30px #2196F3; }
+            }
+
+            .ai-card {
+                background: rgba(0, 0, 0, 0.45);
+                border-radius: 18px;
+                padding: 22px;
+                margin-top: 20px;
+                color: #fff;
+                animation: fadeIn 1s ease-in-out, glowPulse 3s infinite alternate;
+                border: 2px solid rgba(255,255,255,0.2);
+            }
+
+            .ai-title {
+                text-align: center;
+                background: linear-gradient(270deg, #FF4B4B, #4CAF50, #2196F3);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                font-size: 24px;
+                font-weight: bold;
+                text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+            }
+
+            .tip-title {
+                font-size: 18px;
+                color: #00FFEA;
+                margin-top: 15px;
+                font-weight: 600;
+            }
+            ul { margin-left: 20px; padding-left: 10px; list-style-type: disc; }
+
+            ul li {
+                opacity: 0;
+                animation: fadeIn 0.6s forwards;
+            }
+
+            /* Staggered delay */
+            ul li:nth-child(1) { animation-delay: 0.3s; }
+            ul li:nth-child(2) { animation-delay: 0.6s; }
+            ul li:nth-child(3) { animation-delay: 0.9s; }
+            ul li:nth-child(4) { animation-delay: 1.2s; }
+            ul li:nth-child(5) { animation-delay: 1.5s; }
+            </style>
+        """, unsafe_allow_html=True)
         col1, col2, col3 = st.columns(3)
         with col1:
             age = st.text_input('Age')
@@ -603,15 +656,84 @@ if st.session_state.page == "app":
             with st.spinner("Fetching health suggestions..."):
                 ai_response = get_remedies(user_inputs_dict_for_heart, heart_prediction[0],disease="heart")
 
-            st.subheader("💡 AI-Powered Health Suggestions")
-            st.write("**🍽 Diet Tips:**", ai_response.get("diet_tips", []))
-            st.write("**🏃 Lifestyle Tips:**", ai_response.get("lifestyle_tips", []))
-            st.write("**🧘 Notes:**", ai_response.get("notes", []))
+                # ✅ Convert Heart AI suggestions into animated HTML lists
+                heart_diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
+                heart_lifestyle_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("lifestyle_tips", [])])
+                heart_notes_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("notes", [])])
+
+                # ✅ Render animated card for Heart
+                heart_card_html = f"""
+                <div class="ai-card">
+                    <div class="ai-title">💡 AI-Powered Heart Health Suggestions</div>
+                    <div class="tip-title">🍽 Diet Tips:</div>
+                    <ul>{heart_diet_list}</ul>
+                    <div class="tip-title">🏃 Lifestyle Tips:</div>
+                    <ul>{heart_lifestyle_list}</ul>
+                    <div class="tip-title">🧘 Notes:</div>
+                    <ul>{heart_notes_list}</ul>
+                </div>
+                """
+
+                st.markdown(heart_card_html, unsafe_allow_html=True)
 
 
     # Parkinson's Disease Prediction Page
     elif selected == "Parkinsons Prediction":
         st.title("Parkinson's Disease Prediction using ML")
+        st.markdown("""
+            <style>
+            @keyframes fadeIn {
+                0% { opacity: 0; transform: translateY(20px); }
+                100% { opacity: 1; transform: translateY(0); }
+            }
+
+            @keyframes glowPulse {
+                0% { box-shadow: 0 0 10px #FF4B4B, 0 0 20px #4CAF50, 0 0 30px #2196F3; }
+                50% { box-shadow: 0 0 20px #FF4B4B, 0 0 30px #4CAF50, 0 0 40px #2196F3; }
+                100% { box-shadow: 0 0 10px #FF4B4B, 0 0 20px #4CAF50, 0 0 30px #2196F3; }
+            }
+
+            .ai-card {
+                background: rgba(0, 0, 0, 0.45);
+                border-radius: 18px;
+                padding: 22px;
+                margin-top: 20px;
+                color: #fff;
+                animation: fadeIn 1s ease-in-out, glowPulse 3s infinite alternate;
+                border: 2px solid rgba(255,255,255,0.2);
+            }
+
+            .ai-title {
+                text-align: center;
+                background: linear-gradient(270deg, #FF4B4B, #4CAF50, #2196F3);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                font-size: 24px;
+                font-weight: bold;
+                text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+            }
+
+            .tip-title {
+                font-size: 18px;
+                color: #00FFEA;
+                margin-top: 15px;
+                font-weight: 600;
+            }
+            ul { margin-left: 20px; padding-left: 10px; list-style-type: disc; }
+
+            ul li {
+                opacity: 0;
+                animation: fadeIn 0.6s forwards;
+            }
+
+            /* Staggered delay */
+            ul li:nth-child(1) { animation-delay: 0.3s; }
+            ul li:nth-child(2) { animation-delay: 0.6s; }
+            ul li:nth-child(3) { animation-delay: 0.9s; }
+            ul li:nth-child(4) { animation-delay: 1.2s; }
+            ul li:nth-child(5) { animation-delay: 1.5s; }
+            </style>
+        """, unsafe_allow_html=True)
 
         col1, col2, col3, col4, col5 = st.columns(5)
         with col1:
@@ -717,10 +839,25 @@ if st.session_state.page == "app":
             with st.spinner("Fetching health suggestions..."):
                 ai_response = get_remedies(user_inputs_dict_for_parkinsons, parkinsons_prediction[0], disease="parkinsons")
 
-            st.subheader("💡 AI-Powered Health Suggestions")
-            st.write("**🍽 Diet Tips:**", ai_response.get("diet_tips", []))
-            st.write("**🏃 Lifestyle Tips:**", ai_response.get("lifestyle_tips", []))
-            st.write("**🧘 Notes:**", ai_response.get("notes", []))
+            # ✅ Convert Parkinson’s AI suggestions into animated HTML lists
+                parkinsons_diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
+                parkinsons_lifestyle_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("lifestyle_tips", [])])
+                parkinsons_notes_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("notes", [])])
+
+                # ✅ Render animated card for Parkinson's
+                parkinsons_card_html = f"""
+                <div class="ai-card">
+                    <div class="ai-title">💡 AI-Powered Parkinson's Health Suggestions</div>
+                    <div class="tip-title">🍽 Diet Tips:</div>
+                    <ul>{parkinsons_diet_list}</ul>
+                    <div class="tip-title">🏃 Lifestyle Tips:</div>
+                    <ul>{parkinsons_lifestyle_list}</ul>
+                    <div class="tip-title">🧘 Notes:</div>
+                    <ul>{parkinsons_notes_list}</ul>
+                </div>
+                """
+
+                st.markdown(parkinsons_card_html, unsafe_allow_html=True)
 
     elif selected == "AI Chat Assistant":
         st.title("🤖 AI Health Expert Chatbot")
