@@ -33,8 +33,18 @@ st.markdown("""
         50% {background-position: 100% 50%;}
         100% {background-position: 0% 50%;}
     }
-
-
+    .fade-title {
+    font-size: 2.2em;
+    font-weight: bold;
+    color: white;
+    text-align: left;
+    animation: fadeIn 1.2s ease-in-out;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+    }
+    @keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(-10px); }
+    100% { opacity: 1; transform: translateY(0); }
+    }
 """, unsafe_allow_html=True)
 
 # Get current working directory
@@ -341,7 +351,45 @@ if st.session_state.page == "app":
     
 # AI-Based Health Assistant Page
     if selected == 'AI-Based Health Assistant':
-        st.title("🧠 AI-Based Health Assistant")
+        # st.title("🧠 AI-Based Health Assistant")
+        st.markdown("""
+        <style>
+        .tip-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            color: white;
+            animation: fadeInUp 0.8s ease-in-out;
+            backdrop-filter: blur(6px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .tip-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+        }
+        @keyframes fadeInUp {
+            0% {opacity: 0; transform: translateY(10px);}
+            100% {opacity: 1; transform: translateY(0);}
+        }
+        .fade-title {
+        font-size: 2.2em;
+        font-weight: bold;
+        padding-bottom: 20px;
+        color: white;
+        text-align: left;
+        animation: fadeIn 1.2s ease-in-out;
+        text-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+        }
+        @keyframes fadeIn {
+        0% { opacity: 0; transform: translateY(-10px); }
+        100% { opacity: 1; transform: translateY(0); }
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        st.markdown("<div class='fade-title'>🧠AI-Based Health Assistan</div>", unsafe_allow_html=True)
         st.markdown("Enter your basic health info and current symptoms:")
 
         mood = st.selectbox("Current Mood", ["Happy", "Tired", "Sad", "Stressed", "Calm"])
@@ -367,9 +415,24 @@ if st.session_state.page == "app":
                         if res.status_code == 200:
                             result = res.json()
                             st.success("✅ Gemini AI Suggestions")
-                            st.write("**🍽 Diet Tips:**", result.get("diet_tips", []))
-                            st.write("**🏃 Lifestyle Tips:**", result.get("lifestyle_tips", []))
-                            st.write("**💬 Notes:**", result.get("notes", []))
+                            diet_tips = result.get("diet_tips", [])
+                            lifestyle_tips = result.get("lifestyle_tips", [])
+                            notes = result.get("notes", [])
+
+                            st.markdown(f"""
+                            <div class="tip-card">
+                                <div class="tip-title">🍽 Diet Tips:</div>
+                                <div>{'<br>'.join(diet_tips) if diet_tips else 'No tips available.'}</div>
+                            </div>
+                            <div class="tip-card">
+                                <div class="tip-title">🏃 Lifestyle Tips:</div>
+                                <div>{'<br>'.join(lifestyle_tips) if lifestyle_tips else 'No tips available.'}</div>
+                            </div>
+                            <div class="tip-card">
+                                <div class="tip-title">💬 Notes:</div>
+                                <div>{'<br>'.join(notes) if notes else 'No notes available.'}</div>
+                            </div>
+                            """, unsafe_allow_html=True)
                         else:
                             st.error("❌ Error from backend")
                             st.text(res.text)
@@ -379,7 +442,7 @@ if st.session_state.page == "app":
 
     # Diabetes Prediction Page
     elif selected == 'Diabetes Prediction':
-        st.title('Diabetes Prediction using ML')
+        st.markdown("<div class='fade-title'>🩸Diabetes Prediction using ML</div>", unsafe_allow_html=True)
         st.markdown("""
             <style>
             @keyframes fadeIn {
@@ -434,7 +497,6 @@ if st.session_state.page == "app":
             ul li:nth-child(5) { animation-delay: 1.5s; }
             </style>
         """, unsafe_allow_html=True)
-
         col1, col2, col3 = st.columns(3)
         with col1:
             Pregnancies = st.text_input('Number of Pregnancies')
@@ -526,7 +588,7 @@ if st.session_state.page == "app":
 
     # Heart Disease Prediction Page
     elif selected == 'Heart Disease Prediction':
-        st.title('Heart Disease Prediction using ML')
+        st.markdown("<div class='fade-title'>❤️Heart Disease Prediction using ML</div>", unsafe_allow_html=True)
         st.markdown("""
             <style>
             @keyframes fadeIn {
@@ -680,7 +742,7 @@ if st.session_state.page == "app":
 
     # Parkinson's Disease Prediction Page
     elif selected == "Parkinsons Prediction":
-        st.title("Parkinson's Disease Prediction using ML")
+        st.markdown("<div class='fade-title'>🧠Parkinson's Disease Prediction using ML</div>", unsafe_allow_html=True)
         st.markdown("""
             <style>
             @keyframes fadeIn {
@@ -907,40 +969,92 @@ if st.session_state.page == "app":
         
     # About & Developer Page
     elif selected == "About & Developer":
-        st.title("📖 About This Project")
-
         st.markdown("""
-        ### 🧠 Multi-Disease Diagnostic AI
+        <style>
+        /* Fade-in animation */
+        @keyframes fadeIn {
+            0% {opacity: 0; transform: translateY(15px);}
+            100% {opacity: 1; transform: translateY(0);}
+        }
 
-        This is a health-focused machine learning web application built with **Streamlit**, designed to:
-        - Predict the likelihood of **Diabetes**, **Heart Disease**, and **Parkinson’s Disease**
-        - Offer **AI-powered lifestyle and diet recommendations** based on model results
-        - Provide a real-time **AI Health Assistant Chatbot** powered by **Gemini**
+        /* Gradient animated title */
+        @keyframes gradientMove {
+            0% {background-position: 0% 50%;}
+            100% {background-position: 100% 50%;}
+        }
+
+        .about-title {
+            font-size: 42px;
+            font-weight: bold;
+            text-align: center;
+            background: linear-gradient(270deg, #FF4B4B, #4CAF50, #2196F3);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientMove 4s linear infinite, fadeIn 1s ease-in-out;
+            margin-bottom: 30px;
+        }
+
+        /* Section container */
+        .about-section {
+            background: rgba(255,255,255,0.08);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            animation: fadeIn 1s ease-in-out;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        /* Developer Info Styling */
+        .dev-info {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 10px;
+            animation: fadeIn 1.5s ease-in-out;
+            color: white;
+        }
+        .dev-info strong {
+            color: #FFD700;
+        }
+        </style>
+
+        <div class="about-title">📖 About This Project</div>
+
+        <div class="about-section">
+            <h3>🧠 Multi-Disease Diagnostic AI</h3>
+            <p>This is a health-focused machine learning web application built with <b>Streamlit</b>, designed to:</p>
+            <ul>
+                <li>🔬 Predict the likelihood of <b>Diabetes</b>, <b>Heart Disease</b>, and <b>Parkinson’s Disease</b></li>
+                <li>🤖 Offer <b>AI-powered lifestyle and diet recommendations</b> based on model results</li>
+                <li>💬 Provide a real-time <b>AI Health Assistant Chatbot</b> powered by Gemini</li>
+            </ul>
+            <p>🌟 The app aims to <b>bridge the gap between early prediction and preventive healthcare</b> using machine learning and generative AI.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        st.markdown("### 🛠 Tech Stack Used")
+        st.write("""
+        - 🐍 Python  
+        - ⚙️ Scikit-Learn  
+        - 💾 Pickle  
+        - 🎨 Streamlit  
+        - 🌐 Flask  
+        - 🤖 Google Gemini API  
+        - 🧠 DeepFace (for future emotion integration)
+        """)
+
+        st.markdown("### 📬 Contact")
+        st.write("""
+        📧 **Email:** kaustavmondal60@gmail.com  
+        💼 **GitHub:** [github.com/kaustavmondal](https://github.com/LeLoUcH-V-BrItAnIa)  
+        🌐 **LinkedIn:** [linkedin.com/in/kaustavmondal](https://www.linkedin.com/in/kaustav-mondal-7a2702240)
+        """)
+        st.markdown("""<div style="text-align:center; color:white; margin-top:20px; font-style:italic;">
+            💡 Built with dedication and the goal of making healthcare smarter through AI.
+        </div>
+        """, unsafe_allow_html=True)
         
-        The app aims to **bridge the gap between early prediction and preventive healthcare** using machine learning and generative AI.
-        """)
 
-        st.markdown("---")
-
-        st.subheader("👨‍💻 Developer Info")
-        st.markdown("""
-        **Name:** Kaustav Mondal  
-        **Role:** MCA Student | AI & HealthTech Enthusiast  
-        **Project Type:** Academic Research & Practical Implementation  
-        **Tech Stack Used:**  
-        - Python, Scikit-Learn, Pickle  
-        - Streamlit, Flask, Google Gemini API  
-        - DeepFace (for future emotion integration)  
-
-        **Contact:**  
-        - 📧 Email: kaustavmondal60@gmail.com  
-        - 💼 GitHub: [github.com/kaustavmondal](https://github.com/LeLoUcH-V-BrItAnIa)  
-        - 🌐 LinkedIn: [linkedin.com/in/kaustavmondal](www.linkedin.com/in/kaustav-mondal-7a2702240)
-        """)
-
-        st.markdown("---")
-        st.markdown("💡 _Built with dedication and the goal of making healthcare smarter through AI._")
-                
     elif selected == "📊 Dashboard":
         st.title("📊 Prediction Dashboard")
 
