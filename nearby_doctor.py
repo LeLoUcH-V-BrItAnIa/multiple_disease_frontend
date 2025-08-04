@@ -62,12 +62,14 @@ def show_nearby_doctors():
             if specialty.lower() in name.lower() or specialty == "":
                 doctors.append({"name": name, "lat": element["lat"], "lon": element["lon"]})
         return doctors
-
-    if "doctors" not in st.session_state:
+    
+    if "doctors" not in st.session_state or not isinstance(st.session_state.doctors, list):
         st.session_state.doctors = []
-
+        
     if st.button("🔍 Find Doctors"):
         st.session_state.doctors = get_doctors(lat, lon, radius, specialty)
+
+    
 
     if st.session_state.doctors:
         doctors = st.session_state.doctors
