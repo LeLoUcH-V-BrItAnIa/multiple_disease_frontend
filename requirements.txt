@@ -8,3 +8,6 @@ plotly
 pandas
 numpy
 matplotlib
+googlemaps
+streamlit-folium 
+folium
