@@ -91,7 +91,3 @@ def show_nearby_doctors():
             st.write(f"**{d['name']}** — 📍 ({d['lat']:.4f}, {d['lon']:.4f})")
     else:
         st.info("Enter a location and click Find Doctors to view nearby results.")
-
-# Run app
-if __name__ == "__main__":
-    show_nearby_doctors()
