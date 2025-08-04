@@ -1,4 +1,5 @@
 import pandas as pd
+from nearby_doctor import show_nearby_doctors
 import matplotlib.pyplot as plt
 import os
 import pickle
@@ -360,9 +361,10 @@ if st.session_state.page == "app":
     with st.sidebar:
         selected = option_menu(
         'CareIQ Hub 🧠',
-        ['Diabetes Prediction', 'Heart Disease Prediction', 'Parkinsons Prediction', 'AI-Based Health Assistant','📊 Dashboard','AI Chat Assistant','About & Developer'],
+        ['Diabetes Prediction', 'Heart Disease Prediction', 'Parkinsons Prediction', 'AI-Based Health Assistant','📊 Dashboard',
+         'Nearby Doctors','AI Chat Assistant','About & Developer'],
         menu_icon='hospital-fill',
-        icons=['activity', 'heart', 'person', 'robot','chat-dots-fill','info-circle'],
+        icons=['activity', 'heart', 'person', 'robot','chat-dots-fill','geo-alt','info-circle'],
         default_index=0
     )
     
@@ -755,6 +757,11 @@ if st.session_state.page == "app":
                 """
 
                 st.markdown(heart_card_html, unsafe_allow_html=True)
+
+                
+    # nearby doctor's page'
+    elif selected == "Nearby Doctors":
+        show_nearby_doctors()
 
 
     # Parkinson's Disease Prediction Page
