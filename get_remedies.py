@@ -138,6 +138,31 @@ Respond in JSON format:
   "notes": ["..."]
 }}
 """
+def build_leukemia_prompt(inputs, prediction):
+    condition = "has Leukemia" if prediction == 1 else "does not have Leukemia"
+    fields = "\n".join([f"{k}: {v}" for k, v in inputs.items()])
+
+    return f"""
+You are a hematology AI assistant.
+
+The following patient health features were submitted for Leukemia prediction:
+{fields}
+
+Prediction: The person {condition}.
+
+Give:
+- 🧠 2–3 lifestyle or treatment support suggestions for Leukemia care
+- 🥗 Diet and nutrition tips for better immunity
+- 💬 A short uplifting note for the patient
+
+Respond in JSON format:
+{{
+  "diet_tips": ["..."],
+  "lifestyle_tips": ["..."],
+  "notes": ["..."]
+}}
+"""
+
 
 # -------- Dispatcher Function --------
 
@@ -150,6 +175,8 @@ def get_remedies(user_inputs, prediction, disease):
         prompt = build_heart_prompt(user_inputs, prediction)
     elif disease == "parkinsons":
         prompt = build_parkinsons_prompt(user_inputs, prediction)
+    elif disease == "leukemia":
+        prompt = build_leukemia_prompt(user_inputs, prediction)
     else:
         return {"error": "Unsupported disease type"}
 

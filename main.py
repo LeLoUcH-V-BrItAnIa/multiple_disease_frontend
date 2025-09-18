@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from nearby_doctor import show_nearby_doctors
 import matplotlib.pyplot as plt
 import os
@@ -55,6 +56,7 @@ working_dir = os.path.dirname(os.path.abspath(__file__))
 diabetes_model = pickle.load(open(f'{working_dir}/saved_models/diabetes_model.sav', 'rb'))
 heart_disease_model = pickle.load(open(f'{working_dir}/saved_models/heart_disease_model.sav', 'rb'))
 parkinsons_model = pickle.load(open(f'{working_dir}/saved_models/parkinsons_model.sav', 'rb'))
+leukemia_model = pickle.load(open(f'{working_dir}/saved_models/XGBClassifier.pkl', 'rb'))
 
 # ✅ Homepage Section
 if st.session_state.page == "home":
@@ -361,12 +363,13 @@ if st.session_state.page == "app":
     with st.sidebar:
         selected = option_menu(
         'CareIQ Hub 🧠',
-        ['Diabetes Prediction', 'Heart Disease Prediction', 'Parkinsons Prediction', 'AI-Based Health Assistant','📊 Dashboard',
+        ['Diabetes Prediction', 'Heart Disease Prediction','Leukimia Risk Prediction', 'Parkinsons Prediction', 'AI-Based Health Assistant','📊 Dashboard',
          'Nearby Doctors','AI Chat Assistant','About & Developer'],
         menu_icon='hospital-fill',
         icons=['activity', 'heart', 'person', 'robot','chat-dots-fill','geo-alt','info-circle'],
         default_index=0
     )
+
     
 # AI-Based Health Assistant Page
     if selected == 'AI-Based Health Assistant':
@@ -458,6 +461,168 @@ if st.session_state.page == "app":
                     except Exception as e:
                         st.error(f"❌ Request failed: {str(e)}")
                     
+    # Leukimia Risk Prediction Page
+
+    elif selected == 'Leukimia Risk Prediction':
+        st.markdown("""
+        <style>
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes glowPulse {
+            0% { box-shadow: 0 0 10px #FF4B4B, 0 0 20px #4CAF50, 0 0 30px #2196F3; }
+            50% { box-shadow: 0 0 20px #FF4B4B, 0 0 30px #4CAF50, 0 0 40px #2196F3; }
+            100% { box-shadow: 0 0 10px #FF4B4B, 0 0 20px #4CAF50, 0 0 30px #2196F3; }
+        }
+
+        .ai-card {
+            background: rgba(0, 0, 0, 0.45);
+            border-radius: 18px;
+            padding: 22px;
+            margin-top: 20px;
+            color: #fff;
+            animation: fadeIn 1s ease-in-out, glowPulse 3s infinite alternate;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .ai-title {
+            text-align: center;
+            background: linear-gradient(270deg, #FF4B4B, #4CAF50, #2196F3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+        }
+
+        .tip-title {
+            font-size: 18px;
+            color: #00FFEA;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+        ul { margin-left: 20px; padding-left: 10px; list-style-type: disc; }
+
+        ul li {
+            opacity: 0;
+            animation: fadeIn 0.6s forwards;
+        }
+
+        ul li:nth-child(1) { animation-delay: 0.3s; }
+        ul li:nth-child(2) { animation-delay: 0.6s; }
+        ul li:nth-child(3) { animation-delay: 0.9s; }
+        ul li:nth-child(4) { animation-delay: 1.2s; }
+        ul li:nth-child(5) { animation-delay: 1.5s; }
+        </style>
+    """, unsafe_allow_html=True)
+
+        st.markdown("<div class='fade-title'>🧬 Leukemia Risk Prediction using ML</div>", unsafe_allow_html=True)
+
+    # ---------- INPUT FIELDS ----------
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        age = st.number_input("Age", min_value=0, max_value=120, value=30)
+        country = st.number_input("Country (numeric encoded)", min_value=0, value=1000)
+        wbc = st.number_input("WBC Count", min_value=0, value=5000)
+        rbc = st.number_input("RBC Count", min_value=0.0, value=5.0, step=0.01)
+        platelet = st.number_input("Platelet Count", min_value=0, value=250000)
+        hemoglobin = st.number_input("Hemoglobin Level", min_value=0.0, value=13.0, step=0.1)
+
+    with col2:
+        blast = st.number_input("Bone Marrow Blasts", min_value=0, value=50)
+        bmi = st.number_input("BMI", min_value=0.0, value=22.0, step=0.1)
+        ses = st.number_input("Socioeconomic Status", min_value=0, value=1)
+        wbc_rbc_ratio = st.number_input("WBC/RBC Ratio", min_value=0.0, value=1000.0, step=0.1)
+        bmi_con = st.number_input("BMI_con (encoded)", min_value=0, value=1)
+        harmful = st.number_input("Harmful Habits", min_value=0, value=0)
+
+    with col3:
+        genetic_cond = st.number_input("Genetic Condition", min_value=0, value=0)
+        eth_a = np.log1p(st.number_input("Ethnicity Group A", min_value=0, value=0))
+        eth_b = np.log1p(st.number_input("Ethnicity Group B", min_value=0, value=0))
+        eth_c = np.log1p(st.number_input("Ethnicity Group C", min_value=0, value=0))
+
+    # Boolean features in two columns
+    st.subheader("Additional Factors")
+    colb1, colb2 = st.columns(2)
+    with colb1:
+        gender = 1 if st.checkbox("Gender Male") else 0
+        genetic = np.log1p(1 if st.checkbox("Genetic Mutation Yes") else 0)
+        family = 1 if st.checkbox("Family History Yes") else 0
+        smoking = 1 if st.checkbox("Smoking Status Yes") else 0
+        alcohol = 1 if st.checkbox("Alcohol Consumption Yes") else 0
+    with colb2:
+        radiation = np.log1p(1 if st.checkbox("Radiation Exposure Yes") else 0)
+        infection = np.log1p(1 if st.checkbox("Infection History Yes") else 0)
+        chronic = 1 if st.checkbox("Chronic Illness Yes") else 0
+        immune = np.log1p(1 if st.checkbox("Immune Disorders Yes") else 0)
+        urban = 1 if st.checkbox("Urban Area") else 0
+
+    # Collect features in correct order
+    leukemia_features = [[
+        age, country, wbc, rbc, platelet, hemoglobin, blast, bmi, ses,
+        eth_a, eth_b, eth_c, gender, genetic, family, smoking, alcohol,
+        radiation, infection, chronic, immune, urban,
+        wbc_rbc_ratio, bmi_con, harmful, genetic_cond
+    ]]
+
+    # ---------- PREDICTION & AI RECOMMENDATIONS ----------
+    if st.button("Leukemia Test Result"):
+        with st.spinner("Analyzing risk..."):
+            leukemia_prediction = leukemia_model.predict(leukemia_features)[0]
+
+        # Show prediction result
+        if leukemia_prediction == 1 or leukemia_prediction == "True":
+            diagnosis = "⚠️ High risk of Leukemia detected!"
+            st.warning(diagnosis)
+            st.session_state.prediction_log.append(("Leukemia", "High Risk"))
+        else:
+            diagnosis = "✅ Low risk of Leukemia"
+            st.success(diagnosis)
+            st.session_state.prediction_log.append(("Leukemia", "Low Risk"))
+
+        # Prepare user inputs for AI suggestions
+        user_inputs_dict_for_leukemia = {
+            "Age": age,
+            "WBC": wbc,
+            "RBC": rbc,
+            "Platelet": platelet,
+            "Hemoglobin": hemoglobin,
+            "Bone Marrow Blasts": blast,
+            "BMI": bmi,
+            "Socioeconomic Status": ses,
+            "WBC/RBC Ratio": wbc_rbc_ratio,
+            "Harmful Habits": harmful
+        }
+
+        # Call Gemini API for AI-based suggestions
+        with st.spinner("Fetching AI health recommendations..."):
+            ai_response = get_remedies(user_inputs_dict_for_leukemia, leukemia_prediction, disease="leukemia")
+
+        # Format AI suggestions into animated HTML card
+        diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
+        lifestyle_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("lifestyle_tips", [])])
+        notes_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("notes", [])])
+
+        card_html = f"""
+        <div class="ai-card">
+            <div class="ai-title">💡 AI-Powered Health Suggestions</div>
+            <div class="tip-title">🍽 Diet Tips:</div>
+            <ul>{diet_list}</ul>
+            <div class="tip-title">🏃 Lifestyle Tips:</div>
+            <ul>{lifestyle_list}</ul>
+            <div class="tip-title">🧘 Notes:</div>
+            <ul>{notes_list}</ul>
+        </div>
+        """
+        st.markdown(card_html, unsafe_allow_html=True)
+
+
+
+
 
     # Diabetes Prediction Page
     elif selected == 'Diabetes Prediction':
@@ -604,6 +769,8 @@ if st.session_state.page == "app":
             """
 
             st.markdown(card_html, unsafe_allow_html=True)
+    
+    
 
     # Heart Disease Prediction Page
     elif selected == 'Heart Disease Prediction':
