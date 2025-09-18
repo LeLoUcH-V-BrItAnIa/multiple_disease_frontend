@@ -520,105 +520,105 @@ if st.session_state.page == "app":
 
         st.markdown("<div class='fade-title'>🧬 Leukemia Risk Prediction using ML</div>", unsafe_allow_html=True)
 
-    # ---------- INPUT FIELDS ----------
-    col1, col2, col3 = st.columns(3)
+        # ---------- INPUT FIELDS ----------
+        col1, col2, col3 = st.columns(3)
 
-    with col1:
-        age = st.number_input("Age", min_value=0, max_value=120, value=30)
-        country = st.number_input("Country (numeric encoded)", min_value=0, value=1000)
-        wbc = st.number_input("WBC Count", min_value=0, value=5000)
-        rbc = st.number_input("RBC Count", min_value=0.0, value=5.0, step=0.01)
-        platelet = st.number_input("Platelet Count", min_value=0, value=250000)
-        hemoglobin = st.number_input("Hemoglobin Level", min_value=0.0, value=13.0, step=0.1)
+        with col1:
+            age = st.number_input("Age", min_value=0, max_value=120, value=30)
+            country = st.number_input("Country (numeric encoded)", min_value=0, value=1000)
+            wbc = st.number_input("WBC Count", min_value=0, value=5000)
+            rbc = st.number_input("RBC Count", min_value=0.0, value=5.0, step=0.01)
+            platelet = st.number_input("Platelet Count", min_value=0, value=250000)
+            hemoglobin = st.number_input("Hemoglobin Level", min_value=0.0, value=13.0, step=0.1)
 
-    with col2:
-        blast = st.number_input("Bone Marrow Blasts", min_value=0, value=50)
-        bmi = st.number_input("BMI", min_value=0.0, value=22.0, step=0.1)
-        ses = st.number_input("Socioeconomic Status", min_value=0, value=1)
-        wbc_rbc_ratio = st.number_input("WBC/RBC Ratio", min_value=0.0, value=1000.0, step=0.1)
-        bmi_con = st.number_input("BMI_con (encoded)", min_value=0, value=1)
-        harmful = st.number_input("Harmful Habits", min_value=0, value=0)
+        with col2:
+            blast = st.number_input("Bone Marrow Blasts", min_value=0, value=50)
+            bmi = st.number_input("BMI", min_value=0.0, value=22.0, step=0.1)
+            ses = st.number_input("Socioeconomic Status", min_value=0, value=1)
+            wbc_rbc_ratio = st.number_input("WBC/RBC Ratio", min_value=0.0, value=1000.0, step=0.1)
+            bmi_con = st.number_input("BMI_con (encoded)", min_value=0, value=1)
+            harmful = st.number_input("Harmful Habits", min_value=0, value=0)
 
-    with col3:
-        genetic_cond = st.number_input("Genetic Condition", min_value=0, value=0)
-        eth_a = np.log1p(st.number_input("Ethnicity Group A", min_value=0, value=0))
-        eth_b = np.log1p(st.number_input("Ethnicity Group B", min_value=0, value=0))
-        eth_c = np.log1p(st.number_input("Ethnicity Group C", min_value=0, value=0))
+        with col3:
+            genetic_cond = st.number_input("Genetic Condition", min_value=0, value=0)
+            eth_a = np.log1p(st.number_input("Ethnicity Group A", min_value=0, value=0))
+            eth_b = np.log1p(st.number_input("Ethnicity Group B", min_value=0, value=0))
+            eth_c = np.log1p(st.number_input("Ethnicity Group C", min_value=0, value=0))
 
-    # Boolean features in two columns
-    st.subheader("Additional Factors")
-    colb1, colb2 = st.columns(2)
-    with colb1:
-        gender = 1 if st.checkbox("Gender Male") else 0
-        genetic = np.log1p(1 if st.checkbox("Genetic Mutation Yes") else 0)
-        family = 1 if st.checkbox("Family History Yes") else 0
-        smoking = 1 if st.checkbox("Smoking Status Yes") else 0
-        alcohol = 1 if st.checkbox("Alcohol Consumption Yes") else 0
-    with colb2:
-        radiation = np.log1p(1 if st.checkbox("Radiation Exposure Yes") else 0)
-        infection = np.log1p(1 if st.checkbox("Infection History Yes") else 0)
-        chronic = 1 if st.checkbox("Chronic Illness Yes") else 0
-        immune = np.log1p(1 if st.checkbox("Immune Disorders Yes") else 0)
-        urban = 1 if st.checkbox("Urban Area") else 0
+        # Boolean features in two columns
+        st.subheader("Additional Factors")
+        colb1, colb2 = st.columns(2)
+        with colb1:
+            gender = 1 if st.checkbox("Gender Male") else 0
+            genetic = np.log1p(1 if st.checkbox("Genetic Mutation Yes") else 0)
+            family = 1 if st.checkbox("Family History Yes") else 0
+            smoking = 1 if st.checkbox("Smoking Status Yes") else 0
+            alcohol = 1 if st.checkbox("Alcohol Consumption Yes") else 0
+        with colb2:
+            radiation = np.log1p(1 if st.checkbox("Radiation Exposure Yes") else 0)
+            infection = np.log1p(1 if st.checkbox("Infection History Yes") else 0)
+            chronic = 1 if st.checkbox("Chronic Illness Yes") else 0
+            immune = np.log1p(1 if st.checkbox("Immune Disorders Yes") else 0)
+            urban = 1 if st.checkbox("Urban Area") else 0
 
-    # Collect features in correct order
-    leukemia_features = [[
-        age, country, wbc, rbc, platelet, hemoglobin, blast, bmi, ses,
-        eth_a, eth_b, eth_c, gender, genetic, family, smoking, alcohol,
-        radiation, infection, chronic, immune, urban,
-        wbc_rbc_ratio, bmi_con, harmful, genetic_cond
-    ]]
+        # Collect features in correct order
+        leukemia_features = [[
+            age, country, wbc, rbc, platelet, hemoglobin, blast, bmi, ses,
+            eth_a, eth_b, eth_c, gender, genetic, family, smoking, alcohol,
+            radiation, infection, chronic, immune, urban,
+            wbc_rbc_ratio, bmi_con, harmful, genetic_cond
+        ]]
 
-    # ---------- PREDICTION & AI RECOMMENDATIONS ----------
-    if st.button("Leukemia Test Result"):
-        with st.spinner("Analyzing risk..."):
-            leukemia_prediction = leukemia_model.predict(leukemia_features)[0]
+        # ---------- PREDICTION & AI RECOMMENDATIONS ----------
+        if st.button("Leukemia Test Result"):
+            with st.spinner("Analyzing risk..."):
+                leukemia_prediction = leukemia_model.predict(leukemia_features)[0]
 
-        # Show prediction result
-        if leukemia_prediction == 1 or leukemia_prediction == "True":
-            diagnosis = "⚠️ High risk of Leukemia detected!"
-            st.warning(diagnosis)
-            st.session_state.prediction_log.append(("Leukemia", "High Risk"))
-        else:
-            diagnosis = "✅ Low risk of Leukemia"
-            st.success(diagnosis)
-            st.session_state.prediction_log.append(("Leukemia", "Low Risk"))
+            # Show prediction result
+            if leukemia_prediction == 1 or leukemia_prediction == "True":
+                diagnosis = "⚠️ High risk of Leukemia detected!"
+                st.warning(diagnosis)
+                st.session_state.prediction_log.append(("Leukemia", "High Risk"))
+            else:
+                diagnosis = "✅ Low risk of Leukemia"
+                st.success(diagnosis)
+                st.session_state.prediction_log.append(("Leukemia", "Low Risk"))
 
-        # Prepare user inputs for AI suggestions
-        user_inputs_dict_for_leukemia = {
-            "Age": age,
-            "WBC": wbc,
-            "RBC": rbc,
-            "Platelet": platelet,
-            "Hemoglobin": hemoglobin,
-            "Bone Marrow Blasts": blast,
-            "BMI": bmi,
-            "Socioeconomic Status": ses,
-            "WBC/RBC Ratio": wbc_rbc_ratio,
-            "Harmful Habits": harmful
-        }
+            # Prepare user inputs for AI suggestions
+            user_inputs_dict_for_leukemia = {
+                "Age": age,
+                "WBC": wbc,
+                "RBC": rbc,
+                "Platelet": platelet,
+                "Hemoglobin": hemoglobin,
+                "Bone Marrow Blasts": blast,
+                "BMI": bmi,
+                "Socioeconomic Status": ses,
+                "WBC/RBC Ratio": wbc_rbc_ratio,
+                "Harmful Habits": harmful
+            }
 
-        # Call Gemini API for AI-based suggestions
-        with st.spinner("Fetching AI health recommendations..."):
-            ai_response = get_remedies(user_inputs_dict_for_leukemia, leukemia_prediction, disease="leukemia")
+            # Call Gemini API for AI-based suggestions
+            with st.spinner("Fetching AI health recommendations..."):
+                ai_response = get_remedies(user_inputs_dict_for_leukemia, leukemia_prediction, disease="leukemia")
 
-        # Format AI suggestions into animated HTML card
-        diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
-        lifestyle_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("lifestyle_tips", [])])
-        notes_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("notes", [])])
+            # Format AI suggestions into animated HTML card
+            diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
+            lifestyle_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("lifestyle_tips", [])])
+            notes_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("notes", [])])
 
-        card_html = f"""
-        <div class="ai-card">
-            <div class="ai-title">💡 AI-Powered Health Suggestions</div>
-            <div class="tip-title">🍽 Diet Tips:</div>
-            <ul>{diet_list}</ul>
-            <div class="tip-title">🏃 Lifestyle Tips:</div>
-            <ul>{lifestyle_list}</ul>
-            <div class="tip-title">🧘 Notes:</div>
-            <ul>{notes_list}</ul>
-        </div>
-        """
-        st.markdown(card_html, unsafe_allow_html=True)
+            card_html = f"""
+            <div class="ai-card">
+                <div class="ai-title">💡 AI-Powered Health Suggestions</div>
+                <div class="tip-title">🍽 Diet Tips:</div>
+                <ul>{diet_list}</ul>
+                <div class="tip-title">🏃 Lifestyle Tips:</div>
+                <ul>{lifestyle_list}</ul>
+                <div class="tip-title">🧘 Notes:</div>
+                <ul>{notes_list}</ul>
+            </div>
+            """
+            st.markdown(card_html, unsafe_allow_html=True)
 
 
 
