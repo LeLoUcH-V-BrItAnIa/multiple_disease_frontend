@@ -583,6 +583,25 @@ if st.session_state.page == "app":
                 diagnosis = "✅ Low risk of Leukemia"
                 st.success(diagnosis)
                 st.session_state.prediction_log.append(("Leukemia", "Low Risk"))
+            
+            user_data = {
+                "Age": (age or 0),
+                "WBC": (wbc or 0),
+                "RBC": (rbc or 0),
+                "Platelet": (platelet  or 0),
+                "Hemoglobin": (hemoglobin  or 0),
+                "Bone Marrow Blasts": (blast  or 0),
+                "BMI": (bmi or 0),
+                "Socioeconomic Status": (ses  or 0),
+                "WBC/RBC Ratio": (wbc_rbc_ratio  or 0),
+                "Harmful Habits": (harmful  or 0)
+            }
+
+            df = pd.DataFrame(list(user_data.items()), columns=['Feature', 'Value'])
+            df = df.set_index('Feature')  # st.bar_chart needs an index
+
+            st.subheader("📊 User Input Summary")
+            st.bar_chart(df)
 
             # Prepare user inputs for AI suggestions
             user_inputs_dict_for_leukemia = {
