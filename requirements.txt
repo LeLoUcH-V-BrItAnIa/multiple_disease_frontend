@@ -13,8 +13,8 @@ streamlit-folium
 folium
 requests
 pymongo
-dnspython
+# dnspython
 bcrypt
-smtplib
+# smtplib
 random
-rich==10.14.0
+# rich==10.14.0
