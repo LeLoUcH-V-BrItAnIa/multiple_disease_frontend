@@ -477,6 +477,7 @@ if st.session_state.page == "home":
 
     if st.button("🚀 Launch Health Assistant"):
         st.session_state.page = "app"  # ✅ Switch to main app
+        st.rerun()
 
     # 🔻 Footer
     st.markdown("""
