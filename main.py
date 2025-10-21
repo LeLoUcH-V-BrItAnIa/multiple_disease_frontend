@@ -3,8 +3,6 @@ import numpy as np
 from nearby_doctor import show_nearby_doctors
 import matplotlib.pyplot as plt
 import os
-import random
-# import smtplib
 import pickle
 import streamlit as st
 from streamlit_lottie import st_lottie
@@ -29,60 +27,20 @@ except Exception as e:
 db = client["pulse_db"]
 users_collection = db["users"]
 # ---------------- Session State ----------------
-# if "otp_sent" not in st.session_state:
-#     st.session_state.otp_sent = False
-# if "registration_email" not in st.session_state:
-#     st.session_state.registration_email = ""
-# if "registration_password" not in st.session_state:
-#     st.session_state.registration_password = ""
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 if "username" not in st.session_state:
     st.session_state.username = ""
 if "page" not in st.session_state:
     st.session_state.page = "login"  # default page
-# -----------------------------
-# OTP Functions
-# -----------------------------
-# def generate_otp():
-#     return str(random.randint(100000, 999999))
 
-# def send_otp_email(user_email, otp):
-#     sender_email = "britanialelouchv6@gmail.com"
-#     sender_password = "wtrp qcxm hezk erxx"  # Use Gmail App Password
-#     subject = "Your OTP Verification Code"
-#     body = f"Your OTP code is: {otp}"
-#     message = f"Subject: {subject}\n\n{body}"
-
-#     try:
-#         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-#             server.login(sender_email, sender_password)
-#             server.sendmail(sender_email, user_email, message)
-    # except Exception as e:
-    #     st.error(f"Failed to send email: {e}")
 # ---------------- Auth Functions ----------------
 def register_user(username, email, password):
     if users_collection.find_one({"username": username}):
         return False, "Username already exists!"
     hashed_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     users_collection.insert_one({"username": username, "email": email, "password": hashed_pw})
-    # Insert as unverified user
-    # otp = generate_otp()
-    # st.session_state.otp = otp
-    # st.session_state.otp_sent = True
-    # st.session_state.pending_user = {"username": username, "email": email, "password": hashed_pw}
-    # send_otp_email(email, otp)
     return True, "User registered successfully!"
-    # return True, "OTP sent to your email for verification"
-    
-# def verify_otp(user_otp):
-#     if user_otp == st.session_state.otp:
-#         # Save verified user to MongoDB
-#         users_collection.insert_one(st.session_state.pending_user)
-#         st.session_state.otp_sent = False
-#         st.session_state.pending_user = {}
-#         return True
-#     return False
 
 def login_user(username, password):
     user = users_collection.find_one({"username": username})
@@ -144,8 +102,6 @@ def show_login_register_page():
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         with st.form("auth_form"):
-            # page_type = st.radio("Select Action:", ["Register", "Login"])
-
             if selected == "Register":
                 st.subheader("📝 Register")
                 reg_username = st.text_input("Username", key="reg_user")
@@ -153,35 +109,19 @@ def show_login_register_page():
                 reg_password = st.text_input("Password", type="password", key="reg_pass")
                 reg_confirm = st.text_input("Confirm Password", type="password", key="reg_confirm")
                 submit = st.form_submit_button("Register")
-
-                if not st.session_state.get("otp_sent", False):
-                    if submit:
-                        if reg_username and reg_email and reg_password and reg_confirm:
-                            if reg_password != reg_confirm:
-                                st.error("❌ Passwords do not match")
-                            else:
-                                success, msg = register_user(reg_username, reg_email, reg_password)
-                                if success:
-                                    # st.success(msg)
-                                    st.success("✅ Registration successful! You can now login.")
-                                    # st.rerun()
-                                else:
-                                    st.error(msg)
+                if submit:
+                    if reg_username and reg_email and reg_password and reg_confirm:
+                        if reg_password != reg_confirm:
+                            st.error("❌ Passwords do not match")
                         else:
-                            st.warning("Please fill all fields")
-                # else:
-                #     st.subheader("🔑 Enter OTP Sent to Your Email")
-                #     user_otp = st.text_input("OTP")
-                #     verify_btn = st.form_submit_button("Verify OTP")
-                #     if verify_btn:
-                #         if verify_otp(user_otp):
-                #             st.success("✅ Registration successful! You can now login.")
-                #             st.session_state.otp_sent = False
-                #             st.rerun()
-                #         else:
-                #             st.error("❌ Incorrect OTP. Try again")
-
-            elif selected == "Login":
+                            success, msg = register_user(reg_username, reg_email, reg_password)
+                            if success:
+                                st.success(msg + " You can now login.")
+                            else:
+                                st.error(msg)
+                    else:
+                        st.warning("Please fill all fields")
+            else:
                 st.subheader("🔑 Login")
                 username = st.text_input("Username", key="login_user")
                 password = st.text_input("Password", type="password", key="login_pass")
@@ -192,14 +132,12 @@ def show_login_register_page():
                         if success:
                             st.session_state.logged_in = True
                             st.session_state.username = username
-                            st.success(f"✅ Welcome {username}!")
                             st.session_state.page = "home"
                             st.rerun()
                         else:
                             st.error("❌ Invalid username or password")
                     else:
                         st.warning("Enter both username and password")
-        
 # ---------------- Router ----------------
 if not st.session_state.logged_in:
     show_login_register_page()
