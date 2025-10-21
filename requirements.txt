@@ -16,4 +16,4 @@ pymongo
 dnspython
 bcrypt
 smtplib
-random
+rich==10.14.0
