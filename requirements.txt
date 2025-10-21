@@ -15,3 +15,5 @@ requests
 pymongo
 dnspython
 bcrypt
+smtplib
+random
