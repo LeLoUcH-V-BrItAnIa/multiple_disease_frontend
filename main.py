@@ -13,6 +13,7 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 from pymongo import MongoClient
 import bcrypt
+import re
 from dotenv import load_dotenv
 from db_utils import get_user_records,save_prediction
 # ---------------- Environment & MongoDB Setup ----------------
@@ -35,9 +36,21 @@ if "page" not in st.session_state:
     st.session_state.page = "login"  # default page
 
 # ---------------- Auth Functions ----------------
+def is_valid_email(email):
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return re.match(pattern, email) is not None
+
+def is_valid_password(password):
+    pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$'
+    return re.match(pattern, password) is not None
+
 def register_user(username, email, password):
     if users_collection.find_one({"username": username}):
         return False, "Username already exists!"
+    if not is_valid_email(email):
+        return False, "Invalid email format!"
+    if not is_valid_password(password):
+        return False, "Password must be at least 8 characters long, include uppercase, lowercase, number, and special character!"
     hashed_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     users_collection.insert_one({"username": username, "email": email, "password": hashed_pw})
     return True, "User registered successfully!"
@@ -121,6 +134,7 @@ def show_login_register_page():
                                 st.error(msg)
                     else:
                         st.warning("Please fill all fields")
+                
             else:
                 st.subheader("🔑 Login")
                 username = st.text_input("Username", key="login_user")
