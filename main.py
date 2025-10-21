@@ -5,11 +5,144 @@ import matplotlib.pyplot as plt
 import os
 import pickle
 import streamlit as st
+from streamlit_lottie import st_lottie
 from streamlit_option_menu import option_menu
 import requests
 from get_remedies import get_remedies
 import google.generativeai as genai
 from dotenv import load_dotenv
+from pymongo import MongoClient
+import bcrypt
+from dotenv import load_dotenv
+from db_utils import get_user_records,save_prediction
+# ---------------- Environment & MongoDB Setup ----------------
+load_dotenv()
+MONGO_URI = os.getenv("MONGO_URI")  # or st.secrets["MONGO_URI"]
+try:
+    client = MongoClient(MONGO_URI)
+    client.admin.command('ping')
+except Exception as e:
+    st.error("MongoDB connection failed. Check your URI!")
+
+db = client["pulse_db"]
+users_collection = db["users"]
+# ---------------- Session State ----------------
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+if "username" not in st.session_state:
+    st.session_state.username = ""
+if "page" not in st.session_state:
+    st.session_state.page = "login"  # default page
+
+# ---------------- Auth Functions ----------------
+def register_user(username, email, password):
+    if users_collection.find_one({"username": username}):
+        return False, "Username already exists!"
+    hashed_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    users_collection.insert_one({"username": username, "email": email, "password": hashed_pw})
+    return True, "User registered successfully!"
+
+def login_user(username, password):
+    user = users_collection.find_one({"username": username})
+    if user and bcrypt.checkpw(password.encode('utf-8'), user["password"]):
+        return True, user
+    return False, None
+
+def show_login_register_page():
+    st.set_page_config(page_title="Pulse Auth", layout="wide", page_icon="🩺")
+    
+    # Gradient background and form styling
+    st.markdown("""
+    <style>
+    .stApp {
+        background: linear-gradient(-45deg, #0D1B2A, #1B263B, #415A77, #0A1128);
+        background-size: 500% 500%;
+        animation: gradientBG 12s ease infinite;
+        color:white;
+    }
+    @keyframes gradientBG {
+        0% {background-position:0% 50%;}
+        50% {background-position:100% 50%;}
+        100% {background-position:0% 50%;}
+    }
+    .form-box {
+        background: rgba(255,255,255,0.1); 
+        padding:30px; 
+        border-radius:15px; 
+        box-shadow:0 8px 25px rgba(0,0,0,0.5);
+    }
+    input {padding:10px; margin:5px 0; width:100%; border-radius:5px; border:none;}
+    button {padding:10px; width:100%; border-radius:5px; border:none; background:#00FFAA; color:black; font-weight:bold; cursor:pointer;}
+    button:hover {background:#00cc88;}
+    </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown("<h1 style='text-align:center; font-size:3rem;'>Pulse 🩺<br>Predictive Understanding for Lifestyle & Smart Evaluation</h1>", unsafe_allow_html=True)
+
+    # Lottie animation
+    def load_lottie(url):
+        r = requests.get(url)
+        if r.status_code != 200:
+            return None
+        return r.json()
+    
+    animation_url = "https://assets9.lottiefiles.com/packages/lf20_qp1q7mct.json"
+    lottie_anim = load_lottie(animation_url)
+    st_lottie(lottie_anim, height=250)
+
+    # Login/Register form
+    with st.sidebar:
+        selected = option_menu(
+        'PULSE HUB 🧠',
+        ['Login','Register'],
+        menu_icon='hospital-fill',
+        icons=['activity', 'heart'],
+        default_index=0
+    )
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        with st.form("auth_form"):
+            if selected == "Register":
+                st.subheader("📝 Register")
+                reg_username = st.text_input("Username", key="reg_user")
+                reg_email = st.text_input("Email", key="reg_email")
+                reg_password = st.text_input("Password", type="password", key="reg_pass")
+                reg_confirm = st.text_input("Confirm Password", type="password", key="reg_confirm")
+                submit = st.form_submit_button("Register")
+                if submit:
+                    if reg_username and reg_email and reg_password and reg_confirm:
+                        if reg_password != reg_confirm:
+                            st.error("❌ Passwords do not match")
+                        else:
+                            success, msg = register_user(reg_username, reg_email, reg_password)
+                            if success:
+                                st.success(msg + " You can now login.")
+                            else:
+                                st.error(msg)
+                    else:
+                        st.warning("Please fill all fields")
+            else:
+                st.subheader("🔑 Login")
+                username = st.text_input("Username", key="login_user")
+                password = st.text_input("Password", type="password", key="login_pass")
+                submit = st.form_submit_button("Login")
+                if submit:
+                    if username and password:
+                        success, user = login_user(username, password)
+                        if success:
+                            st.session_state.logged_in = True
+                            st.session_state.username = username
+                            st.session_state.page = "home"
+                            st.rerun()
+                        else:
+                            st.error("❌ Invalid username or password")
+                    else:
+                        st.warning("Enter both username and password")
+# ---------------- Router ----------------
+if not st.session_state.logged_in:
+    show_login_register_page()
+    st.stop()  # Prevent rest of the code from running
+
 if "page" not in st.session_state:
     st.session_state.page = "home"
 if "prediction_log" not in st.session_state:
@@ -362,15 +495,28 @@ if st.session_state.page == "home":
 if st.session_state.page == "app":
     with st.sidebar:
         selected = option_menu(
-        'CareIQ Hub 🧠',
+        'PULSE Hub 🧠',
         ['Diabetes Prediction', 'Heart Disease Prediction','Leukimia Risk Prediction', 'Parkinsons Prediction', 'AI-Based Health Assistant','📊 Dashboard',
-         'Nearby Doctors','AI Chat Assistant','About & Developer'],
+         'Nearby Doctors','AI Chat Assistant','About & Developer','My Records','Logout'],
         menu_icon='hospital-fill',
         icons=['activity', 'heart', 'person', 'robot','chat-dots-fill','geo-alt','info-circle'],
         default_index=0
     )
-
+    if selected == "Logout":
+        st.session_state.logged_in = False
+        st.session_state.username = ""
+        st.session_state.page = "login"
+        st.rerun()
     
+    if selected == "My Records":
+        st.title("📋 My Health Reports")
+        records = get_user_records(st.session_state.username)
+        if records:
+            for r in records:
+                st.markdown(f"### 🧩 {r['disease']}")
+                st.json(r)
+        else:
+            st.info("No records found yet.")
 # AI-Based Health Assistant Page
     if selected == 'AI-Based Health Assistant':
         # st.title("🧠 AI-Based Health Assistant")
@@ -455,6 +601,27 @@ if st.session_state.page == "app":
                                 <div>{'<br>'.join(notes) if notes else 'No notes available.'}</div>
                             </div>
                             """, unsafe_allow_html=True)
+                            # 🔹 Save prediction record for logged-in user
+                            if st.session_state.logged_in:
+                                record_data = {
+                                    "symptoms": symptoms,
+                                    "mood": mood,
+                                    "age": age,
+                                    "gender": gender
+                                }
+                                save_prediction(
+                                    username=st.session_state.username,
+                                    disease="General Health Recommendation",
+                                    input_data=record_data,
+                                    result="AI Suggestions Provided",
+                                    ai_suggestions={
+                                        "diet_tips": diet_tips,
+                                        "lifestyle_tips": lifestyle_tips,
+                                        "notes": notes
+                                    }
+                                )
+                                st.info("✅ Your AI health recommendation has been saved to your history.")
+
                         else:
                             st.error("❌ Error from backend")
                             st.text(res.text)
@@ -638,6 +805,17 @@ if st.session_state.page == "app":
             </div>
             """
             st.markdown(card_html, unsafe_allow_html=True)
+            # 🔹 Save prediction record for logged-in user
+            if st.session_state.logged_in:
+                record_data = user_inputs_dict_for_leukemia
+                save_prediction(
+                username=st.session_state.username,
+                disease="Leukemia Risk Prediction",
+                input_data=record_data,
+                result=int(leukemia_prediction),
+                ai_suggestions=ai_response
+                )
+                st.info("✅ Your AI health recommendation has been saved to your history.")
 
 
 
@@ -788,6 +966,18 @@ if st.session_state.page == "app":
             """
 
             st.markdown(card_html, unsafe_allow_html=True)
+            # 🔹 Save prediction record for logged-in user
+            if st.session_state.logged_in:
+                record_data = user_inputs_dict_for_diab
+                save_prediction(
+                username=st.session_state.username,
+                disease="Diabetes Prediction",
+                input_data=record_data,
+                result=int(diab_prediction[0]),
+                ai_suggestions= ai_response
+                )
+                st.info("✅ Your AI health recommendation has been saved to your history.")
+
     
     
 
@@ -943,6 +1133,16 @@ if st.session_state.page == "app":
                 """
 
                 st.markdown(heart_card_html, unsafe_allow_html=True)
+                # 🔹 Save prediction for logged-in user
+                if st.session_state.logged_in:
+                    save_prediction(
+                        username=st.session_state.username,
+                        disease="Heart Disease",
+                        input_data=user_inputs_dict_for_heart,
+                        result=int(heart_prediction[0]),
+                        ai_suggestions=ai_response
+                    )
+                    st.info("✅ Your Heart Disease prediction and AI suggestions have been saved.")
 
                 
     # nearby doctor's page'
@@ -1131,6 +1331,16 @@ if st.session_state.page == "app":
                 """
 
                 st.markdown(parkinsons_card_html, unsafe_allow_html=True)
+                # 🔹 Save prediction for logged-in user
+                if st.session_state.logged_in:
+                    save_prediction(
+                        username=st.session_state.username,
+                        disease="Parkinson's",
+                        input_data=user_inputs_dict_for_parkinsons,
+                        result=int(parkinsons_prediction[0]),
+                        ai_suggestions=ai_response
+                    )
+                    st.info("✅ Your Parkinson's prediction and AI suggestions have been saved.")
 
     elif selected == "AI Chat Assistant":
         st.title("🤖 AI Health Expert Chatbot")

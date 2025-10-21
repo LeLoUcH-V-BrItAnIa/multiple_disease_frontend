@@ -12,3 +12,6 @@ matplotlib
 streamlit-folium 
 folium
 requests
+pymongo
+dnspython
+bcrypt
