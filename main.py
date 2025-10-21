@@ -374,7 +374,7 @@ if st.session_state.page == "home":
 #     </style>
 # """, unsafe_allow_html=True)
 
-    st.markdown('<div class="fade-subheading">🧠An AI-powered health diagnostic and advisory system 🤖💊 that predicts Diabetes, Heart Disease, and Parkinson’s Disease based on clinical parameters.</div>',unsafe_allow_html=True)
+    st.markdown('<div class="fade-subheading">🧠An AI-powered health diagnostic and advisory system 🤖💊 that predicts Diabetes, Heart Disease, and Parkinson’s Disease and more based on clinical parameters.</div>',unsafe_allow_html=True)
     # Animation
     with st.container():
         st.markdown('<div class="lottie-container">', unsafe_allow_html=True)
@@ -389,8 +389,8 @@ if st.session_state.page == "home":
     </h2>
     <p style='text-align:center; color:#f1f1f1; font-size:18px; animation: fadeInText 1.5s ease-in-out;'>
     This AI-powered health assistant can predict:<br>
-    🩸 <b>Diabetes</b> | ❤️ <b>Heart Disease</b> | 🧠 <b>Parkinson’s Disease</b><br><br>
-    It also provides <b>Gemini AI-powered diet & lifestyle recommendations</b>.
+    🩸 <b>Diabetes</b> | ❤️ <b>Heart Disease</b> | 🧠 <b>Parkinson’s Disease And More</b><br><br>
+    It also provides <b>AI-powered diet & lifestyle recommendations</b>.
     </p>
     <style>
     @keyframes fadeIn {
@@ -497,7 +497,7 @@ if st.session_state.page == "home":
     st.markdown("""
         <hr style="margin-top:40px;">
         <div style="text-align:center; font-size: 14px; color: #888;">
-            <b>🧠 Multi-Disease Diagnostic AI</b><br>
+            <b>🧠 Multiple-Disease Diagnostic AI</b><br>
             Built with ❤️ using <span style="color:#FF4B4B;">Python</span>, <span style="color:#2196F3;">Streamlit</span>, 
             <span style="color:#4CAF50;">Scikit-Learn</span> & <span style="color:#FF9800;">Gemini AI</span><br>
             © 2025 Kaustav Mondal | For educational & research purposes only
