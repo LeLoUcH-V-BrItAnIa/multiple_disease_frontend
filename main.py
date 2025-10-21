@@ -4,7 +4,7 @@ from nearby_doctor import show_nearby_doctors
 import matplotlib.pyplot as plt
 import os
 import random
-import smtplib
+# import smtplib
 import pickle
 import streamlit as st
 from streamlit_lottie import st_lottie
@@ -29,12 +29,12 @@ except Exception as e:
 db = client["pulse_db"]
 users_collection = db["users"]
 # ---------------- Session State ----------------
-if "otp_sent" not in st.session_state:
-    st.session_state.otp_sent = False
-if "registration_email" not in st.session_state:
-    st.session_state.registration_email = ""
-if "registration_password" not in st.session_state:
-    st.session_state.registration_password = ""
+# if "otp_sent" not in st.session_state:
+#     st.session_state.otp_sent = False
+# if "registration_email" not in st.session_state:
+#     st.session_state.registration_email = ""
+# if "registration_password" not in st.session_state:
+#     st.session_state.registration_password = ""
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 if "username" not in st.session_state:
@@ -44,45 +44,45 @@ if "page" not in st.session_state:
 # -----------------------------
 # OTP Functions
 # -----------------------------
-def generate_otp():
-    return str(random.randint(100000, 999999))
+# def generate_otp():
+#     return str(random.randint(100000, 999999))
 
-def send_otp_email(user_email, otp):
-    sender_email = "britanialelouchv6@gmail.com"
-    sender_password = "wtrp qcxm hezk erxx"  # Use Gmail App Password
-    subject = "Your OTP Verification Code"
-    body = f"Your OTP code is: {otp}"
-    message = f"Subject: {subject}\n\n{body}"
+# def send_otp_email(user_email, otp):
+#     sender_email = "britanialelouchv6@gmail.com"
+#     sender_password = "wtrp qcxm hezk erxx"  # Use Gmail App Password
+#     subject = "Your OTP Verification Code"
+#     body = f"Your OTP code is: {otp}"
+#     message = f"Subject: {subject}\n\n{body}"
 
-    try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(sender_email, sender_password)
-            server.sendmail(sender_email, user_email, message)
-    except Exception as e:
-        st.error(f"Failed to send email: {e}")
+#     try:
+#         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+#             server.login(sender_email, sender_password)
+#             server.sendmail(sender_email, user_email, message)
+    # except Exception as e:
+    #     st.error(f"Failed to send email: {e}")
 # ---------------- Auth Functions ----------------
 def register_user(username, email, password):
     if users_collection.find_one({"username": username}):
         return False, "Username already exists!"
     hashed_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-    #users_collection.insert_one({"username": username, "email": email, "password": hashed_pw})
+    users_collection.insert_one({"username": username, "email": email, "password": hashed_pw})
     # Insert as unverified user
-    otp = generate_otp()
-    st.session_state.otp = otp
-    st.session_state.otp_sent = True
-    st.session_state.pending_user = {"username": username, "email": email, "password": hashed_pw}
-    send_otp_email(email, otp)
-    st.rerun()
-    return True, "OTP sent to your email for verification"
-    # return True, "User registered successfully!"
-def verify_otp(user_otp):
-    if user_otp == st.session_state.otp:
-        # Save verified user to MongoDB
-        users_collection.insert_one(st.session_state.pending_user)
-        st.session_state.otp_sent = False
-        st.session_state.pending_user = {}
-        return True
-    return False
+    # otp = generate_otp()
+    # st.session_state.otp = otp
+    # st.session_state.otp_sent = True
+    # st.session_state.pending_user = {"username": username, "email": email, "password": hashed_pw}
+    # send_otp_email(email, otp)
+    return True, "User registered successfully!"
+    # return True, "OTP sent to your email for verification"
+    
+# def verify_otp(user_otp):
+#     if user_otp == st.session_state.otp:
+#         # Save verified user to MongoDB
+#         users_collection.insert_one(st.session_state.pending_user)
+#         st.session_state.otp_sent = False
+#         st.session_state.pending_user = {}
+#         return True
+#     return False
 
 def login_user(username, password):
     user = users_collection.find_one({"username": username})
@@ -162,22 +162,24 @@ def show_login_register_page():
                             else:
                                 success, msg = register_user(reg_username, reg_email, reg_password)
                                 if success:
-                                    st.success(msg)
+                                    # st.success(msg)
+                                    st.success("✅ Registration successful! You can now login.")
+                                    # st.rerun()
                                 else:
                                     st.error(msg)
                         else:
                             st.warning("Please fill all fields")
-                else:
-                    st.subheader("🔑 Enter OTP Sent to Your Email")
-                    user_otp = st.text_input("OTP")
-                    verify_btn = st.form_submit_button("Verify OTP")
-                    if verify_btn:
-                        if verify_otp(user_otp):
-                            st.success("✅ Registration successful! You can now login.")
-                            st.session_state.otp_sent = False
-                            st.rerun()
-                        else:
-                            st.error("❌ Incorrect OTP. Try again")
+                # else:
+                #     st.subheader("🔑 Enter OTP Sent to Your Email")
+                #     user_otp = st.text_input("OTP")
+                #     verify_btn = st.form_submit_button("Verify OTP")
+                #     if verify_btn:
+                #         if verify_otp(user_otp):
+                #             st.success("✅ Registration successful! You can now login.")
+                #             st.session_state.otp_sent = False
+                #             st.rerun()
+                #         else:
+                #             st.error("❌ Incorrect OTP. Try again")
 
             elif selected == "Login":
                 st.subheader("🔑 Login")
