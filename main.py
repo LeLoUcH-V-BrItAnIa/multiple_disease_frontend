@@ -77,7 +77,7 @@ def show_login_register_page():
     </style>
     """, unsafe_allow_html=True)
 
-    st.markdown("<h1 style='text-align:center; font-size:3rem;'>Pulse 🩺<br>Predictive Understanding for Lifestyle & Smart Evaluation</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align:center; font-size:3rem;'>PULSE 🩺<br>Predictive Understanding for Lifestyle & Smart Evaluation</h1>", unsafe_allow_html=True)
 
     # Lottie animation
     def load_lottie(url):
