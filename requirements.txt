@@ -1,6 +1,6 @@
 scikit-learn
 xgboost
-streamlit
+streamlit==1.29.0
 streamlit-option-menu==0.3.6
 streamlit_lottie
 dotenv
@@ -16,4 +16,5 @@ pymongo
 dnspython
 bcrypt
 smtplib
-rich==10.14.0
+random
+rich=10.14.0
