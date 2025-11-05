@@ -17,8 +17,8 @@ import re
 from dotenv import load_dotenv
 from db_utils import get_user_records,save_prediction
 # ---------------- Environment & MongoDB Setup ----------------
-# load_dotenv()
-MONGO_URI = st.secrets["MONGO_URI"]#os.getenv("MONGO_URI")   
+load_dotenv()
+MONGO_URI = st.secrets["MONGO_URI"]  #os.getenv("MONGO_URI")   
 try:
     client = MongoClient(MONGO_URI)
     client.admin.command('ping')
