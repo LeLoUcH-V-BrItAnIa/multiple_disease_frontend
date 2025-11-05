@@ -522,10 +522,11 @@ if st.session_state.page == "app":
         st.session_state.username = ""
         st.session_state.page = "login"
         st.rerun()
-    
+# Database records page  
     if selected == "My Records":
         st.title("📋 My Health Reports")
         records = get_user_records(st.session_state.username)
+        print(get_user_records(st.session_state.username))
         if records:
             for r in records:
                 st.markdown(f"### 🧩 {r['disease']}")
