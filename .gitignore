@@ -6,6 +6,7 @@ __pycache__/
 # Environment files
 .env
 .env.*
+.toml
 
 
 # Streamlit cache and logs

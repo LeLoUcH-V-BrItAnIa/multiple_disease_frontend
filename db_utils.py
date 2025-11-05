@@ -8,7 +8,7 @@ import streamlit as st
 load_dotenv()
 
 # Use Streamlit secrets if running in cloud
-MONGO_URI = os.getenv("MONGO_URI") #or st.secrets["MONGO_URI"]
+MONGO_URI = st.secrets["MONGO_URI"] #os.getenv("MONGO_URI")  
 
 # Connect to MongoDB Atlas
 try:
