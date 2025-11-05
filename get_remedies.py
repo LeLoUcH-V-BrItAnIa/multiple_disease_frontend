@@ -50,6 +50,7 @@
 #     except:
 #         return {"error": "Could not parse Gemini response", "raw": text}
 import os
+import streamlit as st
 import json
 import re
 import google.generativeai as genai
@@ -57,7 +58,8 @@ from dotenv import load_dotenv
 
 # Load API key
 load_dotenv()
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+API_KEY = st.secrets["GEMINI_API_KEY"]
+# genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 # Load Gemini model
 model = genai.GenerativeModel("models/gemma-3n-e2b-it")
