@@ -516,7 +516,7 @@ if st.session_state.page == "home":
 if st.session_state.page == "app":
     with st.sidebar:
         selected = option_menu(
-        'PULSE Hub 🧠',
+        'PULSE MAIN MENU🧠',
         ['Diabetes Prediction', 'Heart Disease Prediction','Leukimia Risk Prediction', 'Parkinsons Prediction', 'AI-Based Health Assistant','📊 Dashboard',
          'Nearby Doctors','AI Chat Assistant','About & Developer','My Records','Logout'],
         menu_icon='hospital-fill',
@@ -530,15 +530,45 @@ if st.session_state.page == "app":
         st.rerun()
 # Database records page  
     if selected == "My Records":
+            
         st.title("📋 My Health Reports")
+
         records = get_user_records(st.session_state.username)
-        print(get_user_records(st.session_state.username))
-        if records:
-            for r in records:
-                st.markdown(f"### 🧩 {r['disease']}")
-                st.json(r)
-        else:
+
+        if not records:
             st.info("No records found yet.")
+        else:
+            try:
+                for r in records:
+                    with st.container():
+                        st.markdown(f"### 🧩 {r.get('disease', 'Unknown')}")
+
+                        st.write(f"📊 Result: **{r.get('result', 'N/A')}**")
+                        # st.write(f"📅 Date: {r.get('date', 'N/A')}")
+                        # st.write(f"🧠 Prediction: {r.get('prediction', 'N/A')}")
+                        ai_suggestions = r.get('ai_suggestions','N/A')
+                        diet_tips = ai_suggestions['diet_tips']
+                        st.write("📝 Diet Tips:")
+                        if isinstance(diet_tips, list):
+                            for note in diet_tips:
+                                st.markdown(f"- {note}")
+                        lifestyle_tips = ai_suggestions['lifestyle_tips']
+                        st.write("📝 Lifestyle_tips:")
+                        if not lifestyle_tips:
+                            st.write('N/A')
+                        if isinstance(lifestyle_tips, list):
+                            for note in lifestyle_tips:
+                                st.markdown(f"- {note}")
+                        notes = ai_suggestions['notes']
+                        st.write("📝 Notes:")
+                        if isinstance(notes, list):
+                            for note in notes:
+                                st.markdown(f"- {note}")
+                        
+                        st.divider()
+            except Exception as e:
+                st.write('N/A')
+    
 # AI-Based Health Assistant Page
     if selected == 'AI-Based Health Assistant':
         # st.title("🧠 AI-Based Health Assistant")
@@ -1095,24 +1125,7 @@ if st.session_state.page == "app":
                 "BMI": 30,
                 "Age": 45
             }
-            # Prepare data
-            features = df['Feature']
-            user_values = df['Value']
-            risk_values = [risk_limits.get(f, 0) for f in features]
-            x = np.arange(len(features))
-            width = 0.35
-            st.subheader("📊 User input vs Risk Comparison")
-            plt.figure(figsize=(6,4))
-            # Bars
-            plt.bar(x - width/2, user_values, width, label='Your Value')
-            plt.bar(x + width/2, risk_values, width, label='Risk Limit')
-
-            # Labels
-            plt.xticks(x, features, rotation=30)
-            plt.ylabel("Value")
-            plt.title("Health Parameter Comparison")
-            plt.legend()
-            st.pyplot(plt)
+            plot_user_vs_risk(user_data, risk_limits, "📊 User input vs Risk Comparison")
             # Ai API -----------------------------------------------------------------------------------------------------------------
             user_inputs_dict_for_diab = {
                 "Pregnancies": Pregnancies,
