@@ -16,9 +16,10 @@ import bcrypt
 import re
 from dotenv import load_dotenv
 from db_utils import get_user_records,save_prediction
+import shap
 # ---------------- Environment & MongoDB Setup ----------------
 load_dotenv()
-MONGO_URI = st.secrets["MONGO_URI"]  #os.getenv("MONGO_URI")   
+MONGO_URI = st.secrets["MONGO_URI"] #os.getenv("MONGO_URI") # Fix It  
 try:
     client = MongoClient(MONGO_URI)
     client.admin.command('ping')
@@ -200,6 +201,7 @@ st.markdown("""
 working_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Load models
+diabetes_model_new = pickle.load(open(f'{working_dir}/saved_models/diabetes_model_new.sav', 'rb'))
 diabetes_model = pickle.load(open(f'{working_dir}/saved_models/diabetes_model.sav', 'rb'))
 heart_disease_model = pickle.load(open(f'{working_dir}/saved_models/heart_disease_model.sav', 'rb'))
 parkinsons_model = pickle.load(open(f'{working_dir}/saved_models/parkinsons_model.sav', 'rb'))
@@ -912,13 +914,41 @@ if st.session_state.page == "app":
         with col2:
             Age = st.text_input('Age of the Person')
 
+        # Predict Button
+
         if st.button('Diabetes Test Result'):
             user_input_list = [Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin,
                             BMI, DiabetesPedigreeFunction, Age]
+            # Changing the values to float 
             user_input_list = [float(x) for x in user_input_list]
-
+            # Prediction Code 
             diab_prediction = diabetes_model.predict([user_input_list])
+            # Synthetic data 
+            background_data = np.random.rand(50,8)
+            # Shap explainer 
+            explainer = shap.KernelExplainer(diabetes_model.decision_function, background_data)
+            input_array = np.array([user_input_list])
+            shap_values = explainer.shap_values(input_array)
+            shap_values = shap_values[0]
+            feature_names = [
+                "Pregnancies", "Glucose", "BloodPressure", "SkinThickness",
+                "Insulin", "BMI", "DiabetesPedigreeFunction", "Age"
+            ]
+            # print(shap_values)
+            # Printed values 
+            # [ 0.38705078  5.75635319 -1.03095822  0.00808619 -0.31521563  2.68560051
+            #   0.24937503  0.3377738 ]
+            shap_dict = {}
+            for i in range(len(feature_names)):
+                shap_dict[feature_names[i]] = shap_values[i]
+            # print(shap_dict)
+            # Sorting 
+            sorted_features = sorted(shap_dict.items(), key=lambda x: abs(x[1]), reverse=True)
+            top_features = sorted_features[:5]
+            max_val = max(abs(v) for _, v in top_features)
+            normalized = [(f, v, abs(v)/max_val) for f, v in top_features]
 
+         
             if diab_prediction[0] == 0:
                 diab_diagnosis = '✅ The person is not diabetic'
                 st.success(diab_diagnosis)
@@ -927,7 +957,44 @@ if st.session_state.page == "app":
                 diab_diagnosis = "⚠️ The person is diabetic"
                 st.warning(diab_diagnosis)
                 st.session_state.prediction_log.append(("Diabetes", "Diabetic"))
+            # Showing shap analyzed details
+            st.markdown("""
+                <div style="
+                    background: rgba(0,0,0,0.4);
+                    padding: 20px;
+                    width = 100%;
+                    border-radius: 15px;
+                    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+                ">
+                <h3 style="color:#00FFAA;">🧠 AI Diagnosis Insight</h3>
+                </div>
+                """, unsafe_allow_html=True)
 
+            for feature, value, norm in normalized:
+                bar_length = int(norm * 20)  # max 20 blocks
+                bar = "█" * bar_length
+
+                if value > 0:
+                    st.markdown(
+                        f"<span style='color:#ff4b4b'><b>{feature}</b></span> "
+                        f"{bar} +{round(value,2)} ↑",
+                        unsafe_allow_html=True
+                    )
+                else:
+                    st.markdown(
+                        f"<span style='color:#4CAF50'><b>{feature}</b></span> "
+                        f"{bar} {round(value,2)} ↓",
+                        unsafe_allow_html=True
+                    )
+            top_feature = top_features[0][0]
+            st.info(f"📌 Major contributing factor: **{top_feature}**")
+            # Optional Graph
+            st.subheader("📊 Feature Impact Visualization")
+            import matplotlib.pyplot as plt
+            plt.clf()
+            shap.summary_plot(shap_values.reshape(1,-1), input_array, feature_names=feature_names, show=False)
+            st.pyplot(plt.gcf())
+            # User input summary plot --------------------------------------------------------------------------------------
             user_data = {
                 "Pregnancies": float(Pregnancies or 0),
                 "Glucose": float(Glucose or 0),
@@ -935,20 +1002,44 @@ if st.session_state.page == "app":
                 "BMI": float(BMI or 0),
                 "Age": float(Age or 0)
             }
-            user_data = {
-                "Pregnancies": float(Pregnancies or 0),
-                "Glucose": float(Glucose or 0),
-                "BloodPressure": float(BloodPressure or 0),
-                "BMI": float(BMI or 0),
-                "Age": float(Age or 0)
+            risk_limits = {
+                "Glucose": 140,
+                "BloodPressure": 80,
+                "BMI": 30,
+                "Age": 45
             }
-
             df = pd.DataFrame(list(user_data.items()), columns=['Feature', 'Value'])
             df = df.set_index('Feature')  # st.bar_chart needs an index
+            # st.subheader("📊 User Input Summary")
+            # st.bar_chart(df)
+            # Your data
+            df = pd.DataFrame(list(user_data.items()), columns=['Feature', 'Value'])
+            # Risk limits (define once)
+            risk_limits = {
+                "Glucose": 140,
+                "BloodPressure": 80,
+                "BMI": 30,
+                "Age": 45
+            }
+            # Prepare data
+            features = df['Feature']
+            user_values = df['Value']
+            risk_values = [risk_limits.get(f, 0) for f in features]
+            x = np.arange(len(features))
+            width = 0.35
+            st.subheader("📊 User vs Risk Comparison")
+            plt.figure(figsize=(6,4))
+            # Bars
+            plt.bar(x - width/2, user_values, width, label='Your Value')
+            plt.bar(x + width/2, risk_values, width, label='Risk Limit')
 
-            st.subheader("📊 User Input Summary")
-            st.bar_chart(df)
-
+            # Labels
+            plt.xticks(x, features, rotation=30)
+            plt.ylabel("Value")
+            plt.title("Health Parameter Comparison")
+            plt.legend()
+            st.pyplot(plt)
+            # Ai API -----------------------------------------------------------------------------------------------------------------
             user_inputs_dict_for_diab = {
                 "Pregnancies": Pregnancies,
                 "Glucose": Glucose,
@@ -959,8 +1050,6 @@ if st.session_state.page == "app":
                 "DiabetesPedigreeFunction": DiabetesPedigreeFunction,
                 "Age": Age
             }
-
-
             with st.spinner("Fetching health suggestions..."):
                 ai_response = get_remedies(user_inputs_dict_for_diab, diab_prediction[0],disease="diabetes")
 
@@ -980,7 +1069,6 @@ if st.session_state.page == "app":
                 <ul>{notes_list}</ul>
             </div>
             """
-
             st.markdown(card_html, unsafe_allow_html=True)
             # 🔹 Save prediction record for logged-in user
             if st.session_state.logged_in:

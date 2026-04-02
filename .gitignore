@@ -47,6 +47,7 @@ env/
 .env/
 dvenv/
 dataset/
+test/
 
 # Python egg metadata
 *.egg-info/
