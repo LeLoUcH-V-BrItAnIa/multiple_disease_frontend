@@ -61,7 +61,7 @@ load_dotenv()
 API_KEY = st.secrets["GEMINI_API_KEY"]#os.getenv("GEMINI_API_KEY") Fix It
 # genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 genai.configure(api_key=API_KEY)#Fix It
-
+#
 
 # Load Gemini model
 model = genai.GenerativeModel("models/gemma-3n-e2b-it")

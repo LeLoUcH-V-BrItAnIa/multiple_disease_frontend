@@ -17,9 +17,13 @@ import re
 from dotenv import load_dotenv
 from db_utils import get_user_records,save_prediction
 import shap
+from explainable_ai import get_shap_explanation
+from input_graph import plot_user_vs_risk
 # ---------------- Environment & MongoDB Setup ----------------
 load_dotenv()
-MONGO_URI = st.secrets["MONGO_URI"] #os.getenv("MONGO_URI") # Fix It  
+MONGO_URI = st.secrets["MONGO_URI"]
+# MONGO_URI = os.getenv("MONGO_URI")
+
 try:
     client = MongoClient(MONGO_URI)
     client.admin.command('ping')
@@ -754,6 +758,7 @@ if st.session_state.page == "app":
             wbc_rbc_ratio, bmi_con, harmful, genetic_cond
         ]]
 
+
         # ---------- PREDICTION & AI RECOMMENDATIONS ----------
         if st.button("Leukemia Test Result"):
             with st.spinner("Analyzing risk..."):
@@ -768,6 +773,77 @@ if st.session_state.page == "app":
                 diagnosis = "✅ Low risk of Leukemia"
                 st.success(diagnosis)
                 st.session_state.prediction_log.append(("Leukemia", "Low Risk"))
+            # Manual because xgboost doesnt support decision_state of shap 
+            leukemia_input = leukemia_features[0] 
+
+            leukemia_features_names = [
+                "Age", "Country", "WBC", "RBC", "Platelet", "Hemoglobin",
+                "Blasts", "BMI", "SES", "Ethnicity A", "Ethnicity B", "Ethnicity C",
+                "Gender", "Genetic", "Family History", "Smoking", "Alcohol",
+                "Radiation", "Infection", "Chronic", "Immune", "Urban",
+                "WBC/RBC Ratio", "BMI Con", "Harmful Habits", "Genetic Condition"
+            ]
+            input_array = np.array(leukemia_features)
+            print(input_array.shape)
+            background_data = np.random.rand(50, len(leukemia_input))
+            # we cant chnage the actual model inside numbers so cant use predict proba directly not allowed in new sk learn 
+            def model_fn(x):
+                return leukemia_model.predict_proba(x)
+            explainer = shap.KernelExplainer(model_fn, background_data)
+            shap_values = explainer.shap_values(input_array)
+            shap_values = shap_values[0]  
+            # flatten
+            shap_values = shap_values[:,1]
+            # dict
+            shap_dict = {}
+            for i in range(len(leukemia_features_names)):
+                shap_dict[leukemia_features_names[i]] = float(shap_values[i])
+
+            sorted_features = sorted(shap_dict.items(), key=lambda x: abs(x[1]), reverse=True)
+
+            top_features = sorted_features[:5]
+            max_val = max(abs(v) for _, v in top_features)
+            normalized = [(f, v, abs(v)/max_val) for f, v in top_features]
+            # Showing shap analyzed details
+            st.markdown("""
+                <div style="
+                    background: rgba(0,0,0,0.4);
+                    padding: 20px;
+                    width = 100%;
+                    border-radius: 15px;
+                    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+                ">
+                <h3 style="color:#00FFAA;">🧠 AI Diagnosis Insight</h3>
+                </div>
+                """, unsafe_allow_html=True)
+
+            for feature, value, norm in normalized:
+                bar_length = int(norm * 20)  # max 20 blocks
+                bar = "█" * bar_length
+
+                if value > 0:
+                    st.markdown(
+                        f"<span style='color:#ff4b4b'><b>{feature}</b></span> "
+                        f"{bar} +{round(value,2)} ↑",
+                        unsafe_allow_html=True
+                    )
+                else:
+                    st.markdown(
+                        f"<span style='color:#4CAF50'><b>{feature}</b></span> "
+                        f"{bar} {round(value,2)} ↓",
+                        unsafe_allow_html=True
+                    )
+            top_feature = top_features[0][0]
+            st.info(f"📌 Major contributing factor: **{top_feature}**")
+
+            # Optional Graph
+            st.subheader("📊 Feature Impact Visualization")
+            import matplotlib.pyplot as plt
+            plt.clf()
+            shap.summary_plot(shap_values.reshape(1,-1), input_array, feature_names=leukemia_features_names, show=False)
+            st.pyplot(plt.gcf())
+
+
             
             user_data = {
                 "Age": (age or 0),
@@ -781,12 +857,20 @@ if st.session_state.page == "app":
                 "WBC/RBC Ratio": (wbc_rbc_ratio  or 0),
                 "Harmful Habits": (harmful  or 0)
             }
-
+            leukemia_risk_limits = {
+                "WBC": 11000,
+                "RBC": 5.5,
+                "Platelet": 450000,
+                "Hemoglobin": 12,
+                "Blasts": 5
+            }
             df = pd.DataFrame(list(user_data.items()), columns=['Feature', 'Value'])
-            df = df.set_index('Feature')  # st.bar_chart needs an index
+            df = df.set_index('Feature')  
+            # st.bar_chart needs an index
+            plot_user_vs_risk(user_data, leukemia_risk_limits, "🧬 Blood Health Comparison")
 
-            st.subheader("📊 User Input Summary")
-            st.bar_chart(df)
+            # st.subheader("📊 User Input Summary")
+            # st.bar_chart(df)
 
             # Prepare user inputs for AI suggestions
             user_inputs_dict_for_leukemia = {
@@ -1002,18 +1086,8 @@ if st.session_state.page == "app":
                 "BMI": float(BMI or 0),
                 "Age": float(Age or 0)
             }
-            risk_limits = {
-                "Glucose": 140,
-                "BloodPressure": 80,
-                "BMI": 30,
-                "Age": 45
-            }
             df = pd.DataFrame(list(user_data.items()), columns=['Feature', 'Value'])
             df = df.set_index('Feature')  # st.bar_chart needs an index
-            # st.subheader("📊 User Input Summary")
-            # st.bar_chart(df)
-            # Your data
-            df = pd.DataFrame(list(user_data.items()), columns=['Feature', 'Value'])
             # Risk limits (define once)
             risk_limits = {
                 "Glucose": 140,
@@ -1027,7 +1101,7 @@ if st.session_state.page == "app":
             risk_values = [risk_limits.get(f, 0) for f in features]
             x = np.arange(len(features))
             width = 0.35
-            st.subheader("📊 User vs Risk Comparison")
+            st.subheader("📊 User input vs Risk Comparison")
             plt.figure(figsize=(6,4))
             # Bars
             plt.bar(x - width/2, user_values, width, label='Your Value')
@@ -1174,6 +1248,7 @@ if st.session_state.page == "app":
             user_input = [age, sex, cp, trestbps, chol, fbs, restecg, thalach,
                         exang, oldpeak, slope, ca, thal]
             user_input = [float(x) for x in user_input]
+            input_array = np.array([user_input])
 
             heart_prediction = heart_disease_model.predict([user_input])
 
@@ -1183,6 +1258,64 @@ if st.session_state.page == "app":
             else:
                 st.success('✅ The person does not have any heart disease')
                 st.session_state.prediction_log.append(("Heart Disease", "Negative"))
+            
+            heart_input = [
+                float(age), float(sex), float(cp), float(trestbps),
+                float(chol), float(fbs), float(restecg), float(thalach),
+                float(exang), float(oldpeak), float(slope), float(ca), float(thal)
+            ]
+
+            heart_features = [
+                "Age", "Sex", "Chest Pain", "Resting BP",
+                "Cholesterol", "Fasting BS", "ECG", "Max HR",
+                "Exercise Angina", "Oldpeak", "Slope", "CA", "Thal"
+            ]
+
+            top_features,shap_values = get_shap_explanation(
+                heart_disease_model,
+                heart_input,
+                heart_features
+            )
+            max_val = max(abs(v) for _, v in top_features)
+            normalized = [(f, v, abs(v)/max_val) for f, v in top_features]
+            # Showing shap analyzed details
+            st.markdown("""
+                <div style="
+                    background: rgba(0,0,0,0.4);
+                    padding: 20px;
+                    width = 100%;
+                    border-radius: 15px;
+                    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+                ">
+                <h3 style="color:#00FFAA;">🧠 AI Diagnosis Insight</h3>
+                </div>
+                """, unsafe_allow_html=True)
+
+            for feature, value, norm in normalized:
+                bar_length = int(norm * 20)  # max 20 blocks
+                bar = "█" * bar_length
+
+                if value > 0:
+                    st.markdown(
+                        f"<span style='color:#ff4b4b'><b>{feature}</b></span> "
+                        f"{bar} +{round(value,2)} ↑",
+                        unsafe_allow_html=True
+                    )
+                else:
+                    st.markdown(
+                        f"<span style='color:#4CAF50'><b>{feature}</b></span> "
+                        f"{bar} {round(value,2)} ↓",
+                        unsafe_allow_html=True
+                    )
+            top_feature = top_features[0][0]
+            st.info(f"📌 Major contributing factor: **{top_feature}**")
+            # Optional Graph
+            st.subheader("📊 Feature Impact Visualization")
+            import matplotlib.pyplot as plt
+            plt.clf()
+            shap.summary_plot(shap_values.reshape(1,-1), input_array, feature_names=heart_features, show=False)
+            st.pyplot(plt.gcf())
+
              # ✅ Create summary chart
             heart_data = {
                 "Age": float(age or 0),
@@ -1192,12 +1325,18 @@ if st.session_state.page == "app":
                 "Max HR": float(thalach or 0),
                 "Oldpeak": float(oldpeak or 0)
             }
+            heart_risk_limits = {
+                "Age": 50,
+                "Resting BP": 130,
+                "Cholesterol": 200,
+                "Max HR": 150,
+                "Oldpeak": 2.0
+            }
 
             heart_df = pd.DataFrame(list(heart_data.items()), columns=['Feature', 'Value'])
             heart_df = heart_df.set_index('Feature')
+            plot_user_vs_risk(heart_data, heart_risk_limits, "📊 User input vs Risk Comparison")
 
-            st.subheader("📊 Heart Disease Input Summary")
-            st.bar_chart(heart_df)
             user_inputs_dict_for_heart = {
                         "age": age,
                         "sex": sex,
@@ -1363,8 +1502,10 @@ if st.session_state.page == "app":
                         Shimmer, Shimmer_dB, APQ3, APQ5, APQ, DDA, NHR, HNR,
                         RPDE, DFA, spread1, spread2, D2, PPE]
             user_input = [float(x) for x in user_input]
+            input_array = np.array([user_input])
 
             parkinsons_prediction = parkinsons_model.predict([user_input])
+
 
             if parkinsons_prediction[0] == 1:
                 st.warning("⚠️ The person has Parkinson's disease")
@@ -1372,6 +1513,63 @@ if st.session_state.page == "app":
             else:
                 st.success("✅ The person does not have Parkinson's disease")
                 st.session_state.prediction_log.append(("Parkinson's", "Negative"))
+            
+            parkinsons_input = [float(fo), float(fhi), float(flo), float(Jitter_percent), float(Jitter_Abs), float(RAP), float(PPQ), float(DDP),
+                        float(Shimmer), float(Shimmer_dB), float(APQ3), float(APQ5), float(APQ), float(DDA), float(NHR), float(HNR),
+                        float(RPDE), float(DFA), float(spread1), float(spread2), float(D2), float(PPE)]  # your existing input list
+
+            parkinsons_features = [
+                "fo", "fhi", "flo", "Jitter_percent", "Jitter_Abs", "RAP", "PPQ", "DDP",
+                "Shimmer", "Shimmer_dB", "APQ3", "APQ5", "APQ", "DDA","NHR", "HNR",
+                "RPDE", "DFA", "spread1", "spread2", "D2", "PPE"
+            ]
+
+            top_features,shap_values = get_shap_explanation(
+                parkinsons_model,
+                parkinsons_input,
+                parkinsons_features
+            )
+            print(top_features)
+            max_val = max(abs(v) for _, v in top_features)
+            normalized = [(f, v, abs(v)/max_val) for f, v in top_features]
+            # Showing shap analyzed details
+            st.markdown("""
+                <div style="
+                    background: rgba(0,0,0,0.4);
+                    padding: 20px;
+                    width = 100%;
+                    border-radius: 15px;
+                    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+                ">
+                <h3 style="color:#00FFAA;">🧠 AI Diagnosis Insight</h3>
+                </div>
+                """, unsafe_allow_html=True)
+
+            for feature, value, norm in normalized:
+                bar_length = int(norm * 20)  # max 20 blocks
+                bar = "█" * bar_length
+
+                if value > 0:
+                    st.markdown(
+                        f"<span style='color:#ff4b4b'><b>{feature}</b></span> "
+                        f"{bar} +{round(value,2)} ↑",
+                        unsafe_allow_html=True
+                    )
+                else:
+                    st.markdown(
+                        f"<span style='color:#4CAF50'><b>{feature}</b></span> "
+                        f"{bar} {round(value,2)} ↓",
+                        unsafe_allow_html=True
+                    )
+            top_feature = top_features[0][0]
+            st.info(f"📌 Major contributing factor: **{top_feature}**")
+            # Optional Graph
+            st.subheader("📊 Feature Impact Visualization")
+            import matplotlib.pyplot as plt
+            plt.clf()
+            shap.summary_plot(shap_values.reshape(1,-1), input_array, feature_names=parkinsons_features, show=False)
+            st.pyplot(plt.gcf())
+
             # chart
             parkinsons_data = {
                 "Fo": float(fo or 0),
@@ -1383,12 +1581,23 @@ if st.session_state.page == "app":
                 "RPDE": float(RPDE or 0),
                 "PPE": float(PPE or 0)
             }
+            parkinsons_risk_limits = {
+                "fo": 150,
+                "Jitter_percent": 0.01,
+                "Shimmer": 0.03,
+                "NHR": 0.02,
+                "HNR": 20,
+                "RPDE": 0.4,
+                "PPE":0.5
+
+            }
 
             parkinsons_df = pd.DataFrame(list(parkinsons_data.items()), columns=['Feature', 'Value'])
             parkinsons_df = parkinsons_df.set_index('Feature')
 
-            st.subheader("📊 Parkinson's Input Summary")
-            st.bar_chart(parkinsons_df)
+            plot_user_vs_risk(parkinsons_data, parkinsons_risk_limits, "📊 User input vs Risk Comparison")
+        
+        # Ai Api------------------------------------------------------------------------------------------------
             user_inputs_dict_for_parkinsons = {
         "fo": fo,
         "fhi": fhi,

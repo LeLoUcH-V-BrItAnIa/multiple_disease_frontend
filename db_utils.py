@@ -10,6 +10,7 @@ load_dotenv()
 # Use Streamlit secrets if running in cloud
 MONGO_URI =  os.getenv("MONGO_URI")  #st.secrets["MONGO_URI"] Fix It
 
+
 # Connect to MongoDB Atlas
 try:
     client = MongoClient(MONGO_URI)
