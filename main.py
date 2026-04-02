@@ -19,7 +19,7 @@ from db_utils import get_user_records,save_prediction
 import shap
 # ---------------- Environment & MongoDB Setup ----------------
 load_dotenv()
-MONGO_URI = os.getenv("MONGO_URI") #st.secrets["MONGO_URI"]  Fix It  
+MONGO_URI = st.secrets["MONGO_URI"] #os.getenv("MONGO_URI") # Fix It  
 try:
     client = MongoClient(MONGO_URI)
     client.admin.command('ping')
