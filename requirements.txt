@@ -17,3 +17,4 @@ dnspython
 bcrypt
 shap
 reportlab
+geopy
