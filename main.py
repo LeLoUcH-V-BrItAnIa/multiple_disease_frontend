@@ -158,16 +158,16 @@ def show_login_register_page():
                             st.error("❌ Invalid username or password")
                     else:
                         st.warning("Enter both username and password")
-    # 🔻 Footer
-        st.markdown("""
-        <hr style="margin-top:40px;">
-        <div style="text-align:center; font-size: 14px; color: #888;">
-            <b>🧠 Multi-Disease Diagnostic AI</b><br>
-            Built with ❤️ using <span style="color:#FF4B4B;">Python</span>, <span style="color:#2196F3;">Streamlit</span>, 
-            <span style="color:#4CAF50;">Scikit-Learn</span> & <span style="color:#FF9800;">Gemini AI</span><br>
-            © 2025 Kaustav Mondal | For educational & research purposes only
-        </div>
-        """, unsafe_allow_html=True)
+# 🔻 Footer
+    st.markdown("""
+    <hr style="margin-top:40px;">
+    <div style="text-align:center; font-size: 14px; color: #888;">
+        <b>🧠 Multi-Disease Diagnostic AI</b><br>
+        Built with ❤️ using <span style="color:#FF4B4B;">Python</span>, <span style="color:#2196F3;">Streamlit</span>, 
+        <span style="color:#4CAF50;">Scikit-Learn</span> & <span style="color:#FF9800;">Gemini AI</span><br>
+        © 2025 Kaustav Mondal | For educational & research purposes only
+    </div>
+    """, unsafe_allow_html=True)
 # ---------------- Router ----------------
 if not st.session_state.logged_in:
     show_login_register_page()
