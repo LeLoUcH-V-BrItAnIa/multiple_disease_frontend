@@ -1,86 +1,126 @@
 import streamlit as st
 import requests
-import folium
-from streamlit_folium import folium_static  
+import pandas as pd
+from geopy.distance import geodesic
 
-def geocode_location(location_name):
-    url = "https://nominatim.openstreetmap.org/search"
-    params = {"q": location_name, "format": "json"}
-    headers = {"User-Agent": "CareIQ-App"}  # Required for Nominatim
-    try:
-        response = requests.get(url, params=params, headers=headers, timeout=10)
-        if response.status_code == 200:
-            data = response.json()
-            if data:
-                return float(data[0]["lat"]), float(data[0]["lon"])
-            else:
-                return None, None
-        else:
-            st.error(f"🌐 API Error: {response.status_code}")
-            return None, None
-    except Exception as e:
-        st.error(f"⚠️ Location lookup failed: {e}")
-        return None, None
+# -------------------------------
+# Get user location (manual input)
+# -------------------------------
+def get_location():
 
+    lat = st.number_input("Latitude", value=22.57)   # Default Kolkata
+    lon = st.number_input("Longitude", value=88.36)
+    
+
+    return lat, lon
+
+
+# -------------------------------
+# Fetch doctors from OSM (Overpass API)
+# -------------------------------
+def fetch_doctors(lat, lon, radius=3000, specialist="All"):
+    url = "http://overpass-api.de/api/interpreter"
+
+    query = f"""
+    [out:json];
+    (
+      node["amenity"="hospital"](around:{radius},{lat},{lon});
+      node["amenity"="clinic"](around:{radius},{lat},{lon});
+      node["amenity"="doctors"](around:{radius},{lat},{lon});
+    );
+    out;
+    """
+
+    response = requests.get(url, params={'data': query})
+    data = response.json()
+
+    doctors = []
+
+    for element in data['elements']:
+        tags = element.get('tags', {})
+        name = tags.get('name', 'Unknown').lower()
+
+        lat_d = element['lat']
+        lon_d = element['lon']
+
+        distance = geodesic((lat, lon), (lat_d, lon_d)).km
+
+        doctors.append({
+            "Name": name.title(),
+            "Latitude": lat_d,
+            "Longitude": lon_d,
+            "Distance (km)": round(distance, 2),
+            "Tags": str(tags).lower()
+        })
+
+    df = pd.DataFrame(doctors)
+
+    # -------------------------------
+    # 🔍 FILTER LOGIC
+    # -------------------------------
+    if specialist != "All" and not df.empty:
+
+        keywords = {
+            "Cardiologist ❤️": ["cardio", "heart"],
+            "Diabetologist 🩸": ["diabetes", "endocrine"],
+            "Neurologist 🧠": ["neuro", "brain"],
+            "General Physician 🏥": ["clinic", "doctor", "general"]
+        }
+
+        selected_keywords = keywords.get(specialist, [])
+
+        df = df[
+            df["Name"].str.contains('|'.join(selected_keywords)) |
+            df["Tags"].str.contains('|'.join(selected_keywords))
+        ]
+
+    return df
+
+
+# -------------------------------
+# MAIN FUNCTION
+# -------------------------------
 def show_nearby_doctors():
-    st.title("🗺️ Find Nearby Doctors")
-    st.write("Enter your city/town and search for doctors, clinics, and hospitals near you.")
-
-    location_name = st.text_input("📍 Enter Location (e.g. Kolkata, New York):", "Kolkata")
-    specialty = st.text_input("🩺 Doctor Specialty (e.g. diabetes, cardiologist, pediatrician):", "")
-
-    radius = st.slider("Search Radius (meters)", 500, 5000, 2000, step=500)
-
-    lat, lon = geocode_location(location_name)
-    if lat is None:
-        st.error("⚠️ Could not find that location. Try a more specific name.")
-        return
-
-    def get_doctors(lat, lon, radius, specialty=""):
-        query = f"""
-        [out:json];
-        (
-          node["amenity"="doctors"](around:{radius},{lat},{lon});
-          node["healthcare"="doctor"](around:{radius},{lat},{lon});
-          node["amenity"="clinic"](around:{radius},{lat},{lon});
-          node["amenity"="hospital"](around:{radius},{lat},{lon});
-        );
-        out center;
-        """
-        url = "https://overpass-api.de/api/interpreter"
-        response = requests.get(url, params={"data": query})
-        data = response.json()
-        doctors = []
-        for element in data.get("elements", []):
-            name = element.get("tags", {}).get("name", "Unknown")
-            if specialty.lower() in name.lower() or specialty == "":
-                doctors.append({"name": name, "lat": element["lat"], "lon": element["lon"]})
-        return doctors
-
-    if "doctors" not in st.session_state:
-        st.session_state.doctors = []
+    lat, lon = get_location()
+    specialist = st.selectbox("🧠 Select Specialist", [
+        "All",
+        "Cardiologist ❤️",
+        "Diabetologist 🩸",
+        "Neurologist 🧠",
+        "General Physician 🏥"
+    ])
 
     if st.button("🔍 Find Doctors"):
-        st.session_state.doctors = get_doctors(lat, lon, radius, specialty)
+        with st.spinner("Fetching nearby doctors..."):
+            df = fetch_doctors(lat, lon, specialist=specialist)
 
-    if st.session_state.doctors:
-        doctors = st.session_state.doctors
-        st.success(f"✅ Found {len(doctors)} doctors/clinics near **{location_name}**!")
+        if df.empty:
+            st.warning("No doctors found nearby.")
+            return
 
-        m = folium.Map(location=[lat, lon], zoom_start=13)
-        folium.Marker([lat, lon], tooltip=f"📍 {location_name}", icon=folium.Icon(color="red")).add_to(m)
+        # Sort by distance
+        df = df.sort_values(by="Distance (km)")
 
-        for d in doctors:
-            folium.Marker([d["lat"], d["lon"]],
-                          tooltip=d["name"],
-                          icon=folium.Icon(color="blue", icon="plus-sign")).add_to(m)
+        # -------------------------------
+        # 📊 Map View
+        # -------------------------------
+        st.subheader("🗺 Map View")
+        st.map(df.rename(columns={"Latitude": "lat", "Longitude": "lon"}))
 
-        # ✅ Use folium_static instead of st_folium
-        folium_static(m, width=700, height=500)
+        # -------------------------------
+        # 📋 List View
+        # -------------------------------
+        st.subheader("📋 Doctor List")
 
-        st.markdown("### 🏥 Nearby Doctors")
-        for d in doctors:
-            st.write(f"**{d['name']}** - 📍 ({d['lat']}, {d['lon']})")
-    else:
-        st.info("Enter a location and click Find Doctors to view nearby results.")
-
+        for _, row in df.iterrows():
+            st.markdown(f"""
+            <div style="
+                background: rgba(255,255,255,0.08);
+                padding: 15px;
+                border-radius: 12px;
+                margin-bottom: 10px;
+            ">
+            <b>🏥 {row['Name']}</b><br>
+            📏 Distance: {row['Distance (km)']} km
+            </div>
+            """, unsafe_allow_html=True)

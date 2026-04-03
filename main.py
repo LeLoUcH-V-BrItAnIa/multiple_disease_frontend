@@ -1441,7 +1441,11 @@ if st.session_state.page == "app":
                 
     # nearby doctor's page'
     elif selected == "Nearby Doctors":
+        st.title("🩺 Nearby Doctors Locator")
+        st.subheader("📍 Enter Your Location")
         show_nearby_doctors()
+        
+        
 
 
     # Parkinson's Disease Prediction Page
@@ -1705,7 +1709,7 @@ if st.session_state.page == "app":
                         ai_suggestions=ai_response
                     )
                     st.info("✅ Your Parkinson's prediction and AI suggestions have been saved.")
-
+    # AI chat assitant 
     elif selected == "AI Chat Assistant":
         st.title("🤖 AI Health Expert Chatbot")
 
@@ -1853,7 +1857,7 @@ if st.session_state.page == "app":
         </div>
         """, unsafe_allow_html=True)
         
-
+    # DashBoard page 
     elif selected == "📊 Dashboard":
         st.title("📊 Prediction Dashboard")
         # select records from mongodb
