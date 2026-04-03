@@ -193,6 +193,46 @@ def show_login_register_page():
                             st.error("❌ Invalid username or password")
                     else:
                         st.warning("Enter both username and password")
+        st.markdown("""
+                    <style>
+                    /* Glass card animation */
+                    .glass-card {
+                        margin-top: 30px;
+                        padding: 20px;
+                        border-radius: 15px;
+                        background: rgba(255,255,255,0.08);
+                        backdrop-filter: blur(10px);
+                        text-align: center;
+                        color: white;
+                        animation: floatUp 1.5s ease-in-out;
+                        box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+                    }
+
+                    /* Floating animation */
+                    @keyframes floatUp {
+                        0% {opacity: 0; transform: translateY(30px);}
+                        100% {opacity: 1; transform: translateY(0);}
+                    }
+
+                    /* Glow pulse */
+                    .glow {
+                        font-size: 1.2rem;
+                        font-weight: bold;
+                        color: #00FFAA;
+                        animation: glowPulse 2s infinite alternate;
+                    }
+
+                    @keyframes glowPulse {
+                        0% { text-shadow: 0 0 5px #00FFAA, 0 0 10px #00FFAA; }
+                        100% { text-shadow: 0 0 15px #00FFAA, 0 0 30px #00FFAA; }
+                    }
+                    </style>
+
+                    <div class="glass-card">
+                        <div class="glow">⚡ Secure AI Health System</div>
+                        <p>Login or Register to unlock personalized health insights, predictions, and smart recommendations.</p>
+                    </div>
+                    """, unsafe_allow_html=True)
     st.markdown("""
         <hr style="margin-top:40px;">
         <div style="text-align:center; font-size: 14px; color: #888;">
