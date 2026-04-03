@@ -273,12 +273,10 @@ if st.session_state.page == "home":
     /* Full-page gradient background */
                 
     .stApp {
-        background: linear-gradient(-45deg, #0D1B2A, #1B263B, #415A77, #0A1128);
-        background-size: 500% 500%;
-        animation: gradientBG 12s ease infinite;
-        color: white !important;
+    background: linear-gradient(-45deg, #134e5e, #71b280, #2c7744, #00ffcc);
+    background-size: 400% 400%;
+    animation: gradientBG 14s ease infinite;
     }
-
     /* Animate the gradient */
     @keyframes gradientBG {
         0% {background-position: 0% 50%;}
