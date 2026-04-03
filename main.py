@@ -252,12 +252,7 @@ def show_login_register_page():
                         100% { text-shadow: 0 0 15px #00FFAA, 0 0 30px #00FFAA; }
                     }
                     </style>
-
-                    <div class="glass-card">
-                        <div class="glow">⚡ Secure AI Health System</div>
-                        <p>Login or Register to unlock personalized health insights, predictions, and smart recommendations.</p>
-                    </div>
-                    <!-- PARTICLES -->
+                     <!-- PARTICLES -->
                     <div class="particles">
                         <span style="left:10%; animation-delay:0s;"></span>
                         <span style="left:20%; animation-delay:2s;"></span>
@@ -266,6 +261,12 @@ def show_login_register_page():
                         <span style="left:70%; animation-delay:3s;"></span>
                         <span style="left:90%; animation-delay:5s;"></span>
                     </div>
+
+                    <div class="glass-card">
+                        <div class="glow">⚡ Secure AI Health System</div>
+                        <p>Login or Register to unlock personalized health insights, predictions, and smart recommendations.</p>
+                    </div>
+                   
                     """, unsafe_allow_html=True)
     st.markdown("""
         <hr style="margin-top:40px;">
