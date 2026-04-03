@@ -477,9 +477,9 @@ if st.session_state.page == "home":
         <p class="fade-text">
         Experience the future of healthcare with a smart AI system designed to analyze your health patterns and provide early insights.<br><br>
 
-        🧠 Detect potential risks like <b>Diabetes</b>, <b>Heart Conditions</b>, and <b>Neurological Disorders</b>
-        📊 Get personalized <b>lifestyle, diet, and wellness guidance</b>
-        ⚡ Powered by Machine Learning for faster and smarter predictions
+        🧠 Detect potential risks like <b>Diabetes</b>, <b>Heart Conditions</b>, and <b>Neurological Disorders</b>||
+        📊 Get personalized <b>lifestyle, diet, and wellness guidance</b>||
+        ⚡ Powered by Machine Learning for smarter predictions
         </p>
         """, unsafe_allow_html=True)
 
