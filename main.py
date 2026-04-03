@@ -430,25 +430,58 @@ if st.session_state.page == "home":
     # Project Overview
     # 🌟 Animated Project Overview Title
     st.markdown("""
-    <h2 style='text-align:center; color:#00FFAA; animation: fadeIn 1s ease-in-out;'>
-    🔬 Project Overview
-    </h2>
-    <p style='text-align:center; color:#f1f1f1; font-size:18px; animation: fadeInText 1.5s ease-in-out;'>
-    This AI-powered health assistant can predict:<br>
-    🩸 <b>Diabetes</b> | ❤️ <b>Heart Disease</b> | 🧠 <b>Parkinson’s Disease And More</b><br><br>
-    It also provides <b>AI-powered diet & lifestyle recommendations</b>.
-    </p>
-    <style>
-    @keyframes fadeIn {
-        0% {opacity:0; transform: translateY(-20px);}
-        100% {opacity:1; transform: translateY(0);}
-    }
-    @keyframes fadeInText {
-        0% {opacity:0; transform: translateY(10px);}
-        100% {opacity:1; transform: translateY(0);}
-    }
-    </style>
-    """, unsafe_allow_html=True)
+        <style>
+        /* Typing animation for title */
+        .typing-title {
+            text-align: center;
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #00FFAA;
+            width: fit-content;
+            margin: auto;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 3px solid #00FFAA;
+            animation: typing 2.5s steps(20, end), blink 0.8s infinite;
+        }
+
+        /* Typing effect */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 20ch }
+        }
+
+        /* Cursor blink */
+        @keyframes blink {
+            50% { border-color: transparent }
+        }
+
+        /* Subtitle animation */
+        .fade-text {
+            text-align: center;
+            color: #f1f1f1;
+            font-size: 18px;
+            margin-top: 15px;
+            animation: fadeInText 2s ease-in-out;
+        }
+
+        /* Fade animation */
+        @keyframes fadeInText {
+            0% {opacity:0; transform: translateY(10px);}
+            100% {opacity:1; transform: translateY(0);}
+        }
+        </style>
+
+        <h1 class="typing-title">🚀 Intelligent Health AI</h1>
+
+        <p class="fade-text">
+        Experience the future of healthcare with a smart AI system designed to analyze your health patterns and provide early insights.<br><br>
+
+        🧠 Detect potential risks like <b>Diabetes</b>, <b>Heart Conditions</b>, and <b>Neurological Disorders</b><br>
+        📊 Get personalized <b>lifestyle, diet, and wellness guidance</b><br>
+        ⚡ Powered by Machine Learning for faster and smarter predictions
+        </p>
+        """, unsafe_allow_html=True)
 
     # 🏗️ 3 Animated Columns Section
     col1, col2, col3 = st.columns(3)
