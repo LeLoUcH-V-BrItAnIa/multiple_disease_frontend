@@ -423,6 +423,9 @@ if st.session_state.page == "home":
         st.markdown('<div class="lottie-container">', unsafe_allow_html=True)
         st_lottie(health_animation, height=250, key="health")
         st.markdown('</div>', unsafe_allow_html=True)
+        if st.button("🚀 Checkout Health App"):
+            st.session_state.page = "app"  # ✅ Switch to main app
+            st.rerun()
 
     # Project Overview
     # 🌟 Animated Project Overview Title
@@ -473,10 +476,6 @@ if st.session_state.page == "home":
         Offers <b>personalized heart-health recommendations</b>.</p>
         </div>
         """, unsafe_allow_html=True)
-        
-        if st.button("🚀 Launch Health Assistant"):
-            st.session_state.page = "app"  # ✅ Switch to main app
-            st.rerun()
 
 
     with col3:
