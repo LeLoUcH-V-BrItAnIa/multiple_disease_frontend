@@ -95,9 +95,44 @@ def show_login_register_page():
     button:hover {background:#00cc88;}
     </style>
     """, unsafe_allow_html=True)
+    # Heading 
+    st.markdown("""
+        <style>
+        /* Typing animation */
+        .typing {
+            text-align: center;
+            font-size: 5rem;
+            font-weight: bold;
+            width: fit-content;
+            margin: auto;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 4px solid #ff4b4b;
+            animation: typing 2s steps(6, end), blink 0.7s infinite;
+        }
 
-    st.markdown("<h1 style='text-align:center; font-size:3rem;'>PULSE 🩺<br>Predictive Understanding for Lifestyle & Smart Evaluation</h1>", unsafe_allow_html=True)
+        /* Typing keyframes */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 6ch }
+        }
 
+        /* Cursor blinking */
+        @keyframes blink {
+            50% { border-color: transparent }
+        }
+
+        /* Subtitle */
+        .sub-text {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-top: 10px;
+        }
+        </style>
+
+        <h1 class="typing">PULSE 🩺</h1>
+        <p class="sub-text">Predictive Understanding for Lifestyle & Smart Evaluation</p>
+        """, unsafe_allow_html=True)
     # Lottie animation
     def load_lottie(url):
         r = requests.get(url)
@@ -158,16 +193,7 @@ def show_login_register_page():
                             st.error("❌ Invalid username or password")
                     else:
                         st.warning("Enter both username and password")
-# 🔻 Footer
-    st.markdown("""
-    <hr style="margin-top:40px;">
-    <div style="text-align:center; font-size: 14px; color: #888;">
-        <b>🧠 Multi-Disease Diagnostic AI</b><br>
-        Built with ❤️ using <span style="color:#FF4B4B;">Python</span>, <span style="color:#2196F3;">Streamlit</span>, 
-        <span style="color:#4CAF50;">Scikit-Learn</span> & <span style="color:#FF9800;">Gemini AI</span><br>
-        © 2025 Kaustav Mondal | For educational & research purposes only
-    </div>
-    """, unsafe_allow_html=True)
+
 # ---------------- Router ----------------
 if not st.session_state.logged_in:
     show_login_register_page()
