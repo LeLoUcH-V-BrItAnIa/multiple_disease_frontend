@@ -525,10 +525,36 @@ if st.session_state.page == "home":
     
     # 🔹 Sample Health Insights Title
     st.markdown("""
-    <h3 style='text-align:left; color:#FFD700; animation: fadeIn 1.2s ease-in-out; padding-top:50px;'>
-    📈 Sample Health Data Insights
-    </h3>
-    """, unsafe_allow_html=True)
+        <style>
+        /* Typing animation */
+        .typing-mid {
+            text-align: center;
+            font-size: 3rem;
+            font-weight: bold;
+            color: #FFD700;
+            padding-top: 50px;
+            width: fit-content;
+            margin: auto;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 3px solid #FFD700;
+            animation: typing 2.5s steps(28, end), blink 0.8s infinite;
+        }
+
+        /* Typing effect */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 28ch }
+        }
+
+        /* Cursor blink */
+        @keyframes blink {
+            50% { border-color: transparent }
+        }
+        </style>
+
+        <h1 class="typing-mid">📈 Sample Health Data Insights</h1>
+        """, unsafe_allow_html=True)
 
     # 🔹 Sample Diabetes Data (Pie Chart using matplotlib)
     diabetes_data = pd.DataFrame({
