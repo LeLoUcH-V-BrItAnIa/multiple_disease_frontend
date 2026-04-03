@@ -219,7 +219,7 @@ def show_login_register_page():
         ['Login','Register'],
         menu_icon='hospital-fill',
         icons=['activity', 'heart'],
-        default_index=0
+        default_index=0)
         st.markdown("""
                 <style>
 
@@ -292,7 +292,6 @@ def show_login_register_page():
                     </p>
                 </div>
                 """, unsafe_allow_html=True)
-    )
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         with st.form("auth_form"):
