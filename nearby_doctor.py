@@ -30,9 +30,24 @@ def fetch_doctors(lat, lon, radius=3000, specialist="All"):
     );
     out;
     """
+    for _ in range(2):
+        try:
+            response = requests.get(url, params={'data': query}, timeout=10)
 
-    response = requests.get(url, params={'data': query})
-    data = response.json()
+            if response.status_code != 200:
+                st.error("❌ Overpass API error. Try again later.")
+                return pd.DataFrame()
+
+            data = response.json()
+
+        except requests.exceptions.Timeout:
+            st.error("⏳ Request timed out. Try again.")
+            return pd.DataFrame()
+
+        except Exception as e:
+            st.error(f"⚠️ Unexpected error: {str(e)}")
+            return pd.DataFrame()
+    
 
     doctors = []
 
