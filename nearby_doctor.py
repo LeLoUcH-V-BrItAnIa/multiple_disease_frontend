@@ -18,21 +18,21 @@ def get_location():
 # -------------------------------
 # Fetch doctors from OSM (Overpass API)
 # -------------------------------
-def fetch_doctors(lat, lon, radius=3000, specialist="All"):
+def fetch_doctors(lat, lon, radius=1500, specialist="All"):
     url = "https://overpass.kumi.systems/api/interpreter"
 
     query = f"""
-    [out:json];
+    [out:json][timeout:25];
     (
       node["amenity"="hospital"](around:{radius},{lat},{lon});
       node["amenity"="clinic"](around:{radius},{lat},{lon});
       node["amenity"="doctors"](around:{radius},{lat},{lon});
     );
-    out;
+    out 20;
     """
     for _ in range(2):
         try:
-            response = requests.get(url, params={'data': query}, timeout=10)
+            response = requests.get(url, params={'data': query}, timeout=8)
 
             if response.status_code != 200:
                 st.error("❌ Overpass API error. Try again later.")
