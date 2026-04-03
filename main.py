@@ -212,6 +212,15 @@ def show_login_register_page():
     lottie_anim = load_lottie(animation_url)
     st_lottie(lottie_anim, height=250)
 
+    def get_health_tip():
+        try:
+            url = "https://api.adviceslip.com/advice"
+            res = requests.get(url)
+            data = res.json()
+            return data['slip']['advice']
+        except:
+            return "Stay hydrated 💧 and take care of your health!"
+
     # Login/Register form
     with st.sidebar:
         selected = option_menu(
@@ -234,7 +243,9 @@ def show_login_register_page():
         st.divider()
 
         st.markdown("### 💡 Tip of the Day")
-        st.info("Drink enough water 💧 and maintain a balanced diet for better health.")
+
+        tip = get_health_tip()
+        st.info(tip)
 
         st.divider()
 
