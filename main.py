@@ -473,6 +473,11 @@ if st.session_state.page == "home":
         Offers <b>personalized heart-health recommendations</b>.</p>
         </div>
         """, unsafe_allow_html=True)
+        
+        if st.button("🚀 Launch Health Assistant"):
+            st.session_state.page = "app"  # ✅ Switch to main app
+            st.rerun()
+
 
     with col3:
         if parkinsons_animation:
