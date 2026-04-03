@@ -108,11 +108,20 @@ def show_nearby_doctors():
             df = fetch_doctors(lat, lon, specialist=specialist)
 
         if df.empty:
-            st.warning("No doctors found nearby.")
+            st.warning("😕 No specialists found nearby. Try 'All' or increase radius.")
             return
 
         # Sort by distance
         df = df.sort_values(by="Distance (km)")
+        # Top doctor !
+        top_doc = df.iloc[0]
+
+        st.success(f"""
+        ⭐ Recommended Doctor:
+        🏥 {top_doc['Name']}
+        📏 {top_doc['Distance (km)']} km away
+        """)
+        df = df.head(10)
 
         # -------------------------------
         # 📊 Map View
