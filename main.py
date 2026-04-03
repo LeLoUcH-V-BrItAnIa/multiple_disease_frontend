@@ -220,78 +220,27 @@ def show_login_register_page():
         menu_icon='hospital-fill',
         icons=['activity', 'heart'],
         default_index=0)
+        st.divider()
+        st.markdown("### 🧠 AI Health Assistant")
+        st.caption("Smart predictions & insights powered by Machine Learning")
+        st.divider()
+        st.markdown("### ⚡ Features")
         st.markdown("""
-                <style>
+        - 🩸 Diabetes Prediction  
+        - ❤️ Heart Disease Detection  
+        - 🧠 Parkinson’s Analysis  
+        - 🤖 AI Health Recommendations  
+        """)
+        st.divider()
 
-                /* Sidebar Card */
-                .sidebar-card {
-                    margin-top: 20px;
-                    padding: 15px;
-                    border-radius: 15px;
-                    background: rgba(255,255,255,0.08);
-                    backdrop-filter: blur(8px);
-                    text-align: center;
-                    color: white;
-                    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-                    animation: fadeIn 1.5s ease-in-out;
-                }
+        st.markdown("### 💡 Tip of the Day")
+        st.info("Drink enough water 💧 and maintain a balanced diet for better health.")
 
-                /* Fade */
-                @keyframes fadeIn {
-                    from {opacity:0; transform: translateY(20px);}
-                    to {opacity:1; transform: translateY(0);}
-                }
+        st.divider()
 
-                /* ECG */
-                .ecg-small svg {
-                    width: 100%;
-                    height: 50px;
-                }
-
-                .ecg-small path {
-                    fill: none;
-                    stroke: #00FFAA;
-                    stroke-width: 2;
-                    stroke-dasharray: 300;
-                    stroke-dashoffset: 300;
-                    animation: ecgMove 2s linear infinite;
-                }
-
-                @keyframes ecgMove {
-                    to { stroke-dashoffset: 0; }
-                }
-
-                /* Glow text */
-                .glow-text {
-                    color: #00FFAA;
-                    font-weight: bold;
-                    margin-top: 10px;
-                    animation: glow 2s infinite alternate;
-                }
-
-                @keyframes glow {
-                    from { text-shadow: 0 0 5px #00FFAA; }
-                    to { text-shadow: 0 0 20px #00FFAA; }
-                }
-
-                </style>
-
-                <div class="sidebar-card">
-                    <h4>🧠 Smart Health AI</h4>
-
-                    <div class="ecg-small">
-                        <svg viewBox="0 0 300 100">
-                            <path d="M0 50 L40 50 L60 20 L80 80 L100 50 L140 50 L160 30 L180 70 L200 50 L300 50"/>
-                        </svg>
-                    </div>
-
-                    <div class="glow-text">Analyzing • Predicting • Caring</div>
-
-                    <p style="font-size:13px; margin-top:10px;">
-                        Your AI-powered assistant for early disease detection and lifestyle improvement.
-                    </p>
-                </div>
-                """, unsafe_allow_html=True)
+        st.markdown("### 🚀 System Status")
+        st.success("AI System: Online ✅")
+    
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         with st.form("auth_form"):
