@@ -956,7 +956,10 @@ if st.session_state.page == "app":
 
             # Call Gemini API for AI-based suggestions
             with st.spinner("Fetching AI health recommendations..."):
-                ai_response = get_remedies(user_inputs_dict_for_leukemia, leukemia_prediction, disease="leukemia")
+                ai_response = get_remedies(user_inputs_dict_for_leukemia, 
+                                           leukemia_prediction, 
+                                           disease="leukemia",
+                                           username = st.session_state.username)
 
             # Format AI suggestions into animated HTML card
             diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
@@ -1176,7 +1179,10 @@ if st.session_state.page == "app":
                 "Age": Age
             }
             with st.spinner("Fetching health suggestions..."):
-                ai_response = get_remedies(user_inputs_dict_for_diab, diab_prediction[0],disease="diabetes")
+                ai_response = get_remedies(user_inputs_dict_for_diab, 
+                                           diab_prediction[0]
+                                           ,disease="diabetes",
+                                           username=st.session_state.username)
 
             # Build the HTML content for the card
             diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
@@ -1405,7 +1411,10 @@ if st.session_state.page == "app":
             }
 
             with st.spinner("Fetching health suggestions..."):
-                ai_response = get_remedies(user_inputs_dict_for_heart, heart_prediction[0],disease="heart")
+                ai_response = get_remedies(user_inputs_dict_for_heart, 
+                                           heart_prediction[0],
+                                           disease="heart",
+                                           username = st.session_state.username)
 
                 # ✅ Convert Heart AI suggestions into animated HTML lists
                 heart_diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
@@ -1679,7 +1688,10 @@ if st.session_state.page == "app":
                 "PPE": PPE
                 }       
             with st.spinner("Fetching health suggestions..."):
-                ai_response = get_remedies(user_inputs_dict_for_parkinsons, parkinsons_prediction[0], disease="parkinsons")
+                ai_response = get_remedies(user_inputs_dict_for_parkinsons, 
+                                           parkinsons_prediction[0],
+                                            disease="parkinsons",
+                                            username = st.session_state.username)
 
             # ✅ Convert Parkinson’s AI suggestions into animated HTML lists
                 parkinsons_diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
