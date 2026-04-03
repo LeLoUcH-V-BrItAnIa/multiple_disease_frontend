@@ -194,45 +194,124 @@ def show_login_register_page():
                     else:
                         st.warning("Enter both username and password")
         st.markdown("""
-                    <style>
-                    /* Glass card animation */
-                    .glass-card {
-                        margin-top: 30px;
-                        padding: 20px;
-                        border-radius: 15px;
-                        background: rgba(255,255,255,0.08);
-                        backdrop-filter: blur(10px);
-                        text-align: center;
-                        color: white;
-                        animation: floatUp 1.5s ease-in-out;
-                        box-shadow: 0 8px 30px rgba(0,0,0,0.4);
-                    }
+            <style>
 
-                    /* Floating animation */
-                    @keyframes floatUp {
-                        0% {opacity: 0; transform: translateY(30px);}
-                        100% {opacity: 1; transform: translateY(0);}
-                    }
+            /* ================= PARTICLE BACKGROUND ================= */
+            .particles {
+                position: fixed;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                z-index: -1;
+                overflow: hidden;
+            }
 
-                    /* Glow pulse */
-                    .glow {
-                        font-size: 1.2rem;
-                        font-weight: bold;
-                        color: #00FFAA;
-                        animation: glowPulse 2s infinite alternate;
-                    }
+            .particles span {
+                position: absolute;
+                display: block;
+                width: 6px;
+                height: 6px;
+                background: rgba(0,255,170,0.5);
+                border-radius: 50%;
+                animation: floatParticles 10s linear infinite;
+            }
 
-                    @keyframes glowPulse {
-                        0% { text-shadow: 0 0 5px #00FFAA, 0 0 10px #00FFAA; }
-                        100% { text-shadow: 0 0 15px #00FFAA, 0 0 30px #00FFAA; }
-                    }
-                    </style>
+            @keyframes floatParticles {
+                0% {transform: translateY(100vh) scale(0);}
+                100% {transform: translateY(-10vh) scale(1);}
+            }
 
-                    <div class="glass-card">
-                        <div class="glow">⚡ Secure AI Health System</div>
-                        <p>Login or Register to unlock personalized health insights, predictions, and smart recommendations.</p>
-                    </div>
-                    """, unsafe_allow_html=True)
+            /* ================= ECG LINE ================= */
+            .ecg {
+                width: 100%;
+                height: 60px;
+                margin-top: 20px;
+            }
+
+            .ecg svg {
+                width: 100%;
+                height: 100%;
+            }
+
+            .ecg path {
+                fill: none;
+                stroke: #00FFAA;
+                stroke-width: 2;
+                stroke-dasharray: 400;
+                stroke-dashoffset: 400;
+                animation: ecgMove 2s linear infinite;
+            }
+
+            @keyframes ecgMove {
+                to { stroke-dashoffset: 0; }
+            }
+
+            /* ================= AI SCANNING TEXT ================= */
+            .ai-scan {
+                margin-top: 15px;
+                font-size: 1.1rem;
+                text-align: center;
+                color: #00FFAA;
+                animation: scan 2s infinite;
+            }
+
+            @keyframes scan {
+                0% {opacity: 0.3;}
+                50% {opacity: 1;}
+                100% {opacity: 0.3;}
+            }
+
+            /* ================= GLASS CARD ================= */
+            .glass-card {
+                margin-top: 30px;
+                padding: 25px;
+                border-radius: 18px;
+                background: rgba(255,255,255,0.08);
+                backdrop-filter: blur(12px);
+                text-align: center;
+                color: white;
+                animation: fadeUp 1.5s ease-in-out;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            }
+
+            /* Fade animation */
+            @keyframes fadeUp {
+                0% {opacity: 0; transform: translateY(30px);}
+                100% {opacity: 1; transform: translateY(0);}
+            }
+
+            </style>
+
+            <!-- PARTICLES -->
+            <div class="particles">
+                <span style="left:10%; animation-delay:0s;"></span>
+                <span style="left:20%; animation-delay:2s;"></span>
+                <span style="left:30%; animation-delay:4s;"></span>
+                <span style="left:50%; animation-delay:1s;"></span>
+                <span style="left:70%; animation-delay:3s;"></span>
+                <span style="left:90%; animation-delay:5s;"></span>
+            </div>
+
+            <!-- GLASS CARD -->
+            <div class="glass-card">
+                <h3>🤖 AI Health System Initializing...</h3>
+                
+                <!-- ECG -->
+                <div class="ecg">
+                    <svg viewBox="0 0 500 100">
+                        <path d="M0 50 L50 50 L70 10 L90 90 L110 50 L150 50 L170 20 L190 80 L210 50 L500 50"/>
+                    </svg>
+                </div>
+
+                <!-- AI TEXT -->
+                <div class="ai-scan">🔍 Scanning health patterns...</div>
+
+                <p style="margin-top:10px;">
+                    Secure • Intelligent • Predictive Healthcare System
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
     st.markdown("""
         <hr style="margin-top:40px;">
         <div style="text-align:center; font-size: 14px; color: #888;">
