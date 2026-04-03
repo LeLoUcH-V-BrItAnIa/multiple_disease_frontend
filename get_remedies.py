@@ -55,132 +55,180 @@ import json
 import re
 import google.generativeai as genai
 from dotenv import load_dotenv
+from db_utils import get_user_records
 
 # Load API key 
 load_dotenv()
 API_KEY = st.secrets["GEMINI_API_KEY"]#os.getenv("GEMINI_API_KEY") Fix It
 # genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 genai.configure(api_key=API_KEY)#Fix It
-#
+
 
 # Load Gemini model
 model = genai.GenerativeModel("models/gemma-3n-e2b-it")
 
+# History summary function 
+def build_user_history_summary(records):
+    if not records:
+        return "No previous records."
+
+    summary = ""
+
+    for r in records[:10]:  # last 10 records only
+        summary += f"""
+Disease: {r.get('disease')}
+Result: {r.get('result')}
+"""
+
+    return summary
+
 # -------- Prompt Builders --------
 
-def build_diabetes_prompt(inputs, prediction):
+def build_diabetes_prompt(inputs, prediction,history_summary):
     condition = "diabetic" if prediction == 1 else "not diabetic"
     fields = "\n".join([f"{k}: {v}" for k, v in inputs.items()])
     
     return f"""
-You are a medical AI assistant.
+    You are an advanced AI health advisor.
 
-The user provided the following input values related to diabetes:
-{fields}
+    CURRENT PATIENT DATA:
+    {fields}
 
-Prediction: The person is {condition}.
+    CURRENT PREDICTION:
+    The person is {condition}.
 
-Give 2-3 personalized:
-- 🍽 Diet Tips
-- 🏃 Lifestyle Recommendations
-- 💬 A short motivational health note
+    PATIENT HISTORY:
+    {history_summary}
 
-Return output in JSON format:
-{{
-  "diet_tips": ["..."],
-  "lifestyle_tips": ["..."],
-  "notes": ["..."]
-}}
-"""
+    TASK:
+    1. Analyze trends in the patient's history
+    2. Identify if condition is improving or worsening
+    3. Give:
+    - 2 personalized diet tips
+    - 2 lifestyle improvements
+    - 1 long-term health insight
 
-def build_heart_prompt(inputs, prediction):
+    Respond in JSON:
+    {{
+    "diet_tips": [],
+    "lifestyle_tips": [],
+    "notes": []
+    }}
+    """
+
+def build_heart_prompt(inputs, prediction,history_summary):
     condition = "has heart disease" if prediction == 1 else "does not have heart disease"
     fields = "\n".join([f"{k}: {v}" for k, v in inputs.items()])
     
     return f"""
-You are a heart health advisor.
+You are an advanced AI health advisor.
 
-The following patient data was submitted:
+CURRENT PATIENT DATA:
 {fields}
 
-Model Prediction: The person {condition}.
+CURRENT PREDICTION:
+The person is {condition}.
 
-Give:
-- 🧡 2–3 heart-healthy lifestyle tips
-- 🥗 Diet changes to improve heart health
-- 💬 One short health note
+PATIENT HISTORY:
+{history_summary}
 
-Respond in JSON format:
+TASK:
+1. Analyze trends in the patient's history
+2. Identify if condition is improving or worsening
+3. Give:
+   - 2 personalized diet tips
+   - 2 lifestyle improvements
+   - 1 long-term health insight
+
+Respond in JSON:
 {{
-  "diet_tips": ["..."],
-  "lifestyle_tips": ["..."],
-  "notes": ["..."]
+  "diet_tips": [],
+  "lifestyle_tips": [],
+  "notes": []
 }}
 """
 
-def build_parkinsons_prompt(inputs, prediction):
+def build_parkinsons_prompt(inputs, prediction,history_summary):
     condition = "has Parkinson’s disease" if prediction == 1 else "does not have Parkinson’s disease"
     fields = "\n".join([f"{k}: {v}" for k, v in inputs.items()])
     
     return f"""
-You are a neuro-care AI assistant.
+You are an advanced AI health advisor.
 
-The following voice/vocal features were submitted for Parkinson’s prediction:
+CURRENT PATIENT DATA:
 {fields}
 
-Prediction: The person {condition}.
+CURRENT PREDICTION:
+The person is {condition}.
 
-Give:
-- 🧠 2–3 lifestyle or exercise suggestions for Parkinson’s support
-- 🥗 Diet suggestions
-- 💬 A short uplifting note for the patient
+PATIENT HISTORY:
+{history_summary}
 
-Respond in JSON format:
+TASK:
+1. Analyze trends in the patient's history
+2. Identify if condition is improving or worsening
+3. Give:
+   - 2 personalized diet tips
+   - 2 lifestyle improvements
+   - 1 long-term health insight
+
+Respond in JSON:
 {{
-  "diet_tips": ["..."],
-  "lifestyle_tips": ["..."],
-  "notes": ["..."]
+  "diet_tips": [],
+  "lifestyle_tips": [],
+  "notes": []
 }}
 """
-def build_leukemia_prompt(inputs, prediction):
+
+def build_leukemia_prompt(inputs, prediction,history_summary):
     condition = "has Leukemia" if prediction == 1 else "does not have Leukemia"
     fields = "\n".join([f"{k}: {v}" for k, v in inputs.items()])
 
     return f"""
-You are a hematology AI assistant.
+You are an advanced AI health advisor.
 
-The following patient health features were submitted for Leukemia prediction:
+CURRENT PATIENT DATA:
 {fields}
 
-Prediction: The person {condition}.
+CURRENT PREDICTION:
+The person is {condition}.
 
-Give:
-- 🧠 2–3 lifestyle or treatment support suggestions for Leukemia care
-- 🥗 Diet and nutrition tips for better immunity
-- 💬 A short uplifting note for the patient
+PATIENT HISTORY:
+{history_summary}
 
-Respond in JSON format:
+TASK:
+1. Analyze trends in the patient's history
+2. Identify if condition is improving or worsening
+3. Give:
+   - 2 personalized diet tips
+   - 2 lifestyle improvements
+   - 1 long-term health insight
+
+Respond in JSON:
 {{
-  "diet_tips": ["..."],
-  "lifestyle_tips": ["..."],
-  "notes": ["..."]
+  "diet_tips": [],
+  "lifestyle_tips": [],
+  "notes": []
 }}
 """
 
 
 # -------- Dispatcher Function --------
 
-def get_remedies(user_inputs, prediction, disease):
+def get_remedies(user_inputs, prediction, disease , username):
     disease = disease.lower()
+    # fetch records 
+    records = get_user_records(username)
+    history_summary = build_user_history_summary(records)
     
     if disease == "diabetes":
-        prompt = build_diabetes_prompt(user_inputs, prediction)
+        prompt = build_diabetes_prompt(user_inputs, prediction,history_summary)
     elif disease == "heart":
-        prompt = build_heart_prompt(user_inputs, prediction)
+        prompt = build_heart_prompt(user_inputs, prediction,history_summary)
     elif disease == "parkinsons":
-        prompt = build_parkinsons_prompt(user_inputs, prediction)
+        prompt = build_parkinsons_prompt(user_inputs, prediction,history_summary)
     elif disease == "leukemia":
-        prompt = build_leukemia_prompt(user_inputs, prediction)
+        prompt = build_leukemia_prompt(user_inputs, prediction,history_summary)
     else:
         return {"error": "Unsupported disease type"}
 
