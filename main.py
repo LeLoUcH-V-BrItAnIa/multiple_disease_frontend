@@ -1444,6 +1444,7 @@ if st.session_state.page == "app":
         st.title("🩺 Nearby Doctors Locator")
         st.subheader("📍 Enter Your Location")
         show_nearby_doctors()
+        # st.rerun()
         
         
 

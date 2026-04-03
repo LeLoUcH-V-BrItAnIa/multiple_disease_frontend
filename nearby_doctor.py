@@ -18,36 +18,33 @@ def get_location():
 # -------------------------------
 # Fetch doctors from OSM (Overpass API)
 # -------------------------------
-def fetch_doctors(lat, lon, radius=1500, specialist="All"):
-    url = "https://overpass.kumi.systems/api/interpreter"
+def fetch_doctors(lat, lon, radius=3000, specialist="All"):
+    url = "http://overpass-api.de/api/interpreter"
 
     query = f"""
-    [out:json][timeout:25];
+    [out:json];
     (
       node["amenity"="hospital"](around:{radius},{lat},{lon});
       node["amenity"="clinic"](around:{radius},{lat},{lon});
       node["amenity"="doctors"](around:{radius},{lat},{lon});
     );
-    out 20;
+    out;
     """
-    for _ in range(2):
-        try:
-            response = requests.get(url, params={'data': query}, timeout=8)
 
-            if response.status_code != 200:
-                st.error("❌ Overpass API error. Try again later.")
-                return pd.DataFrame()
 
-            data = response.json()
+    try:
+        response = requests.get(url, params={'data': query}, timeout=10)
 
-        except requests.exceptions.Timeout:
-            st.error("⏳ Request timed out. Try again.")
+        if response.status_code != 200:
+            st.error("❌ Overpass API error. Try again later.")
             return pd.DataFrame()
+            
 
-        except Exception as e:
-            st.error(f"⚠️ Unexpected error: {str(e)}")
-            return pd.DataFrame()
-    
+        data = response.json()
+    except Exception as e:
+        st.error(f"⚠️ Unexpected error: {str(e)}")
+        return pd.DataFrame()
+
 
     doctors = []
 
@@ -106,6 +103,7 @@ def show_nearby_doctors():
     ])
 
     if st.button("🔍 Find Doctors"):
+        
         with st.spinner("Fetching nearby doctors..."):
             df = fetch_doctors(lat, lon, specialist=specialist)
 
@@ -139,3 +137,4 @@ def show_nearby_doctors():
             📏 Distance: {row['Distance (km)']} km
             </div>
             """, unsafe_allow_html=True)
+            
