@@ -195,6 +195,31 @@ def show_login_register_page():
                         st.warning("Enter both username and password")
         st.markdown("""
                     <style>
+                    /* ================= PARTICLE BACKGROUND ================= */
+                    .particles {
+                        position: fixed;
+                        width: 100%;
+                        height: 100%;
+                        top: 0;
+                        left: 0;
+                        z-index: -1;
+                        overflow: hidden;
+                    }
+
+                    .particles span {
+                        position: absolute;
+                        display: block;
+                        width: 6px;
+                        height: 6px;
+                        background: rgba(0,255,170,0.5);
+                        border-radius: 50%;
+                        animation: floatParticles 10s linear infinite;
+                    }
+
+                    @keyframes floatParticles {
+                        0% {transform: translateY(100vh) scale(0);}
+                        100% {transform: translateY(-10vh) scale(1);}
+                    }
                     /* Glass card animation */
                     .glass-card {
                         margin-top: 30px;
