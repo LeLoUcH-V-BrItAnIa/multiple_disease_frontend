@@ -3,6 +3,7 @@ import bcrypt
 import os
 from dotenv import load_dotenv
 import streamlit as st
+from datetime import datetime
 
 # Load local .env if exists
 load_dotenv()
@@ -38,18 +39,31 @@ records_collection = db["records"]
 #         return True, user
 #     return False, None
 
-# -------------------------------
-# Prediction Data Functions
-# -------------------------------
 
+
+# Prediction Data Functions
 def save_prediction(username, disease, input_data, result, ai_suggestions):
     records_collection.insert_one({
         "username": username,
         "disease": disease,
         "inputs": input_data,
-        "result": result,
-        "ai_suggestions": ai_suggestions
+        "result": int(result),
+        "ai_suggestions": ai_suggestions,
+        "created_at":datetime.now()
     })
+# deletion function 
+def delete_old_record(username,keep_latest=5):
+    records = list(
+        records_collection.find({"username":username}).sort("created_at",-1)
+    )
+    old_records = records[keep_latest:]
 
+    if old_records:
+        ids_to_delete = [r["_id"] for r in old_records]
+        records_collection.delete_many({"_id":{"$in":ids_to_delete}})
+        return len(ids_to_delete)
+    return 0
+
+# get user records 
 def get_user_records(username):
-    return list(records_collection.find({"username": username}, {"_id": 0}))
+    return list(records_collection.find({"username": username}, {"_id": 0}).sort("created_at",-1)) #newest first

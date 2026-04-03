@@ -16,3 +16,4 @@ pymongo
 dnspython
 bcrypt
 shap
+reportlab
