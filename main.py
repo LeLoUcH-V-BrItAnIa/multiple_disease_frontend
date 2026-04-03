@@ -257,6 +257,15 @@ def show_login_register_page():
                         <div class="glow">⚡ Secure AI Health System</div>
                         <p>Login or Register to unlock personalized health insights, predictions, and smart recommendations.</p>
                     </div>
+                    <!-- PARTICLES -->
+                    <div class="particles">
+                        <span style="left:10%; animation-delay:0s;"></span>
+                        <span style="left:20%; animation-delay:2s;"></span>
+                        <span style="left:30%; animation-delay:4s;"></span>
+                        <span style="left:50%; animation-delay:1s;"></span>
+                        <span style="left:70%; animation-delay:3s;"></span>
+                        <span style="left:90%; animation-delay:5s;"></span>
+                    </div>
                     """, unsafe_allow_html=True)
     st.markdown("""
         <hr style="margin-top:40px;">
