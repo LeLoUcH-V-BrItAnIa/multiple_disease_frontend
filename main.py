@@ -74,10 +74,9 @@ def show_login_register_page():
     st.markdown("""
     <style>
     .stApp {
-        background: linear-gradient(-45deg, #0D1B2A, #1B263B, #415A77, #0A1128);
-        background-size: 500% 500%;
-        animation: gradientBG 12s ease infinite;
-        color:white;
+    background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #ff00cc);
+    background-size: 400% 400%;
+    animation: gradientBG 12s ease infinite;
     }
     @keyframes gradientBG {
         0% {background-position:0% 50%;}
