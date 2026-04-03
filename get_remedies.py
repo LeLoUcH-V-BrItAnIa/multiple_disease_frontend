@@ -199,3 +199,34 @@ def extract_json(text):
             "raw": text,
             "exception": str(e)
         }
+# for dashboard insights 
+def generate_dashboard_insights(df): 
+    # Convert dataframe to summary text
+    summary = f"""
+    Total Records: {len(df)}
+
+    Disease Counts:
+    {df['Disease'].value_counts().to_dict()}
+
+    Result Counts:
+    {df['Result'].value_counts().to_dict()}
+    """
+
+    prompt = f"""
+    You are a health analytics AI.
+
+    Analyze this user's health prediction dashboard data:
+
+    {summary}
+
+    Give:
+    - 2-3 short insights about trends or risks
+    - 1 motivational or advisory note
+
+    Keep it simple, friendly, and helpful.
+    """
+
+    model = genai.GenerativeModel("models/gemma-3n-e2b-it")
+    response = model.generate_content(prompt)
+
+    return response.text

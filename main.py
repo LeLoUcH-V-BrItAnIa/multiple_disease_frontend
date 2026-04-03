@@ -8,14 +8,15 @@ import streamlit as st
 from streamlit_lottie import st_lottie
 from streamlit_option_menu import option_menu
 import requests
-from get_remedies import get_remedies
+from get_remedies import get_remedies,generate_dashboard_insights
 import google.generativeai as genai
 from dotenv import load_dotenv
 from pymongo import MongoClient
+from generate_reports import generate_pdf_report
 import bcrypt
 import re
 from dotenv import load_dotenv
-from db_utils import get_user_records,save_prediction
+from db_utils import get_user_records,save_prediction,delete_old_record
 import shap
 from explainable_ai import get_shap_explanation
 from input_graph import plot_user_vs_risk
@@ -528,12 +529,41 @@ if st.session_state.page == "app":
         st.session_state.username = ""
         st.session_state.page = "login"
         st.rerun()
+
 # Database records page  
     if selected == "My Records":
-            
         st.title("📋 My Health Reports")
+        st.subheader("(0 is No and 1 is Yes)")
+        if "show_all_records" not in st.session_state:
+            st.session_state.show_all_records = False
+        col1, col2 , col3= st.columns(3)
+        with col1:
+            if st.button("📂 Show All Records"):
+                st.session_state.show_all_records = True
+        with col2:
+            if st.button("🔙 Show Recent Only"):
+                st.session_state.show_all_records = False
+        with col3:
+            if st.button("🧹 Delete Old Records"):
+                deleted = delete_old_record(st.session_state.username)
+                st.success(f"Deleted {deleted} old records")
 
         records = get_user_records(st.session_state.username)
+        # extract avialable diseases 
+        diseases = list(set([r.get("disease",'Unknown') for r in records]))
+
+        # Add "All" option
+        diseases.insert(0,'All')
+        
+        # Dropdown filter 
+        selected_disease = st.selectbox(" Filter by Disease", diseases)
+
+        if not st.session_state.show_all_records:
+            records = records[:3]   # ✅ only latest 5  
+        # Apply disease filter
+        if selected_disease != "All":
+            records = [r for r in records if r.get("disease") == selected_disease]
+        
 
         if not records:
             st.info("No records found yet.")
@@ -541,9 +571,17 @@ if st.session_state.page == "app":
             try:
                 for r in records:
                     with st.container():
+                        created_at = r.get("created_at", "N/A")
                         st.markdown(f"### 🧩 {r.get('disease', 'Unknown')}")
-
-                        st.write(f"📊 Result: **{r.get('result', 'N/A')}**")
+                        if created_at != "N/A":
+                            created_at = str(created_at)[:19]  # clean format
+                        st.write(f"📅 Date: {created_at}")
+                        result = r.get('result','N/A')
+                        if result == 0:
+                            result = "Negative"
+                        else:
+                            result = "Positive"
+                        st.write(f"📊 Result: **{result}**")
                         # st.write(f"📅 Date: {r.get('date', 'N/A')}")
                         # st.write(f"🧠 Prediction: {r.get('prediction', 'N/A')}")
                         ai_suggestions = r.get('ai_suggestions','N/A')
@@ -1818,13 +1856,28 @@ if st.session_state.page == "app":
 
     elif selected == "📊 Dashboard":
         st.title("📊 Prediction Dashboard")
-
-        if "prediction_log" not in st.session_state or len(st.session_state.prediction_log) == 0:
-            st.info("No predictions yet. Run some tests first!")
+        # select records from mongodb
+        records = get_user_records(st.session_state.username)
+        # if no DB records !
+        if not records:
+            if "prediction_log" not in st.session_state or len(st.session_state.prediction_log) == 0:
+                st.info("No predictions yet. Run some tests first!")
+                st.stop()
+            else:
+                st.warning("Showing temporary session data (not saved)")
+                df = pd.DataFrame(st.session_state.prediction_log, columns=["Disease", "Result"])
         else:
-            df = pd.DataFrame(st.session_state.prediction_log, columns=["Disease", "Result"])
-
             # ✅ Pie Chart for Prediction Result Distribution
+            df = pd.DataFrame(records)
+            df.rename(columns={'disease':'Disease','result':'Result'},inplace = True)
+
+            if "created_at" in df.columns:
+                df["created_at"] = pd.to_datetime(df["created_at"])
+                timeline = df.groupby(df["created_at"].dt.date).size()
+
+                st.subheader("📈 Prediction Timeline")
+                st.line_chart(timeline)
+
             result_counts = df["Result"].value_counts()
             fig1, ax1 = plt.subplots()
             ax1.pie(result_counts.values, labels=result_counts.index, autopct='%1.1f%%', startangle=90, 
@@ -1838,17 +1891,58 @@ if st.session_state.page == "app":
             disease_counts.columns = ["Disease", "Count"]
             st.subheader("📌 Predictions Per Disease")
             st.bar_chart(disease_counts.set_index("Disease"))
+            # Latest Prediction 
+            latest = df.iloc[0]
+
+            st.info(f"""
+            🧾 Latest Prediction:
+            - Disease: {latest['Disease']}
+            - Result: {'High Risk ⚠️' if latest['Result']==1 else 'Safe ✅'}
+            """)
 
             # ✅ Summary Metrics
             col1, col2, col3, col4 = st.columns(4)
             with col1:
                 st.metric("Total Predictions", len(df))
             with col2:
-                st.metric("Diabetes Cases", len(df[df["Disease"] == "Diabetes"]))
+                st.metric("Diabetes Cases", len(df[df["Disease"] == "Diabetes Prediction"]))
             with col3:
                 st.metric("Heart Disease Cases", len(df[df["Disease"] == "Heart Disease"]))
             with col4:
                 st.metric("Parkinson's Cases", len(df[df["Disease"] == "Parkinson's"]))
+            st.subheader("🧠 AI Health Insights")
+
+            try:
+               if st.button("🧠 Generate AI Insights"):
+                with st.spinner("Analyzing your health trends..."):
+                    insight_text = generate_dashboard_insights(df)
+                    st.info(insight_text)
+            except:
+                st.warning("AI insights not available right now.")
+
+            # for downloading reports 
+
+            st.subheader("📄 Export Report")
+
+            if st.button("📥 Download PDF Report"):
+                try:
+                    insight_text = generate_dashboard_insights(df)
+                    pdf_path = generate_pdf_report(
+                        df,
+                        st.session_state.username,
+                        insights = insight_text
+                    )
+
+                    with open(pdf_path, "rb") as f:
+                        st.download_button(
+                            label="⬇️ Click to Download",
+                            data=f,
+                            file_name=pdf_path,
+                            mime="application/pdf"
+                        )
+
+                except Exception as e:
+                    st.error(f"Error generating PDF: {str(e)}")
 
     # Footer
     if selected != "AI Chat Assistant":
