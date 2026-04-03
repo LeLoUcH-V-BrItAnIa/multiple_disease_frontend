@@ -20,6 +20,74 @@ from db_utils import get_user_records,save_prediction,delete_old_record
 import shap
 from explainable_ai import get_shap_explanation
 from input_graph import plot_user_vs_risk
+import time
+
+if "loading_done" not in st.session_state:
+    st.session_state.loading_done = False
+
+
+if not st.session_state.loading_done:
+    st.markdown("""
+    <style>
+    .loader-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        color: white;
+    }
+
+    .loader-title {
+        font-size: 3rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: #00FFAA;
+        animation: glow 1.5s infinite alternate;
+    }
+
+    @keyframes glow {
+        from { text-shadow: 0 0 10px #00FFAA; }
+        to { text-shadow: 0 0 30px #00FFAA; }
+    }
+
+    .spinner {
+        border: 6px solid rgba(255,255,255,0.2);
+        border-top: 6px solid #00FFAA;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+        margin-top: 20px;
+        font-size: 1.2rem;
+        animation: fade 2s infinite;
+    }
+
+    @keyframes fade {
+        0% {opacity: 0.3;}
+        50% {opacity: 1;}
+        100% {opacity: 0.3;}
+    }
+    </style>
+
+    <div class="loader-container">
+        <div class="loader-title">🩺 PULSE AI</div>
+        <div class="spinner"></div>
+        <div class="loading-text">Initializing Smart Health System...</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    time.sleep(3)  # ⏳ loading duration
+    st.session_state.loading_done = True
+    st.rerun()
+
 # ---------------- Environment & MongoDB Setup ----------------
 load_dotenv()
 MONGO_URI = st.secrets["MONGO_URI"]
