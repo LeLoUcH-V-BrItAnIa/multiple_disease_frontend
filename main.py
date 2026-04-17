@@ -180,6 +180,8 @@ def register_user(username, email, password):
         return False, "Username already exists!"
     if not is_valid_email(email):
         return False, "Invalid email format!"
+    if users_collection.find_one({"email": email.lower()}):
+        return False, "Email already registered!"
     if not is_valid_password(password):
         return False, "Password must be at least 8 characters long, include uppercase, lowercase, number, and special character!"
     token = str(uuid.uuid4())
@@ -346,7 +348,7 @@ def show_login_register_page():
                                 st.success("📧 Verification email sent! Check your inbox.")
                                 # st.success(msg + " You can now login.")
                             else:
-                                st.error('E')
+                                st.error(token)
                     else:
                         st.warning("Please fill all fields")
                 
