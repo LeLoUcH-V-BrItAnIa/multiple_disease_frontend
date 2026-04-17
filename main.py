@@ -1,4 +1,8 @@
+# Libraries 
 import pandas as pd
+import uuid
+import smtplib
+from email.mime.text import MIMEText
 import numpy as np
 from nearby_doctor import show_nearby_doctors
 import matplotlib.pyplot as plt
@@ -22,10 +26,14 @@ from explainable_ai import get_shap_explanation
 from input_graph import plot_user_vs_risk
 import time
 
+st.set_page_config(page_title="Pulse Auth", 
+                   layout="wide", 
+                   page_icon="🩺")
+# Session for page loading 
 if "loading_done" not in st.session_state:
     st.session_state.loading_done = False
 
-
+# Session for loading done 
 if not st.session_state.loading_done:
     st.markdown("""
     <style>
@@ -90,15 +98,15 @@ if not st.session_state.loading_done:
 
 # ---------------- Environment & MongoDB Setup ----------------
 load_dotenv()
+# Mongo DB key 
 MONGO_URI = st.secrets["MONGO_URI"]
 # MONGO_URI = os.getenv("MONGO_URI")
-
 try:
     client = MongoClient(MONGO_URI)
     client.admin.command('ping')
 except Exception as e:
     st.error("MongoDB connection failed. Check your URI!")
-
+# Database
 db = client["pulse_db"]
 users_collection = db["users"]
 # ---------------- Session State ----------------
@@ -108,6 +116,29 @@ if "username" not in st.session_state:
     st.session_state.username = ""
 if "page" not in st.session_state:
     st.session_state.page = "login"  # default page
+if "just_verified" not in st.session_state:
+    st.session_state.just_verified = False
+
+# ---------------- Email Verification ----------------
+params = st.query_params
+
+if "verify" in params:
+    token = params["verify"]
+
+    user = users_collection.find_one({"token": token})
+
+    if user:
+        users_collection.update_one(
+            {"token": token},
+            {"$set": {"verified": True}}
+        )
+          # ✅ REMOVE PARAM FROM URL (IMPORTANT)
+        st.query_params.clear()
+        st.session_state.just_verified = True
+# Show message once
+if st.session_state.just_verified:
+    st.success("✅ Email Verified! You can login now.")
+    st.session_state.just_verified = False
 
 # ---------------- Auth Functions ----------------
 def is_valid_email(email):
@@ -118,6 +149,32 @@ def is_valid_password(password):
     pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$'
     return re.match(pattern, password) is not None
 
+# Send verification email 
+def send_verification_email(receiver_email,token):
+    sender = st.secrets["Email"]#os.getenv("EMAIL")
+    password = st.secrets["EMAIL_PASSWORD"]#os.getenv("EMAIL_PASSWORD")
+    link = f"http://localhost:8501/?verify={token}"
+
+    msg = MIMEText(f"""
+    Welcome to PULSE 🩺
+
+    Click the link below to verify your account:
+    {link}
+
+    If you didn’t register, ignore this.
+    """)
+
+    msg["Subject"] = "Verify your PULSE Account"
+    msg["From"] = sender
+    msg["To"] = receiver_email
+
+    server = smtplib.SMTP("smtp.gmail.com", 587)
+    server.starttls()
+    server.login(sender, password)
+    server.send_message(msg)
+    server.quit()
+
+# User registration 
 def register_user(username, email, password):
     if users_collection.find_one({"username": username}):
         return False, "Username already exists!"
@@ -125,18 +182,34 @@ def register_user(username, email, password):
         return False, "Invalid email format!"
     if not is_valid_password(password):
         return False, "Password must be at least 8 characters long, include uppercase, lowercase, number, and special character!"
+    token = str(uuid.uuid4())
     hashed_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-    users_collection.insert_one({"username": username, "email": email, "password": hashed_pw})
-    return True, "User registered successfully!"
-
+    users_collection.insert_one({"username": username, 
+                                 "email": email, 
+                                 "password": hashed_pw,
+                                 "verified":False,
+                                 "token":token
+                                 })
+    return True,token
+# User login 
 def login_user(username, password):
     user = users_collection.find_one({"username": username})
-    if user and bcrypt.checkpw(password.encode('utf-8'), user["password"]):
-        return True, user
-    return False, None
 
+    if not user:
+        return False, "User not found"
+    
+    if not bcrypt.checkpw(password.encode('utf-8'), user["password"]):
+        return False, "Incorrect password"
+
+    if not user.get("verified", False):
+        return False, "Verify your email first!"
+    
+    return True,user
+    
+
+# Showing login registration page 
 def show_login_register_page():
-    st.set_page_config(page_title="Pulse Auth", layout="wide", page_icon="🩺")
+    # st.set_page_config(page_title="Pulse Auth", layout="wide", page_icon="🩺")
     
     # Gradient background and form styling
     st.markdown("""
@@ -211,7 +284,7 @@ def show_login_register_page():
     animation_url = "https://assets9.lottiefiles.com/packages/lf20_qp1q7mct.json"
     lottie_anim = load_lottie(animation_url)
     st_lottie(lottie_anim, height=250)
-
+    # Getting small health tips !
     def get_health_tip():
         try:
             url = "https://api.adviceslip.com/advice"
@@ -267,11 +340,13 @@ def show_login_register_page():
                         if reg_password != reg_confirm:
                             st.error("❌ Passwords do not match")
                         else:
-                            success, msg = register_user(reg_username, reg_email, reg_password)
+                            success, token = register_user(reg_username, reg_email, reg_password)
                             if success:
-                                st.success(msg + " You can now login.")
+                                send_verification_email(reg_email,token)
+                                st.success("📧 Verification email sent! Check your inbox.")
+                                # st.success(msg + " You can now login.")
                             else:
-                                st.error(msg)
+                                st.error('E')
                     else:
                         st.warning("Please fill all fields")
                 
@@ -282,14 +357,14 @@ def show_login_register_page():
                 submit = st.form_submit_button("Login")
                 if submit:
                     if username and password:
-                        success, user = login_user(username, password)
+                        success, result = login_user(username, password)
                         if success:
                             st.session_state.logged_in = True
-                            st.session_state.username = username
+                            st.session_state.username = result["username"]
                             st.session_state.page = "home"
                             st.rerun()
                         else:
-                            st.error("❌ Invalid username or password")
+                            st.error(f"❌ {result}")
                     else:
                         st.warning("Enter both username and password")
         st.markdown("""
@@ -388,9 +463,9 @@ if "page" not in st.session_state:
 if "prediction_log" not in st.session_state:
     st.session_state["prediction_log"] = []
 # Set page configuration
-st.set_page_config(page_title="Health Assistant",
-                   layout="wide",
-                   page_icon="🧑‍⚕️")
+# st.set_page_config(page_title="Health Assistant",
+#                    layout="wide",
+#                    page_icon="🧑‍⚕️")
 st.markdown("""
     <style>
     
@@ -449,6 +524,7 @@ if st.session_state.page == "home":
     diabetes_animation = load_lottie("https://assets10.lottiefiles.com/packages/lf20_1pxqjqps.json")
     heart_animation = load_lottie("https://assets9.lottiefiles.com/packages/lf20_ydo1amjm.json")
     parkinsons_animation = load_lottie("https://assets7.lottiefiles.com/packages/lf20_mjlh3hcy.json")
+    
     # 🎨 CSS for animated gradient title
     st.markdown("""
     <style>
@@ -666,7 +742,7 @@ if st.session_state.page == "home":
 
     # 🏗️ 3 Animated Columns Section
     col1, col2, col3 = st.columns(3)
-
+    # Diabetes Animation 
     with col1:
         if diabetes_animation:
             st_lottie(diabetes_animation, height=200, key="diabetes")
@@ -678,7 +754,7 @@ if st.session_state.page == "home":
         Provides <b>AI-based diet & lifestyle suggestions</b>.</p>
         </div>
         """, unsafe_allow_html=True)
-
+    # Heart Animation
     with col2:
         if heart_animation:
             st_lottie(heart_animation, height=200, key="heart")
@@ -690,8 +766,7 @@ if st.session_state.page == "home":
         Offers <b>personalized heart-health recommendations</b>.</p>
         </div>
         """, unsafe_allow_html=True)
-
-
+    #Parkinsons Animation
     with col3:
         if parkinsons_animation:
             st_lottie(parkinsons_animation, height=200, key="parkinsons")
@@ -704,7 +779,7 @@ if st.session_state.page == "home":
         </div>
         """, unsafe_allow_html=True)
     
-    # 🔹 Sample Health Insights Title
+    # Sample Health Insights Title
     st.markdown("""
         <style>
         /* Typing animation */
@@ -737,7 +812,7 @@ if st.session_state.page == "home":
         <h1 class="typing-mid">📈 Sample Health Data Insights</h1>
         """, unsafe_allow_html=True)
 
-    # 🔹 Sample Diabetes Data (Pie Chart using matplotlib)
+    # Sample Diabetes Data (Pie Chart using matplotlib)
     diabetes_data = pd.DataFrame({
         "Result": ["Diabetic", "Non-Diabetic"],
         "Count": [45, 120]
@@ -753,13 +828,13 @@ if st.session_state.page == "home":
         "Average": [52, 240, 130, 150]
     })
 
-    # 🔹 Sample Parkinson's Data (Line Chart)
+    # Sample Parkinson's Data (Line Chart)
     parkinsons_data = pd.DataFrame({
         "Sample": list(range(1, 11)),
         "Fo": [120, 125, 123, 119, 122, 121, 124, 126, 125, 123]
     })
 
-    # 🔹 Display in 3 columns
+    # Display in 3 columns
     col1, col2, col3 = st.columns(3)
 
     with col1:
@@ -803,7 +878,27 @@ if st.session_state.page == "app":
         menu_icon='hospital-fill',
         icons=['activity', 'heart', 'person', 'robot','chat-dots-fill','geo-alt','info-circle'],
         default_index=0
-    )
+        )
+        def get_health_tip():
+            try:
+                url = "https://api.adviceslip.com/advice"
+                res = requests.get(url)
+                data = res.json()
+                return data['slip']['advice']
+            except:
+                return "Stay hydrated 💧 and take care of your health!"
+        # Getting small health tips !
+        st.divider()
+        st.markdown("### 💡 Tip of the Day")
+        tip = get_health_tip()
+        st.info(tip)
+        st.divider()
+
+        st.markdown("### 🚀 System Status")
+        st.success("AI System: Online ✅")
+
+    
+    # Logout Button ! 
     if selected == "Logout":
         st.session_state.logged_in = False
         st.session_state.username = ""
