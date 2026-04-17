@@ -12,7 +12,7 @@ import streamlit as st
 from streamlit_lottie import st_lottie
 from streamlit_option_menu import option_menu
 import requests
-from get_remedies import get_remedies,generate_dashboard_insights
+from get_remedies import get_remedies,generate_dashboard_insights,ai_suggest_username
 import google.generativeai as genai
 from dotenv import load_dotenv
 from pymongo import MongoClient
@@ -333,6 +333,13 @@ def show_login_register_page():
         st.success("AI System: Online ✅")
     
     col1, col2, col3 = st.columns([1, 2, 1])
+    with col1:
+        if st.button("🤖 AI Suggest Username"):
+            if reg_email:
+                suggestion = ai_suggest_username(reg_email)
+                st.info(f"Suggested username: {suggestion}")
+            else:
+                st.warning("Enter email first!")
     with col2:
         with st.form("auth_form"):
             if selected == "Register":
@@ -356,7 +363,7 @@ def show_login_register_page():
                                 st.error(token)
                     else:
                         st.warning("Please fill all fields")
-                
+       
             else:
                 st.subheader("🔑 Login")
                 username = st.text_input("Username", key="login_user")

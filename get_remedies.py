@@ -67,6 +67,16 @@ genai.configure(api_key=API_KEY)#Fix It
 # Load Gemini model
 model = genai.GenerativeModel("models/gemma-3n-e2b-it")
 
+
+def ai_suggest_username(email):
+    prompt = f"Suggest a short, cool username based on this email: {email}. Only return username, no explanation."
+
+    try:
+        response = model.generate_content(prompt)
+        return response.text.strip()
+    except:
+        return "Error" # fallback
+
 # History summary function 
 def build_user_history_summary(records):
     if not records:
