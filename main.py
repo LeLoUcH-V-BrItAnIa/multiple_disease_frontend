@@ -120,6 +120,8 @@ if "just_verified" not in st.session_state:
     st.session_state.just_verified = False
 if "last_sent" not in st.session_state:
     st.session_state.last_sent = 0
+if "resend_email" not in st.session_state:
+    st.session_state.resend_email = None
 
 
 # ---------------- Email Verification ----------------
@@ -371,18 +373,25 @@ def show_login_register_page():
                         else:
                             st.error(f"❌ {result}")
                             if "verify" in result.lower():
-                                if time.time() - st.session_state.last_sent > 30:
-                                    if st.button("📧 Resend Verification Email"):
-                                        user = users_collection.find_one({"email":email})
-                                        if user:
-                                            token = user["token"]
-                                            send_verification_email(email,token)
-                                            st.session_state.last_sent = time.time()
-                                            st.success("📧 Verification email sent again!")
-                                else:
-                                    st.warning("⏳ Wait before resending email")
+                                st.session_state.resend_email = email
+                                
                     else:
                         st.warning("Enter both username and password")
+                if st.session_state.resend_email:
+                    if time.time() - st.session_state.last_sent > 30:
+                        if st.button("📧 Resend Verification Email"):
+                            user = users_collection.find_one({"email": st.session_state.resend_email})
+
+                            if user:
+                                token = user["token"]
+                                send_verification_email(st.session_state.resend_email, token)
+
+                                st.session_state.last_sent = time.time()
+                                st.success("📧 Verification email sent again!")
+                                st.session_state.resend_email = None
+                    else:
+                        st.warning("⏳ Wait before resending email")
+
         st.markdown("""
                     <style>
                     /* ================= PARTICLE BACKGROUND ================= */
