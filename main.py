@@ -176,6 +176,12 @@ def send_verification_email(receiver_email,token):
 
 # User registration 
 def register_user(username, email, password):
+    if users_collection.find_one({"username": username}):
+        return False, "Username already exists!"
+    if not is_valid_email(email):
+        return False, "Invalid email format!"
+    if not is_valid_password(password):
+        return False, "Password must be at least 8 characters long, include uppercase, lowercase, number, and special character!"
     token = str(uuid.uuid4())
     hashed_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     users_collection.insert_one({"username": username, 
@@ -184,14 +190,6 @@ def register_user(username, email, password):
                                  "verified":False,
                                  "token":token
                                  })
-    if users_collection.find_one({"username": username}):
-        return False,"Username already exists!"
-    # if users_collection.find_one({"email": email}):
-    #     return False,token, "Email already exists!"
-    if not is_valid_email(email):
-        return False,"Invalid email format!"
-    if not is_valid_password(password):
-        return False,"Password must be at least 8 characters long, include uppercase, lowercase, number, and special character!"
     return True,token
 # User login 
 def login_user(username, password):
