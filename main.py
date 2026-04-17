@@ -133,7 +133,7 @@ if "verify" in params:
             {"$set": {"verified": True}}
         )
           # ✅ REMOVE PARAM FROM URL (IMPORTANT)
-        st.query_params.clear()
+        st.experimental_set_query_params()
         st.session_state.just_verified = True
 # Show message once
 if st.session_state.just_verified:
