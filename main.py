@@ -185,13 +185,13 @@ def register_user(username, email, password):
                                  "token":token
                                  })
     if users_collection.find_one({"username": username}):
-        return False,token, "Username already exists!"
+        return False,"Username already exists!"
     # if users_collection.find_one({"email": email}):
     #     return False,token, "Email already exists!"
     if not is_valid_email(email):
-        return False,token, "Invalid email format!"
+        return False,"Invalid email format!"
     if not is_valid_password(password):
-        return False,token, "Password must be at least 8 characters long, include uppercase, lowercase, number, and special character!"
+        return False,"Password must be at least 8 characters long, include uppercase, lowercase, number, and special character!"
     return True,token
 # User login 
 def login_user(username, password):
@@ -342,13 +342,13 @@ def show_login_register_page():
                         if reg_password != reg_confirm:
                             st.error("❌ Passwords do not match")
                         else:
-                            success, token ,msg= register_user(reg_username, reg_email, reg_password)
+                            success, token = register_user(reg_username, reg_email, reg_password)
                             if success:
                                 send_verification_email(reg_email,token)
                                 st.success("📧 Verification email sent! Check your inbox.")
                                 # st.success(msg + " You can now login.")
                             else:
-                                st.error(msg)
+                                st.error('E')
                     else:
                         st.warning("Please fill all fields")
                 
