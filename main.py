@@ -151,7 +151,7 @@ def is_valid_password(password):
 
 # Send verification email 
 def send_verification_email(receiver_email,token):
-    sender = st.secrets["Email"]#os.getenv("EMAIL")
+    sender = st.secrets["EMAIL"]#os.getenv("EMAIL")
     password = st.secrets["EMAIL_PASSWORD"]#os.getenv("EMAIL_PASSWORD")
     link = f"https://pulse-prediction-app.streamlit.app/?verify={token}"
 
