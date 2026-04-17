@@ -186,8 +186,8 @@ def register_user(username, email, password):
                                  })
     if users_collection.find_one({"username": username}):
         return False,token, "Username already exists!"
-    if users_collection.find_one({"email": email}):
-        return False,token, "Email already exists!"
+    # if users_collection.find_one({"email": email}):
+    #     return False,token, "Email already exists!"
     if not is_valid_email(email):
         return False,token, "Invalid email format!"
     if not is_valid_password(password):
