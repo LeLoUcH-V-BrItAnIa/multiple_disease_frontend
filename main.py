@@ -120,10 +120,10 @@ if "just_verified" not in st.session_state:
     st.session_state.just_verified = False
 
 # ---------------- Email Verification ----------------
-params = st.query_params
+params = st.experimental_get_query_params()
 
 if "verify" in params:
-    token = params["verify"]
+    token = params["verify"][0]
 
     user = users_collection.find_one({"token": token})
 
@@ -133,7 +133,7 @@ if "verify" in params:
             {"$set": {"verified": True}}
         )
           # ✅ REMOVE PARAM FROM URL (IMPORTANT)
-        st.query_params.clear()
+        st.experimental_set_query_params()
         st.session_state.just_verified = True
 # Show message once
 if st.session_state.just_verified:
