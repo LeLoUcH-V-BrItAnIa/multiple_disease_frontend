@@ -400,81 +400,81 @@ def show_login_register_page():
             else:
                 st.warning("Enter email first!")
 
-        st.markdown("""
-                    <style>
-                    /* ================= PARTICLE BACKGROUND ================= */
-                    .particles {
-                        position: fixed;
-                        width: 100%;
-                        height: 100%;
-                        top: 0;
-                        left: 0;
-                        z-index: -1;
-                        overflow: hidden;
-                    }
+    st.markdown("""
+                <style>
+                /* ================= PARTICLE BACKGROUND ================= */
+                .particles {
+                    position: fixed;
+                    width: 100%;
+                    height: 100%;
+                    top: 0;
+                    left: 0;
+                    z-index: -1;
+                    overflow: hidden;
+                }
 
-                    .particles span {
-                        position: absolute;
-                        display: block;
-                        width: 6px;
-                        height: 6px;
-                        background: rgba(0,255,170,0.5);
-                        border-radius: 50%;
-                        animation: floatParticles 10s linear infinite;
-                    }
+                .particles span {
+                    position: absolute;
+                    display: block;
+                    width: 6px;
+                    height: 6px;
+                    background: rgba(0,255,170,0.5);
+                    border-radius: 50%;
+                    animation: floatParticles 10s linear infinite;
+                }
 
-                    @keyframes floatParticles {
-                        0% {transform: translateY(100vh) scale(0);}
-                        100% {transform: translateY(-10vh) scale(1);}
-                    }
-                    /* Glass card animation */
-                    .glass-card {
-                        margin-top: 30px;
-                        padding: 20px;
-                        border-radius: 15px;
-                        background: rgba(255,255,255,0.08);
-                        backdrop-filter: blur(10px);
-                        text-align: center;
-                        color: white;
-                        animation: floatUp 1.5s ease-in-out;
-                        box-shadow: 0 8px 30px rgba(0,0,0,0.4);
-                    }
+                @keyframes floatParticles {
+                    0% {transform: translateY(100vh) scale(0);}
+                    100% {transform: translateY(-10vh) scale(1);}
+                }
+                /* Glass card animation */
+                .glass-card {
+                    margin-top: 30px;
+                    padding: 20px;
+                    border-radius: 15px;
+                    background: rgba(255,255,255,0.08);
+                    backdrop-filter: blur(10px);
+                    text-align: center;
+                    color: white;
+                    animation: floatUp 1.5s ease-in-out;
+                    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+                }
 
-                    /* Floating animation */
-                    @keyframes floatUp {
-                        0% {opacity: 0; transform: translateY(30px);}
-                        100% {opacity: 1; transform: translateY(0);}
-                    }
+                /* Floating animation */
+                @keyframes floatUp {
+                    0% {opacity: 0; transform: translateY(30px);}
+                    100% {opacity: 1; transform: translateY(0);}
+                }
 
-                    /* Glow pulse */
-                    .glow {
-                        font-size: 1.2rem;
-                        font-weight: bold;
-                        color: #00FFAA;
-                        animation: glowPulse 2s infinite alternate;
-                    }
+                /* Glow pulse */
+                .glow {
+                    font-size: 1.2rem;
+                    font-weight: bold;
+                    color: #00FFAA;
+                    animation: glowPulse 2s infinite alternate;
+                }
 
-                    @keyframes glowPulse {
-                        0% { text-shadow: 0 0 5px #00FFAA, 0 0 10px #00FFAA; }
-                        100% { text-shadow: 0 0 15px #00FFAA, 0 0 30px #00FFAA; }
-                    }
-                    </style>
-                     <!-- PARTICLES -->
-                    <div class="particles">
-                        <span style="left:10%; animation-delay:0s;"></span>
-                        <span style="left:20%; animation-delay:2s;"></span>
-                        <span style="left:30%; animation-delay:4s;"></span>
-                        <span style="left:50%; animation-delay:1s;"></span>
-                        <span style="left:70%; animation-delay:3s;"></span>
-                        <span style="left:90%; animation-delay:5s;"></span>
-                    </div>
+                @keyframes glowPulse {
+                    0% { text-shadow: 0 0 5px #00FFAA, 0 0 10px #00FFAA; }
+                    100% { text-shadow: 0 0 15px #00FFAA, 0 0 30px #00FFAA; }
+                }
+                </style>
+                    <!-- PARTICLES -->
+                <div class="particles">
+                    <span style="left:10%; animation-delay:0s;"></span>
+                    <span style="left:20%; animation-delay:2s;"></span>
+                    <span style="left:30%; animation-delay:4s;"></span>
+                    <span style="left:50%; animation-delay:1s;"></span>
+                    <span style="left:70%; animation-delay:3s;"></span>
+                    <span style="left:90%; animation-delay:5s;"></span>
+                </div>
 
-                    <div class="glass-card">
-                        <div class="glow">⚡ Secure AI Health System</div>
-                        <p>Login or Register to unlock personalized health insights, predictions, and smart recommendations.</p>
-                    </div>
-                   
-                    """, unsafe_allow_html=True)
+                <div class="glass-card">
+                    <div class="glow">⚡ Secure AI Health System</div>
+                    <p>Login or Register to unlock personalized health insights, predictions, and smart recommendations.</p>
+                </div>
+                
+                """, unsafe_allow_html=True)
     st.markdown("""
         <hr style="margin-top:40px;">
         <div style="text-align:center; font-size: 14px; color: #888;">
