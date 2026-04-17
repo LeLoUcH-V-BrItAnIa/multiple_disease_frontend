@@ -118,6 +118,9 @@ if "page" not in st.session_state:
     st.session_state.page = "login"  # default page
 if "just_verified" not in st.session_state:
     st.session_state.just_verified = False
+if "last_sent" not in st.session_state:
+    st.session_state.last_sent = 0
+
 
 # ---------------- Email Verification ----------------
 params = st.experimental_get_query_params()
@@ -198,15 +201,15 @@ def login_user(username, password):
     user = users_collection.find_one({"username": username})
 
     if not user:
-        return False, "User not found"
+        return False, "User not found",None
     
     if not bcrypt.checkpw(password.encode('utf-8'), user["password"]):
-        return False, "Incorrect password"
+        return False, "Incorrect password",None
 
     if not user.get("verified", False):
-        return False, "Verify your email first!"
+        return False, "Verify your email first!",user["email"]
     
-    return True,user
+    return True,user,None
     
 
 # Showing login registration page 
@@ -359,7 +362,7 @@ def show_login_register_page():
                 submit = st.form_submit_button("Login")
                 if submit:
                     if username and password:
-                        success, result = login_user(username, password)
+                        success, result ,email= login_user(username, password)
                         if success:
                             st.session_state.logged_in = True
                             st.session_state.username = result["username"]
@@ -367,6 +370,16 @@ def show_login_register_page():
                             st.rerun()
                         else:
                             st.error(f"❌ {result}")
+                            if "verify" in result.lower():
+                                if time.time() - st.session_state > 30:
+                                    if st.button("📧 Resend Verification Email"):
+                                        user = users_collection.find_one({"email":email})
+                                        if user:
+                                            token = user["token"]
+                                            send_verification_email(email,token)
+                                            st.success("📧 Verification email sent again!")
+                                else:
+                                    st.warning("⏳ Wait before resending email")
                     else:
                         st.warning("Enter both username and password")
         st.markdown("""
