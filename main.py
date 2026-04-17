@@ -371,12 +371,13 @@ def show_login_register_page():
                         else:
                             st.error(f"❌ {result}")
                             if "verify" in result.lower():
-                                if time.time() - st.session_state > 30:
+                                if time.time() - st.session_state.last_sent > 30:
                                     if st.button("📧 Resend Verification Email"):
                                         user = users_collection.find_one({"email":email})
                                         if user:
                                             token = user["token"]
                                             send_verification_email(email,token)
+                                            st.session_state.last_sent = time.time()
                                             st.success("📧 Verification email sent again!")
                                 else:
                                     st.warning("⏳ Wait before resending email")
