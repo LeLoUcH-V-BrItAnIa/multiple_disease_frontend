@@ -377,20 +377,20 @@ def show_login_register_page():
                                 
                     else:
                         st.warning("Enter both username and password")
-                if st.session_state.resend_email:
-                    if time.time() - st.session_state.last_sent > 30:
-                        if st.button("📧 Resend Verification Email"):
-                            user = users_collection.find_one({"email": st.session_state.resend_email})
+        if st.session_state.resend_email:
+            if time.time() - st.session_state.last_sent > 30:
+                if st.button("📧 Resend Verification Email"):
+                    user = users_collection.find_one({"email": st.session_state.resend_email})
 
-                            if user:
-                                token = user["token"]
-                                send_verification_email(st.session_state.resend_email, token)
+                    if user:
+                        token = user["token"]
+                        send_verification_email(st.session_state.resend_email, token)
 
-                                st.session_state.last_sent = time.time()
-                                st.success("📧 Verification email sent again!")
-                                st.session_state.resend_email = None
-                    else:
-                        st.warning("⏳ Wait before resending email")
+                        st.session_state.last_sent = time.time()
+                        st.success("📧 Verification email sent again!")
+                        st.session_state.resend_email = None
+            else:
+                st.warning("⏳ Wait before resending email")
 
         st.markdown("""
                     <style>
