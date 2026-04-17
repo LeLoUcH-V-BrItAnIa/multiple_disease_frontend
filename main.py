@@ -469,7 +469,8 @@ def show_login_register_page():
                     """, unsafe_allow_html=True)
     if st.button("🤖 AI Suggest Username"):
         if reg_email:
-            suggestion = ai_suggest_username(reg_email)
+            email = st.text_input("Email", key="reg_email")
+            suggestion = ai_suggest_username(email)
             st.info(f"Suggested username: {suggestion}")
         else:
             st.warning("Enter email first!")
