@@ -333,13 +333,6 @@ def show_login_register_page():
         st.success("AI System: Online ✅")
     
     col1, col2, col3 = st.columns([1, 2, 1])
-    with col3:
-        if st.button("🤖 AI Suggest Username"):
-            if reg_email:
-                suggestion = ai_suggest_username(reg_email)
-                st.info(f"Suggested username: {suggestion}")
-            else:
-                st.warning("Enter email first!")
     with col2:
         with st.form("auth_form"):
             if selected == "Register":
@@ -398,7 +391,7 @@ def show_login_register_page():
                         st.session_state.resend_email = None
             else:
                 st.warning("⏳ Wait before resending email")
-
+  
         st.markdown("""
                     <style>
                     /* ================= PARTICLE BACKGROUND ================= */
@@ -474,6 +467,13 @@ def show_login_register_page():
                     </div>
                    
                     """, unsafe_allow_html=True)
+    if st.button("🤖 AI Suggest Username"):
+        if reg_email:
+            suggestion = ai_suggest_username(reg_email)
+            st.info(f"Suggested username: {suggestion}")
+        else:
+            st.warning("Enter email first!")
+
     st.markdown("""
         <hr style="margin-top:40px;">
         <div style="text-align:center; font-size: 14px; color: #888;">
