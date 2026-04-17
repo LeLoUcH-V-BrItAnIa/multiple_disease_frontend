@@ -467,7 +467,7 @@ def show_login_register_page():
                     </div>
                    
                     """, unsafe_allow_html=True)
-    st.subheader("###Ai Suggested Usernames###")
+    st.subheader("Ai Suggested Usernames")
     email = st.text_input("Enter the Email!")
     if st.button("🤖 AI Suggest Username"):
             
