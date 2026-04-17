@@ -153,7 +153,7 @@ def is_valid_password(password):
 def send_verification_email(receiver_email,token):
     sender = st.secrets["Email"]#os.getenv("EMAIL")
     password = st.secrets["EMAIL_PASSWORD"]#os.getenv("EMAIL_PASSWORD")
-    link = f"http://localhost:8501/?verify={token}"
+    link = f"https://pulse-prediction-app.streamlit.app/?verify={token}"
 
     msg = MIMEText(f"""
     Welcome to PULSE 🩺
