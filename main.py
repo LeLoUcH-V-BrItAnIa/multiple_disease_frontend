@@ -910,23 +910,25 @@ if st.session_state.page == "home":
 # Sidebar
 if st.session_state.page == "app":
     with st.sidebar:
+        # 🔍 SEARCH BAR
         search = st.text_input("🔍 Search disease")
+
         if search:
             s = search.lower()
 
-            if "diabetes" in s:
-                st.session_state.selected_page = "Diabetes Prediction"
-            elif "heart" in s:
-                st.session_state.selected_page = "Heart Disease Prediction"
-            elif "parkinson" in s:
-                st.session_state.selected_page = "Parkinsons Prediction"
-            elif "leukemia" in s:
-                st.session_state.selected_page = "Leukimia Risk Prediction"
-            elif "stroke" in s:
-                st.session_state.selected_page = "Stroke Prediction"
-            elif "thyroid" in s:
-                st.session_state.selected_page = "Thyroid Prediction"
+            disease_map = {
+                "diabetes": "Diabetes Prediction",
+                "heart": "Heart Disease Prediction",
+                "parkinson": "Parkinsons Prediction",
+                "leukemia": "Leukimia Risk Prediction",
+                "stroke": "Stroke Prediction",
+                "thyroid": "Thyroid Prediction"
+            }
 
+            for key, value in disease_map.items():
+                if key in s:
+                    st.session_state.page = value
+                    st.rerun()   # 🔥 VERY IMPORTANT
         selected = option_menu(
         'PULSE MAIN MENU🧠',
         ['Diabetes Prediction', 'Heart Disease Prediction','Leukimia Risk Prediction', 'Parkinsons Prediction', 'AI-Based Health Assistant','📊 Dashboard',
@@ -936,7 +938,10 @@ if st.session_state.page == "app":
         default_index=0
         )
         # Sync selection
-        st.session_state.selected_page = selected
+        # ✅ Update page ONLY from menu
+        if selected != st.session_state.page:
+            st.session_state.page = selected
+        
         def get_health_tip():
             try:
                 url = "https://api.adviceslip.com/advice"
