@@ -912,7 +912,7 @@ if st.session_state.page == "app":
         selected = option_menu(
         'PULSE MAIN MENU🧠',
         ['Diabetes Prediction', 'Heart Disease Prediction','Leukimia Risk Prediction', 'Parkinsons Prediction', 'AI-Based Health Assistant','📊 Dashboard',
-         'Nearby Doctors','AI Chat Assistant','About & Developer','🧠Health Risk Dashboard','My Records','Logout'],
+         'Nearby Doctors','AI Chat Assistant','About & Developer','Health Risk Dashboard','My Records','Logout'],
         menu_icon='hospital-fill',
         icons=['activity', 'heart', 'person', 'robot','chat-dots-fill','geo-alt','info-circle'],
         default_index=0
