@@ -12,7 +12,7 @@ matplotlib
 streamlit-folium 
 folium
 requests
-pymongo
+pymongo==4.6.1
 dnspython
 bcrypt
 shap
