@@ -938,7 +938,10 @@ if st.session_state.page == "app":
         default_index=0
         )
         # Sync selection
-        st.session_state.selected_page = selected
+        # ✅ Update page ONLY from menu
+        if selected != st.session_state.page:
+            st.session_state.page = selected
+        
         def get_health_tip():
             try:
                 url = "https://api.adviceslip.com/advice"
