@@ -1181,11 +1181,11 @@ if st.session_state.page == "app":
             leukemia = leukemia_model.predict(leukemia_input)[0]
 
             # ===== PARKINSON (SAFE FALLBACK) =====
-            try:
-                dummy_input = [[0]*22]  # fallback dummy features
-                park = parkinsons_model.predict(dummy_input)[0]
-            except:
-                park = "N/A"
+            # try:
+            #     dummy_input = [[0]*22]  # fallback dummy features
+            #     park = parkinsons_model.predict(dummy_input)[0]
+            # except:
+            #     park = "N/A"
 
             # ---------------- RESULTS ----------------
             st.subheader("📊 Results")
@@ -1201,7 +1201,7 @@ if st.session_state.page == "app":
             show("Diabetes", diab)
             show("Heart Disease", heart)
             show("Leukemia", leukemia)
-            show("Parkinsons", park)
+            # show("Parkinsons", park)
 
             # ---------------- GEMINI SUMMARY ----------------
             prompt = f"""
@@ -1212,7 +1212,7 @@ if st.session_state.page == "app":
             Diabetes: {diab}
             Heart Disease: {heart}
             Leukemia: {leukemia}
-            Parkinsons: {park}
+            
 
             Give:
             - Simple risk summary
