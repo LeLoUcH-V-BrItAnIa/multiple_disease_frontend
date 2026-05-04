@@ -307,22 +307,6 @@ def show_login_register_page():
     
     # Login/Register form
     with st.sidebar:
-        search = st.text_input("🔍 Search disease")
-        if search:
-            s = search.lower()
-
-            if "diabetes" in s:
-                selected = "Diabetes Prediction"
-            elif "heart" in s:
-                selected = "Heart Disease Prediction"
-            elif "parkinson" in s:
-                selected = "Parkinsons Prediction"
-            elif "leukemia" in s:
-                selected = "Leukimia Risk Prediction"
-            elif "stroke" in s:
-                selected = "Stroke Prediction"
-            elif "thyroid" in s:
-                selected = "Thyroid Prediction"
         selected = option_menu(
         'Welcome To PULSE🧠',
         ['Login','Register'],
@@ -924,6 +908,22 @@ if st.session_state.page == "home":
 # Sidebar
 if st.session_state.page == "app":
     with st.sidebar:
+        search = st.text_input("🔍 Search disease")
+        if search:
+            s = search.lower()
+
+            if "diabetes" in s:
+                selected = "Diabetes Prediction"
+            elif "heart" in s:
+                selected = "Heart Disease Prediction"
+            elif "parkinson" in s:
+                selected = "Parkinsons Prediction"
+            elif "leukemia" in s:
+                selected = "Leukimia Risk Prediction"
+            elif "stroke" in s:
+                selected = "Stroke Prediction"
+            elif "thyroid" in s:
+                selected = "Thyroid Prediction"
         selected = option_menu(
         'PULSE MAIN MENU🧠',
         ['Diabetes Prediction', 'Heart Disease Prediction','Leukimia Risk Prediction', 'Parkinsons Prediction', 'AI-Based Health Assistant','📊 Dashboard',
