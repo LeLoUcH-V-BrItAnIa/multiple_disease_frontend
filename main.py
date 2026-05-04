@@ -912,7 +912,7 @@ if st.session_state.page == "app":
         selected = option_menu(
         'PULSE MAIN MENU🧠',
         ['Diabetes Prediction', 'Heart Disease Prediction','Leukimia Risk Prediction', 'Parkinsons Prediction', 'AI-Based Health Assistant','📊 Dashboard',
-         'Nearby Doctors','AI Chat Assistant','About & Developer','My Records','Logout'],
+         'Nearby Doctors','AI Chat Assistant','About & Developer','🧠 Health Risk Dashboard','My Records','Logout'],
         menu_icon='hospital-fill',
         icons=['activity', 'heart', 'person', 'robot','chat-dots-fill','geo-alt','info-circle'],
         default_index=0
@@ -1132,6 +1132,104 @@ if st.session_state.page == "app":
                     except Exception as e:
                         st.error(f"❌ Request failed: {str(e)}")
                     
+    elif selected == "🧠 Health Risk Dashboard":
+        st.title("🧠 AI Multi-Disease Risk Dashboard")
+
+        st.markdown("Enter your basic health details")
+
+        # ---------------- INPUT ----------------
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            age = st.number_input("Age", 1, 120, 25)
+            bmi = st.number_input("BMI", 10.0, 50.0, 22.0)
+            glucose = st.number_input("Glucose", 50, 300, 100)
+
+        with col2:
+            bp = st.number_input("Blood Pressure", 50, 200, 80)
+            cholesterol = st.number_input("Cholesterol", 100, 400, 200)
+            heart_rate = st.number_input("Max Heart Rate", 60, 220, 120)
+
+        with col3:
+            wbc = st.number_input("WBC Count", 1000, 20000, 7000)
+            rbc = st.number_input("RBC Count", 2.0, 8.0, 5.0)
+            platelet = st.number_input("Platelet Count", 10000, 500000, 250000)
+
+        # ---------------- BUTTON ----------------
+        if st.button("🔍 Analyze All Diseases"):
+
+            # ===== DIABETES =====
+            diabetes_input = [
+                0, glucose, bp, 20, 80, bmi, 0.5, age
+            ]
+            diab = diabetes_model.predict([diabetes_input])[0]
+
+            # ===== HEART =====
+            heart_input = [
+                age, 1, 0, bp, cholesterol, 0, 0, heart_rate,
+                0, 1.0, 1, 0, 2
+            ]
+            heart = heart_disease_model.predict([heart_input])[0]
+
+            # ===== LEUKEMIA =====
+            leukemia_input = [[
+                age, 1000, wbc, rbc, platelet, 13, 50, bmi, 1,
+                0,0,0, 1,0,0,0,0,
+                0,0,0,0,1,
+                1000,1,0,0
+            ]]
+            leukemia = leukemia_model.predict(leukemia_input)[0]
+
+            # ===== PARKINSON (SAFE FALLBACK) =====
+            try:
+                dummy_input = [[0]*22]  # fallback dummy features
+                park = parkinsons_model.predict(dummy_input)[0]
+            except:
+                park = "N/A"
+
+            # ---------------- RESULTS ----------------
+            st.subheader("📊 Results")
+
+            def show(label, value):
+                if value == 1:
+                    st.error(f"{label}: ⚠️ High Risk")
+                elif value == 0:
+                    st.success(f"{label}: ✅ Low Risk")
+                else:
+                    st.info(f"{label}: Not Available")
+
+            show("Diabetes", diab)
+            show("Heart Disease", heart)
+            show("Leukemia", leukemia)
+            show("Parkinsons", park)
+
+            # ---------------- GEMINI SUMMARY ----------------
+            prompt = f"""
+            User health data:
+            Age: {age}, BMI: {bmi}, Glucose: {glucose}, BP: {bp}, Cholesterol: {cholesterol}
+
+            Predictions:
+            Diabetes: {diab}
+            Heart Disease: {heart}
+            Leukemia: {leukemia}
+            Parkinsons: {park}
+
+            Give:
+            - Simple risk summary
+            - Most concerning disease
+            - Diet suggestions
+            - Lifestyle advice
+            """
+
+            try:
+                model = genai.GenerativeModel("gemini-pro")
+                response = model.generate_content(prompt)
+
+                st.subheader("🤖 AI Health Summary")
+                st.write(response.text)
+
+            except Exception as e:
+                st.error("Gemini error")
     # Leukimia Risk Prediction Page
 
     elif selected == 'Leukimia Risk Prediction':
