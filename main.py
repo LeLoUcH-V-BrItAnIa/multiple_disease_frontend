@@ -928,7 +928,6 @@ if st.session_state.page == "app":
             for key, value in disease_map.items():
                 if key in s:
                     st.session_state.page = value
-                    st.rerun()   # 🔥 VERY IMPORTANT
         selected = option_menu(
         'PULSE MAIN MENU🧠',
         ['Diabetes Prediction', 'Heart Disease Prediction','Leukimia Risk Prediction', 'Parkinsons Prediction', 'AI-Based Health Assistant','📊 Dashboard',
@@ -938,9 +937,7 @@ if st.session_state.page == "app":
         default_index=0
         )
         # Sync selection
-        # ✅ Update page ONLY from menu
-        if selected != st.session_state.page:
-            st.session_state.page = selected
+        st.session_state.page = selected
         
         def get_health_tip():
             try:
