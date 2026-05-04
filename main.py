@@ -909,37 +909,6 @@ if st.session_state.page == "home":
 # Sidebar
 if st.session_state.page == "app":
     with st.sidebar:
-        # 🔍 SEARCH BAR (ADD THIS HERE)
-        search = st.text_input("🔍 Search diseases (quick access)")
-
-        ALL_PAGES = {
-            "diabetes": "Diabetes Prediction",
-            "heart": "Heart Disease Prediction",
-            "parkinson": "Parkinsons Prediction",
-            "leukemia": "Leukimia Risk Prediction",
-
-            # hidden pages (NOT in sidebar)
-            "thyroid": "Thyroid Prediction",
-            "stroke": "Stroke Prediction",
-            "kidney": "Kidney Disease Prediction"
-        }
-
-        if search:
-            s = search.lower()
-            results = []
-
-            for key, page in ALL_PAGES.items():
-                if key in s or s in key:
-                    results.append(page)
-
-            if results:
-                st.markdown("### 🔎 Results")
-
-                for page in results:
-                    if st.button(f"👉 Open {page}"):
-                        st.session_state.page = page
-            else:
-                st.warning("No matching page found")
         selected = option_menu(
         'PULSE MAIN MENU🧠',
         ['Diabetes Prediction', 'Heart Disease Prediction','Leukimia Risk Prediction', 'Parkinsons Prediction', 'AI-Based Health Assistant','📊 Dashboard',
@@ -948,7 +917,6 @@ if st.session_state.page == "app":
         icons=['activity', 'heart', 'person', 'robot','chat-dots-fill','geo-alt','info-circle'],
         default_index=0
         )
-        st.session_state.page = selected
         
         def get_health_tip():
             try:
@@ -967,16 +935,17 @@ if st.session_state.page == "app":
 
         st.markdown("### 🚀 System Status")
         st.success("AI System: Online ✅")
-    page = st.session_state.page
+
+    
     # Logout Button ! 
-    if page == "Logout":
+    if selected == "Logout":
         st.session_state.logged_in = False
         st.session_state.username = ""
         st.session_state.page = "login"
         st.rerun()
 
 # Database records page  
-    if page == "My Records":
+    if selected == "My Records":
         st.title("📋 My Health Reports")
         st.subheader("(0 is No and 1 is Yes)")
         if "show_all_records" not in st.session_state:
@@ -1053,7 +1022,7 @@ if st.session_state.page == "app":
                 st.write('N/A')
     
 # AI-Based Health Assistant Page
-    if page == 'AI-Based Health Assistant':
+    if selected == 'AI-Based Health Assistant':
         # st.title("🧠 AI-Based Health Assistant")
         st.markdown("""
         <style>
@@ -1165,7 +1134,7 @@ if st.session_state.page == "app":
                     
     # Leukimia Risk Prediction Page
 
-    elif page == 'Leukimia Risk Prediction':
+    elif selected == 'Leukimia Risk Prediction':
         st.markdown("""
         <style>
         @keyframes fadeIn {
@@ -1440,7 +1409,7 @@ if st.session_state.page == "app":
 
 
     # Diabetes Prediction Page
-    elif page == 'Diabetes Prediction':
+    elif selected == 'Diabetes Prediction':
         st.markdown("<div class='fade-title'>🩸Diabetes Prediction using ML</div>", unsafe_allow_html=True)
         st.markdown("""
             <style>
@@ -1660,13 +1629,7 @@ if st.session_state.page == "app":
 
     
     
-    elif page == "Thyroid Prediction":
-        st.title("🧪 Thyroid Prediction")
-        st.info("Coming soon...")
 
-    elif page == "Stroke Prediction":
-        st.title("🧠 Stroke Prediction")
-        st.info("Coming soon...")
     # Heart Disease Prediction Page
     elif selected == 'Heart Disease Prediction':
         st.markdown("<div class='fade-title'>❤️Heart Disease Prediction using ML</div>", unsafe_allow_html=True)
@@ -1900,7 +1863,7 @@ if st.session_state.page == "app":
 
                 
     # nearby doctor's page'
-    elif page == "Nearby Doctors":
+    elif selected == "Nearby Doctors":
         st.title("🩺 Nearby Doctors Locator")
         st.subheader("📍 Enter Your Location")
         show_nearby_doctors()
@@ -1910,7 +1873,7 @@ if st.session_state.page == "app":
 
 
     # Parkinson's Disease Prediction Page
-    elif page == "Parkinsons Prediction":
+    elif selected == "Parkinsons Prediction":
         st.markdown("<div class='fade-title'>🧠Parkinson's Disease Prediction using ML</div>", unsafe_allow_html=True)
         st.markdown("""
             <style>
@@ -2174,7 +2137,7 @@ if st.session_state.page == "app":
                     )
                     st.info("✅ Your Parkinson's prediction and AI suggestions have been saved.")
     # AI chat assitant 
-    elif page == "AI Chat Assistant":
+    elif selected == "AI Chat Assistant":
         st.title("🤖 AI Health Expert Chatbot")
 
         # Load API key securely
@@ -2235,7 +2198,7 @@ if st.session_state.page == "app":
                 st.error(f"❌ API response error: {e}")
         
     # About & Developer Page
-    elif page == "About & Developer":
+    elif selected == "About & Developer":
         st.markdown("""
         <style>
         /* Fade-in animation */
@@ -2322,7 +2285,7 @@ if st.session_state.page == "app":
         """, unsafe_allow_html=True)
         
     # DashBoard page 
-    elif page == "📊 Dashboard":
+    elif selected == "📊 Dashboard":
         st.title("📊 Prediction Dashboard")
         # select records from mongodb
         records = get_user_records(st.session_state.username)
@@ -2413,7 +2376,7 @@ if st.session_state.page == "app":
                     st.error(f"Error generating PDF: {str(e)}")
 
     # Footer
-    if page != "AI Chat Assistant":
+    if selected != "AI Chat Assistant":
         # 🔻 Footer
         st.markdown("""
         <hr style="margin-top:40px;">
