@@ -25,6 +25,7 @@ import shap
 from explainable_ai import get_shap_explanation
 from input_graph import plot_user_vs_risk
 import time
+import certifi
 
 st.set_page_config(page_title="Pulse Auth", 
                    layout="wide", 
@@ -102,7 +103,7 @@ load_dotenv()
 MONGO_URI = st.secrets["MONGO_URI"]
 # MONGO_URI = os.getenv("MONGO_URI")
 try:
-    client = MongoClient(MONGO_URI,tls=True, tlsAllowInvalidCertificates=True)
+    client = MongoClient(MONGO_URI,tls=True, tlsCAFile=certifi.where())
     client.admin.command('ping')
 except Exception as e:
     st.error("MongoDB connection failed. Check your URI!")
