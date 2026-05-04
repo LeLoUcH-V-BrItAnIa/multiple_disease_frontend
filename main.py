@@ -123,6 +123,8 @@ if "last_sent" not in st.session_state:
     st.session_state.last_sent = 0
 if "resend_email" not in st.session_state:
     st.session_state.resend_email = None
+if "selected_page" not in st.session_state:
+    st.session_state.selected_page = "Diabetes Prediction"
 
 
 # ---------------- Email Verification ----------------
@@ -913,17 +915,18 @@ if st.session_state.page == "app":
             s = search.lower()
 
             if "diabetes" in s:
-                selected = "Diabetes Prediction"
+                st.session_state.selected_page = "Diabetes Prediction"
             elif "heart" in s:
-                selected = "Heart Disease Prediction"
+                st.session_state.selected_page = "Heart Disease Prediction"
             elif "parkinson" in s:
-                selected = "Parkinsons Prediction"
+                st.session_state.selected_page = "Parkinsons Prediction"
             elif "leukemia" in s:
-                selected = "Leukimia Risk Prediction"
+                st.session_state.selected_page = "Leukimia Risk Prediction"
             elif "stroke" in s:
-                selected = "Stroke Prediction"
+                st.session_state.selected_page = "Stroke Prediction"
             elif "thyroid" in s:
-                selected = "Thyroid Prediction"
+                st.session_state.selected_page = "Thyroid Prediction"
+
         selected = option_menu(
         'PULSE MAIN MENU🧠',
         ['Diabetes Prediction', 'Heart Disease Prediction','Leukimia Risk Prediction', 'Parkinsons Prediction', 'AI-Based Health Assistant','📊 Dashboard',
@@ -932,6 +935,8 @@ if st.session_state.page == "app":
         icons=['activity', 'heart', 'person', 'robot','chat-dots-fill','geo-alt','info-circle'],
         default_index=0
         )
+        # Sync selection
+        st.session_state.selected_page = selected
         def get_health_tip():
             try:
                 url = "https://api.adviceslip.com/advice"
