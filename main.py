@@ -1132,7 +1132,7 @@ if st.session_state.page == "app":
                     except Exception as e:
                         st.error(f"❌ Request failed: {str(e)}")
                     
-    elif selected == "🧠 Health Risk Dashboard":
+    elif selected == "Health Risk Dashboard":
         st.title("🧠 AI Multi-Disease Risk Dashboard")
 
         st.markdown("Enter your basic health details")
