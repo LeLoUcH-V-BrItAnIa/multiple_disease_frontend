@@ -102,7 +102,7 @@ load_dotenv()
 MONGO_URI = st.secrets["MONGO_URI"]
 # MONGO_URI = os.getenv("MONGO_URI")
 try:
-    client = MongoClient(MONGO_URI)
+    client = MongoClient(MONGO_URI,tls=True, tlsAllowInvalidCertificates=True)
     client.admin.command('ping')
 except Exception as e:
     st.error("MongoDB connection failed. Check your URI!")
