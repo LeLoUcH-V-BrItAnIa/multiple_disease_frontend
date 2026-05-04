@@ -18,3 +18,4 @@ bcrypt
 shap
 reportlab
 geopy
+certifi
