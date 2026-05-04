@@ -123,8 +123,7 @@ if "last_sent" not in st.session_state:
     st.session_state.last_sent = 0
 if "resend_email" not in st.session_state:
     st.session_state.resend_email = None
-if "selected_page" not in st.session_state:
-    st.session_state.selected_page = "Diabetes Prediction"
+
 
 
 # ---------------- Email Verification ----------------
@@ -910,24 +909,37 @@ if st.session_state.page == "home":
 # Sidebar
 if st.session_state.page == "app":
     with st.sidebar:
-        # 🔍 SEARCH BAR
-        search = st.text_input("🔍 Search disease")
+        # 🔍 SEARCH BAR (ADD THIS HERE)
+        search = st.text_input("🔍 Search diseases (quick access)")
+
+        ALL_PAGES = {
+            "diabetes": "Diabetes Prediction",
+            "heart": "Heart Disease Prediction",
+            "parkinson": "Parkinsons Prediction",
+            "leukemia": "Leukimia Risk Prediction",
+
+            # hidden pages (NOT in sidebar)
+            "thyroid": "Thyroid Prediction",
+            "stroke": "Stroke Prediction",
+            "kidney": "Kidney Disease Prediction"
+        }
 
         if search:
             s = search.lower()
+            results = []
 
-            disease_map = {
-                "diabetes": "Diabetes Prediction",
-                "heart": "Heart Disease Prediction",
-                "parkinson": "Parkinsons Prediction",
-                "leukemia": "Leukimia Risk Prediction",
-                "stroke": "Stroke Prediction",
-                "thyroid": "Thyroid Prediction"
-            }
+            for key, page in ALL_PAGES.items():
+                if key in s or s in key:
+                    results.append(page)
 
-            for key, value in disease_map.items():
-                if key in s:
-                    st.session_state.page = value
+            if results:
+                st.markdown("### 🔎 Results")
+
+                for page in results:
+                    if st.button(f"👉 Open {page}"):
+                        st.session_state.page = page
+            else:
+                st.warning("No matching page found")
         selected = option_menu(
         'PULSE MAIN MENU🧠',
         ['Diabetes Prediction', 'Heart Disease Prediction','Leukimia Risk Prediction', 'Parkinsons Prediction', 'AI-Based Health Assistant','📊 Dashboard',
@@ -936,7 +948,6 @@ if st.session_state.page == "app":
         icons=['activity', 'heart', 'person', 'robot','chat-dots-fill','geo-alt','info-circle'],
         default_index=0
         )
-        # Sync selection
         st.session_state.page = selected
         
         def get_health_tip():
@@ -1650,7 +1661,13 @@ if st.session_state.page == "app":
 
     
     
+    elif st.session_state.page == "Thyroid Prediction":
+        st.title("🧪 Thyroid Prediction")
+        st.info("Coming soon...")
 
+    elif st.session_state.page == "Stroke Prediction":
+        st.title("🧠 Stroke Prediction")
+        st.info("Coming soon...")
     # Heart Disease Prediction Page
     elif selected == 'Heart Disease Prediction':
         st.markdown("<div class='fade-title'>❤️Heart Disease Prediction using ML</div>", unsafe_allow_html=True)
