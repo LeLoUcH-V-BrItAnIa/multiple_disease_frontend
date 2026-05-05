@@ -3,6 +3,9 @@ import pandas as pd
 import xgboost as xgb
 import uuid
 import smtplib
+from sentence_transformers import SentenceTransformer
+import faiss
+import numpy as np
 from email.mime.text import MIMEText
 import numpy as np
 from nearby_doctor import show_nearby_doctors
@@ -553,6 +556,12 @@ kidney_model = pickle.load(open(f'{working_dir}/saved_models/kidney_model_reduce
 thyroid_model = pickle.load(open(f'{working_dir}/saved_models/thyroid_model.sav', 'rb'))
 # Thyroid feature order (VERY IMPORTANT)
 thyroid_features = pickle.load(open(f'{working_dir}/saved_models/thyroid_features.sav', 'rb'))
+
+# ----------- RAG LOAD -----------
+rag_model = SentenceTransformer('./RAG/all-MiniLM-L6-v2')
+
+rag_index = faiss.read_index("./RAG/medical_index.faiss")
+rag_docs = np.load("medical_docs.npy", allow_pickle=True)
 
 # ✅ Homepage Section
 if st.session_state.page == "home":
@@ -2708,64 +2717,120 @@ if st.session_state.page == "app":
                     st.info("✅ Your Parkinson's prediction and AI suggestions have been saved.")
     # AI chat assitant 
     elif selected == "AI Chat Assistant":
-        st.title("🤖 AI Health Expert Chatbot")
 
-        # Load API key securely
-        API_KEY = os.getenv("GEMINI_API_KEY")
-        if not API_KEY:
-            st.error("🔑 API Key is missing. Please check your .env file.")
-        else:
-            import google.generativeai as gen_ai
-            gen_ai.configure(api_key=API_KEY)
+        st.markdown("<div class='fade-title'>🤖 AI Medical Chat Assistant</div>", unsafe_allow_html=True)
 
-            try:
-                # You can change the model if needed
-                model = gen_ai.GenerativeModel("models/gemma-3n-e2b-it")  # Recommended stable model
-            except Exception as e:
-                st.error(f"Error loading Gemini model: {e}")
-                st.stop()
+        # Chat history
+        if "chat_history" not in st.session_state:
+            st.session_state.chat_history = []
 
-            # Initialize chat session
-            if "chat_session" not in st.session_state:
-                st.session_state.chat_session = model.start_chat(history=[])
+        user_input = st.text_input("Ask your health question:")
 
-            st.markdown("💬 Ask me anything about diseases, symptoms, fitness, diet, or mental health.")
+        if st.button("Send"):
+            if user_input:
 
-            # Show chat history
-            for message in st.session_state.chat_session.history:
-                with st.chat_message(message.role):
-                    st.markdown(message.parts[0].text)
+                # ----------- RAG SEARCH -----------
+                query_vec = rag_model.encode([user_input])
+                D, I = rag_index.search(query_vec, k=3)
 
-            # Chat input
-            user_prompt = st.chat_input("💬 Ask your health question...")
-        if user_prompt:
-            # User message bubble
-            st.markdown(f"""
-                <div style='background:#4CAF50; color:white; padding:10px 15px; border-radius:15px; 
-                            max-width:70%; margin:10px 0; float:right;'>
-                    {user_prompt}
-                </div>
-                <div style='clear:both;'></div>
-            """, unsafe_allow_html=True)
+                context = "\n".join([rag_docs[i] for i in I[0]])
 
-            try:
-                gemini_response = st.session_state.chat_session.send_message(
-                    f"You are a medical assistant. Answer the following in health-expert tone:\n{user_prompt}"
-                )
+                # ----------- PROMPT -----------
+                prompt = f"""
+                You are a medical assistant AI.
 
-                if gemini_response and hasattr(gemini_response, "text"):
-                    # Assistant message bubble
-                    st.markdown(f"""
-                        <div style='background:#222; color:#FFD700; padding:10px 15px; border-radius:15px; 
-                                    max-width:70%; margin:10px 0; float:left;'>
-                            {gemini_response.text}
-                        </div>
-                        <div style='clear:both;'></div>
-                    """, unsafe_allow_html=True)
-                else:
-                    st.error("⚠️ No valid response received.")
-            except Exception as e:
-                st.error(f"❌ API response error: {e}")
+                Rules:
+                - Only answer from context
+                - Do not guess
+                - Do not give medicines
+                - Always say: Consult a healthcare professional
+
+                Context:
+                {context}
+
+                Question:
+                {user_input}
+                """
+
+                # ----------- GEMINI CALL -----------
+                try:
+                    model = genai.GenerativeModel("models/gemini-1.5-flash")
+                    response = model.generate_content(prompt)
+
+                    answer = response.text
+
+                except Exception as e:
+                    answer = "Error getting response."
+
+                # Save chat
+                st.session_state.chat_history.append(("You", user_input))
+                st.session_state.chat_history.append(("AI", answer))
+
+        # Display chat
+        for role, msg in st.session_state.chat_history:
+            if role == "You":
+                st.markdown(f"**🧑 You:** {msg}")
+            else:
+                st.markdown(f"**🤖 AI:** {msg}")
+    # elif selected == "AI Chat Assistant":
+    #     st.title("🤖 AI Health Expert Chatbot")
+
+    #     # Load API key securely
+    #     API_KEY = os.getenv("GEMINI_API_KEY")
+    #     if not API_KEY:
+    #         st.error("🔑 API Key is missing. Please check your .env file.")
+    #     else:
+    #         import google.generativeai as gen_ai
+    #         gen_ai.configure(api_key=API_KEY)
+
+    #         try:
+    #             # You can change the model if needed
+    #             model = gen_ai.GenerativeModel("models/gemma-3n-e2b-it")  # Recommended stable model
+    #         except Exception as e:
+    #             st.error(f"Error loading Gemini model: {e}")
+    #             st.stop()
+
+    #         # Initialize chat session
+    #         if "chat_session" not in st.session_state:
+    #             st.session_state.chat_session = model.start_chat(history=[])
+
+    #         st.markdown("💬 Ask me anything about diseases, symptoms, fitness, diet, or mental health.")
+
+    #         # Show chat history
+    #         for message in st.session_state.chat_session.history:
+    #             with st.chat_message(message.role):
+    #                 st.markdown(message.parts[0].text)
+
+    #         # Chat input
+    #         user_prompt = st.chat_input("💬 Ask your health question...")
+    #     if user_prompt:
+    #         # User message bubble
+    #         st.markdown(f"""
+    #             <div style='background:#4CAF50; color:white; padding:10px 15px; border-radius:15px; 
+    #                         max-width:70%; margin:10px 0; float:right;'>
+    #                 {user_prompt}
+    #             </div>
+    #             <div style='clear:both;'></div>
+    #         """, unsafe_allow_html=True)
+
+    #         try:
+    #             gemini_response = st.session_state.chat_session.send_message(
+    #                 f"You are a medical assistant. Answer the following in health-expert tone:\n{user_prompt}"
+    #             )
+
+    #             if gemini_response and hasattr(gemini_response, "text"):
+    #                 # Assistant message bubble
+    #                 st.markdown(f"""
+    #                     <div style='background:#222; color:#FFD700; padding:10px 15px; border-radius:15px; 
+    #                                 max-width:70%; margin:10px 0; float:left;'>
+    #                         {gemini_response.text}
+    #                     </div>
+    #                     <div style='clear:both;'></div>
+    #                 """, unsafe_allow_html=True)
+    #             else:
+    #                 st.error("⚠️ No valid response received.")
+    #         except Exception as e:
+    #             st.error(f"❌ API response error: {e}")
         
     # About & Developer Page
     elif selected == "About & Developer":
