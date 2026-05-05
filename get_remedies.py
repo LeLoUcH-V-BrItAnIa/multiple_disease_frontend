@@ -122,13 +122,8 @@ def get_cbc_interpretation(inputs):
 
     response = model.generate_content(prompt)
 
-    try:
-        return json.loads(response.text)
-    except:
-        return {
-            "summary": "Unable to interpret report.",
-            "key_points": []
-        }
+    return json.loads(response.text)
+    
 # -------- Prompt Builders --------
 
 def build_kidney_prompt(inputs, prediction, history_summary):
