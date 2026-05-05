@@ -1580,20 +1580,21 @@ if st.session_state.page == "app":
             DiabetesPedigreeFunction = st.text_input('Diabetes Pedigree Function value')
         with col2:
             Age = st.text_input('Age of the Person')
-        # Engineered features 
-        Glucose_BMI = float(Glucose) * float(BMI)
-        Age_BMI = float(Age) * float(BMI)
-        BMI_Category = 1 if float(BMI) < 25 else (2 if float(BMI) < 30 else 3)
-        Age_Group = 0 if float(Age) < 30 else (1 if float(Age) < 50 else 20)
-
+        
         # Predict Button
 
         if st.button('Diabetes Test Result'):
+            # Engineered features 
+            Glucose_BMI = float(Glucose) * float(BMI)
+            Age_BMI = float(Age) * float(BMI)
+            BMI_Category = 1 if float(BMI) < 25 else (2 if float(BMI) < 30 else 3)
+            Age_Group = 0 if float(Age) < 30 else (1 if float(Age) < 50 else 2)
+
             user_input_list = [Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, DiabetesPedigreeFunction, Age , Glucose_BMI , Age_BMI , BMI_Category , Age_Group]
             # Changing the values to float 
             user_input_list = [float(x) for x in user_input_list]
             # Prediction Code 
-            diab_prediction = diabetes_model.predict([user_input_list])
+            diab_prediction = diabetes_model_new.predict([user_input_list])
             # Synthetic data 
             background_data = np.random.rand(50,8)
             # Shap explainer 
