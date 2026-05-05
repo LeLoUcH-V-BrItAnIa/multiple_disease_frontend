@@ -546,6 +546,12 @@ parkinsons_model = pickle.load(open(f'{working_dir}/saved_models/parkinsons_mode
 # leukemia_model = pickle.load(open(f'{working_dir}/saved_models/leukimia_model.sav', 'rb'))
 leukemia_model = xgb.XGBClassifier()
 leukemia_model.load_model(f'{working_dir}/saved_models/leukemia_model.json')
+# Kidney Model
+kidney_model = pickle.load(open(f'{working_dir}/saved_models/kidney_model_reduced.sav', 'rb'))
+# Thyroid Model
+thyroid_model = pickle.load(open(f'{working_dir}/saved_models/thyroid_model.sav', 'rb'))
+# Thyroid feature order (VERY IMPORTANT)
+thyroid_features = pickle.load(open(f'{working_dir}/saved_models/thyroid_features.sav', 'rb'))
 
 # ✅ Homepage Section
 if st.session_state.page == "home":
@@ -914,7 +920,7 @@ if st.session_state.page == "app":
     with st.sidebar:
         selected = option_menu(
         'PULSE MAIN MENU🧠',
-        ['Diabetes Prediction', 'Heart Disease Prediction','Leukimia Risk Prediction', 'Parkinsons Prediction', 'AI-Based Health Assistant','📊 Dashboard',
+        ['Diabetes Prediction', 'Heart Disease Prediction','Leukimia Risk Prediction','Kidney Disease Prediction','Thyroid Disease Prediction', 'Parkinsons Prediction', 'AI-Based Health Assistant','📊 Dashboard',
          'Nearby Doctors','AI Chat Assistant','About & Developer','Health Risk Dashboard','My Records','Logout'],
         menu_icon='hospital-fill',
         icons=['activity', 'heart', 'person', 'robot','chat-dots-fill','geo-alt','info-circle'],
@@ -1508,7 +1514,81 @@ if st.session_state.page == "app":
 
 
 
+    elif selected == 'Kidney Disease Prediction':
+        st.markdown("<div class='fade-title'>🧬 Kidney Disease Prediction</div>", unsafe_allow_html=True)
 
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            age = st.number_input("Age", 1, 120, 40)
+            bp = st.number_input("Blood Pressure", 50, 200, 80)
+            sg = st.number_input("Specific Gravity", 1.0, 1.05, 1.02)
+
+        with col2:
+            al = st.number_input("Albumin", 0, 5, 1)
+            su = st.number_input("Sugar", 0, 5, 0)
+            bgr = st.number_input("Blood Glucose Random", 50, 300, 120)
+
+        with col3:
+            bu = st.number_input("Blood Urea", 10, 200, 40)
+            sc = st.number_input("Serum Creatinine", 0.1, 15.0, 1.2)
+            hemo = st.number_input("Hemoglobin", 3.0, 20.0, 13.5)
+
+        if st.button("Kidney Test Result"):
+
+            kidney_input = [age, bp, sg, al, su, bgr, bu, sc, hemo]
+
+            input_df = pd.DataFrame([kidney_input])
+
+            prediction = kidney_model.predict(input_df)
+
+            if prediction[0] == 1:
+                st.warning("⚠️ High risk of Kidney Disease")
+            else:
+                st.success("✅ Low risk of Kidney Disease")
+
+    elif selected == 'Thyroid Disease Prediction':
+        thyroid_features = pickle.load(open(f'{working_dir}/saved_models/thyroid_features.sav', 'rb'))
+        st.markdown("<div class='fade-title'>🦋 Thyroid Disease Prediction using ML</div>", unsafe_allow_html=True)
+
+        st.write("Enter patient details:")
+
+        user_input = {}
+
+        # 🔥 Dynamic UI based on saved features
+        for feature in thyroid_features:
+
+            # Convert feature name to readable label
+            label = feature.replace("_", " ").title()
+
+            # 🧠 Smart field type handling
+            if feature in ['sex', 'on_thyroxine', 'query_on_thyroxine', 'on_antithyroid_medication',
+                        'sick', 'pregnant', 'thyroid_surgery', 'i131_treatment',
+                        'query_hypothyroid', 'query_hyperthyroid', 'lithium',
+                        'goitre', 'tumor', 'hypopituitary', 'psych']:
+                
+                user_input[feature] = st.selectbox(label, [0, 1])
+
+            else:
+                user_input[feature] = st.number_input(label, value=0.0)
+
+        # 🔍 Prediction Button
+        if st.button("Thyroid Test Result"):
+
+            input_df = pd.DataFrame([user_input])
+
+            prediction = thyroid_model.predict(input_df)
+
+            # Optional probability
+            if hasattr(thyroid_model, "predict_proba"):
+                prob = thyroid_model.predict_proba(input_df)[0][1]
+                st.write(f"💡 Risk Probability: {round(prob*100, 2)}%")
+
+            # Output
+            if prediction[0] == 1:
+                st.warning("⚠️ Thyroid Disorder Detected")
+            else:
+                st.success("✅ Normal Thyroid Function")
     # Diabetes Prediction Page
     elif selected == 'Diabetes Prediction':
         st.markdown("<div class='fade-title'>🩸Diabetes Prediction using ML</div>", unsafe_allow_html=True)
