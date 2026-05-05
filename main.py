@@ -1510,6 +1510,7 @@ if st.session_state.page == "app":
                 ai_suggestions=ai_response
                 )
                 st.info("✅ Your AI health recommendation has been saved to your history.")
+    
     elif selected == 'Thyroid Disease Prediction':
         st.markdown("<div class='fade-title'>🦋 Thyroid Disease Prediction using ML</div>", unsafe_allow_html=True)
 
@@ -1561,6 +1562,54 @@ if st.session_state.page == "app":
             else:
                 st.success('✅ Normal')
                 st.session_state.prediction_log.append(("Thyroid Disease", "Negative"))
+            thyroid_input_dict = {
+                "TSH": TSH,
+                "FTI": FTI,
+                "TT4": TT4,
+                "Age": age,
+                "Sex": sex,
+                "On Thyroxine": on_thyroxine,
+                "Thyroid Surgery": thyroid_surgery,
+                "Query Hypothyroid": query_hypothyroid
+            }
+
+            # 🔥 AI CALL
+            with st.spinner("Fetching AI health recommendations..."):
+                ai_response = get_remedies(
+                    thyroid_input_dict,
+                    thyroid_prediction[0],
+                    disease="thyroid",
+                    username=st.session_state.username
+                )
+
+            # Display
+            diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
+            lifestyle_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("lifestyle_tips", [])])
+            notes_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("notes", [])])
+
+            st.markdown(f"""
+            <div class="ai-card">
+                <div class="ai-title">💡 AI-Powered Thyroid Health Suggestions</div>
+                <div class="tip-title">🍽 Diet Tips:</div>
+                <ul>{diet_list}</ul>
+                <div class="tip-title">🏃 Lifestyle Tips:</div>
+                <ul>{lifestyle_list}</ul>
+                <div class="tip-title">🧘 Notes:</div>
+                <ul>{notes_list}</ul>
+            </div>
+            """, unsafe_allow_html=True)
+             # 🔹 Save prediction record for logged-in user
+            if st.session_state.logged_in:
+                record_data = thyroid_input_dict
+                save_prediction(
+                username=st.session_state.username,
+                disease="Leukemia Risk Prediction",
+                input_data=record_data,
+                result=int(thyroid_prediction),
+                ai_suggestions=ai_response
+                )
+                st.info("✅ Your AI health recommendation has been saved to your history.")
+    
     
     elif selected == 'Kidney Disease Prediction':
             st.markdown("<div class='fade-title'>🧬 Kidney Disease Prediction using ML</div>", unsafe_allow_html=True)
@@ -1679,40 +1728,6 @@ if st.session_state.page == "app":
                     ai_suggestions=ai_response
                     )
                     st.info("✅ Your AI health recommendation has been saved to your history.")
-                # # SHAP Display
-                # st.markdown("""
-                #     <div style="
-                #         background: rgba(0,0,0,0.4);
-                #         padding: 20px;
-                #         border-radius: 15px;
-                #     ">
-                #     <h3 style="color:#00FFAA;">🧠 AI Diagnosis Insight</h3>
-                #     </div>
-                # """, unsafe_allow_html=True)
-
-                # for feature, value, norm in normalized:
-                #     bar_length = int(norm * 20)
-                #     bar = "█" * bar_length
-
-                #     if value > 0:
-                #         st.markdown(
-                #             f"<span style='color:#ff4b4b'><b>{feature}</b></span> "
-                #             f"{bar} +{round(value,2)} ↑",
-                #             unsafe_allow_html=True
-                #         )
-                #     else:
-                #         st.markdown(
-                #             f"<span style='color:#4CAF50'><b>{feature}</b></span> "
-                #             f"{bar} {round(value,2)} ↓",
-                #             unsafe_allow_html=True
-                #         )
-
-                # # SHAP Graph
-                # st.subheader("📊 Feature Impact Visualization")
-                # import matplotlib.pyplot as plt
-                # plt.clf()
-                # shap.summary_plot(shap_values.reshape(1,-1), input_array, feature_names=feature_names, show=False)
-                # st.pyplot(plt.gcf())
 
         
     # Diabetes Prediction Page
