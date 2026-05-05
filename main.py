@@ -1544,8 +1544,8 @@ if st.session_state.page == "app":
             if st.button('Kidney Test Result'):
 
                 user_input_list = [
-                    hemo, sg, al, htn_yes, sc,
-                    sod, bgr, wc_11000, wc_9800, rc_5.2
+                    'hemo', 'sg', 'al', 'htn_yes', 'sc',
+                    'sod, bgr', 'wc_11000', 'wc_9800', 'rc_5.2'
                 ]
 
                 # Convert to float
