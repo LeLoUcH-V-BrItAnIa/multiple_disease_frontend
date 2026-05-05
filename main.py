@@ -1600,7 +1600,7 @@ if st.session_state.page == "app":
             explainer = shap.KernelExplainer(diabetes_model.decision_function,background_data)
             input_array = np.array([user_input_list])
             shap_values = explainer.shap_values(input_array)
-            shap_values = shap_values[1]
+            shap_values = shap_values[0]
             feature_names = [
                 "Pregnancies", "Glucose", "BloodPressure", "SkinThickness",
                 "Insulin", "BMI", "DiabetesPedigreeFunction", "Age" 
