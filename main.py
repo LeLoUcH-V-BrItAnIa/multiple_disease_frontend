@@ -1516,29 +1516,43 @@ if st.session_state.page == "app":
 
     elif selected == 'Kidney Disease Prediction':
         st.markdown("<div class='fade-title'>🧬 Kidney Disease Prediction</div>", unsafe_allow_html=True)
-
-        col1, col2, col3 = st.columns(3)
-
-        with col1:
-            age = st.number_input("Age", 1, 120, 40)
-            bp = st.number_input("Blood Pressure", 50, 200, 80)
-            sg = st.number_input("Specific Gravity", 1.0, 1.05, 1.02)
-
-        with col2:
-            al = st.number_input("Albumin", 0, 5, 1)
-            su = st.number_input("Sugar", 0, 5, 0)
-            bgr = st.number_input("Blood Glucose Random", 50, 300, 120)
-
-        with col3:
-            bu = st.number_input("Blood Urea", 10, 200, 40)
-            sc = st.number_input("Serum Creatinine", 0.1, 15.0, 1.2)
-            hemo = st.number_input("Hemoglobin", 3.0, 20.0, 13.5)
+        # Raw inputs
+        hemo = st.number_input("Hemoglobin", 3.0, 20.0, 13.5)
+        sg = st.selectbox("Specific Gravity", [1.005, 1.010, 1.015, 1.020, 1.025])
+        al = st.selectbox("Albumin", [0,1,2,3,4,5])
+        htn = st.selectbox("Hypertension", ["No", "Yes"])
+        sc = st.number_input("Serum Creatinine", 0.1, 15.0, 1.2)
+        sod = st.number_input("Sodium", 100, 180, 135)
+        bgr = st.number_input("Blood Glucose Random", 50, 300, 120)
+        wc = st.selectbox("White Blood Cell Count", ["9800", "11000"])
+        rc = st.selectbox("Red Blood Cell Count", ["5.2", "Other"])
 
         if st.button("Kidney Test Result"):
 
-            kidney_input = [age, bp, sg, al, su, bgr, bu, sc, hemo]
+            # Initialize all features = 0
+            features = {col: 0 for col in kidney_model.feature_names_in_}
 
-            input_df = pd.DataFrame([kidney_input])
+            # Fill numeric features
+            features['hemo'] = hemo
+            features['sg'] = sg
+            features['al'] = al
+            features['sc'] = sc
+            features['sod'] = sod
+            features['bgr'] = bgr
+
+            # Encode categorical
+            features['htn_yes'] = 1 if htn == "Yes" else 0
+
+            if wc == "11000":
+                features['wc_11000'] = 1
+            else:
+                features['wc_9800'] = 1
+
+            if rc == "5.2":
+                features['rc_5.2'] = 1
+
+            # Convert to DataFrame
+            input_df = pd.DataFrame([features])
 
             prediction = kidney_model.predict(input_df)
 
