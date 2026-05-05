@@ -1581,8 +1581,8 @@ if st.session_state.page == "app":
         with col2:
             Age = st.text_input('Age of the Person')
         # Engineered features 
-        Glucose_BMI = Glucose * BMI
-        Age_BMI = Age * BMI
+        Glucose_BMI = int(Glucose) * int(BMI)
+        Age_BMI = int(Age) * int(BMI)
         BMI_Category = 1 if BMI < 25 else (2 if BMI < 30 else 3)
         Age_Group = 0 if Age < 30 else (1 if Age < 50 else 20)
 
