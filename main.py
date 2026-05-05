@@ -1542,10 +1542,7 @@ if st.session_state.page == "app":
             # Predict Button
             if st.button('Kidney Test Result'):
 
-                user_input_list = [
-                    'hemo', 'sg', 'al', 'htn_yes', 'sc',
-                    'sod, bgr', 'wc_11000', 'wc_9800', 'rc_5.2'
-                ]
+                user_input_list = [hemo, sg, al, htn_yes, sc,sod, bgr, wc_11000, wc_9800, rc_5]
 
                 # Convert to float
                 user_input_list = [float(x) for x in user_input_list]
