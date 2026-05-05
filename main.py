@@ -538,8 +538,8 @@ st.markdown("""
 working_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Load models
-diabetes_model_new = pickle.load(open(f'{working_dir}/saved_models/diabetes_model_new.pkl', 'rb'))
-# diabetes_model = pickle.load(open(f'{working_dir}/saved_models/diabetes_model.sav', 'rb'))
+# diabetes_model_new = pickle.load(open(f'{working_dir}/saved_models/diabetes_model_new.pkl', 'rb'))
+diabetes_model = pickle.load(open(f'{working_dir}/saved_models/diabetes_model.sav', 'rb'))
 heart_disease_model = pickle.load(open(f'{working_dir}/saved_models/heart_disease_model.sav', 'rb'))
 parkinsons_model = pickle.load(open(f'{working_dir}/saved_models/parkinsons_model.sav', 'rb'))
 leukemia_model = pickle.load(open(f'{working_dir}/saved_models/leukimia_model.sav', 'rb'))
@@ -1582,30 +1582,29 @@ if st.session_state.page == "app":
             Age = st.text_input('Age of the Person')
         
         # Predict Button
-
         if st.button('Diabetes Test Result'):
             # Engineered features 
-            Glucose_BMI = float(Glucose) * float(BMI)
-            Age_BMI = float(Age) * float(BMI)
-            BMI_Category = 1 if float(BMI) < 25 else (2 if float(BMI) < 30 else 3)
-            Age_Group = 0 if float(Age) < 30 else (1 if float(Age) < 50 else 2)
+            # Glucose_BMI = float(Glucose) * float(BMI)
+            # Age_BMI = float(Age) * float(BMI)
+            # BMI_Category = 1 if float(BMI) < 25 else (2 if float(BMI) < 30 else 3)
+            # Age_Group = 0 if float(Age) < 30 else (1 if float(Age) < 50 else 2)
 
-            user_input_list = [Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, DiabetesPedigreeFunction, Age , Glucose_BMI , Age_BMI , BMI_Category , Age_Group]
+            user_input_list = [Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, DiabetesPedigreeFunction, Age ] #, Glucose_BMI , Age_BMI , BMI_Category , Age_Group
             # Changing the values to float 
             user_input_list = [float(x) for x in user_input_list]
             # Prediction Code 
-            diab_prediction = diabetes_model_new.predict([user_input_list])
+            diab_prediction = diabetes_model.predict([user_input_list])
             # Synthetic data 
             background_data = np.random.rand(50,8)
             # Shap explainer 
-            explainer = shap.TreeExplainer(diabetes_model_new)
+            explainer = shap.KernelExplainer(diabetes_model.decision_function,background_data)
             input_array = np.array([user_input_list])
             shap_values = explainer.shap_values(input_array)
             shap_values = shap_values[1]
             feature_names = [
                 "Pregnancies", "Glucose", "BloodPressure", "SkinThickness",
-                "Insulin", "BMI", "DiabetesPedigreeFunction", "Age" ,'BMI_Category', 'Age_Group', 'Glucose_BMI', 'Age_BMI'
-            ]
+                "Insulin", "BMI", "DiabetesPedigreeFunction", "Age" 
+            ] #,'BMI_Category', 'Age_Group', 'Glucose_BMI', 'Age_BMI'
             # print(shap_values)
             # Printed values 
             # [ 0.38705078  5.75635319 -1.03095822  0.00808619 -0.31521563  2.68560051
