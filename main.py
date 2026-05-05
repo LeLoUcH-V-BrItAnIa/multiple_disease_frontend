@@ -1732,6 +1732,25 @@ if st.session_state.page == "app":
         
     # Diabetes Prediction Page
     elif selected == 'Diabetes Prediction':
+        st.markdown("""
+        <div style="
+            background: rgba(0,0,0,0.4);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        ">
+        <h3 style="color:#00FFAA;">🧬 What is Diabetes Pedigree Function?</h3>
+
+        <p style="font-size:14px;">
+        It measures your <b>family history of diabetes</b>.<br><br>
+
+        👉 If many of your close relatives (parents, siblings) have diabetes, your risk is higher.<br>
+        👉 If no one in your family has diabetes, your risk is lower.<br><br>
+
+        💡 Instead of entering a confusing number, just select your family history below — we’ll calculate it for you.
+        </p>
+        </div>
+        """, unsafe_allow_html=True)
         st.markdown("<div class='fade-title'>🩸Diabetes Prediction using ML</div>", unsafe_allow_html=True)
         st.markdown("""
             <style>
