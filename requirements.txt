@@ -19,5 +19,3 @@ shap
 reportlab
 geopy
 certifi
-SentenceTransformer
-faiss
