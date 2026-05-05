@@ -2411,14 +2411,45 @@ if st.session_state.page == "app":
         st.title("🩺 Nearby Doctors Locator")
         st.subheader("📍 Enter Your Location")
         st.markdown("""
-            ### 📘 What is Latitude & Longitude?
+        <style>
+        .locator-card {
+            background: rgba(255,255,255,0.08);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        .title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #00FFAA;
+        }
+        .small {
+            font-size: 14px;
+            color: #ddd;
+        }
+        @keyframes fadeIn {
+            0% {opacity: 0; transform: translateY(10px);}
+            100% {opacity: 1; transform: translateY(0);}
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        st.markdown("""
+        <div class="locator-card">
+        <div class="title">📍 Location Intelligence</div>
+        <div class="small">
+        Latitude and Longitude help identify your exact location on Earth.<br><br>
 
-            - **Latitude** → Horizontal position (North/South)
-            - **Longitude** → Vertical position (East/West)
+        🌍 Latitude → North/South position<br>
+        🌎 Longitude → East/West position<br><br>
 
-            Example:
-            - Kolkata → Lat: 22.57, Lon: 88.36
-            """)
+        Example:<br>
+        Kolkata → 22.57 (Lat), 88.36 (Lon)
+        </div>
+        </div>
+        """, unsafe_allow_html=True)
         st.subheader("📍 Find Latitude & Longitude")
 
         place = st.text_input("Enter place name")
