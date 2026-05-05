@@ -1632,6 +1632,41 @@ if st.session_state.page == "app":
                 else:
                     st.success('✅ The person does not have Kidney Disease')
                     st.session_state.prediction_log.append(("Kidney Disease", "Negative"))
+                # Prepare user input dict
+                kidney_input_dict = {
+                    "Hemoglobin": hemo,
+                    "Specific Gravity": sg,
+                    "Albumin": al,
+                    "Hypertension": htn_yes,
+                    "Serum Creatinine": sc,
+                    "Sodium": sod,
+                    "Blood Glucose": bgr
+                }
+                # 🔥 AI CALL
+                with st.spinner("Fetching AI health recommendations..."):
+                    ai_response = get_remedies(
+                        kidney_input_dict,
+                        kidney_prediction[0],
+                        disease="kidney",
+                        username=st.session_state.username
+                    )
+
+                # Display
+                diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
+                lifestyle_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("lifestyle_tips", [])])
+                notes_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("notes", [])])
+
+                st.markdown(f"""
+                <div class="ai-card">
+                    <div class="ai-title">💡 AI-Powered Kidney Health Suggestions</div>
+                    <div class="tip-title">🍽 Diet Tips:</div>
+                    <ul>{diet_list}</ul>
+                    <div class="tip-title">🏃 Lifestyle Tips:</div>
+                    <ul>{lifestyle_list}</ul>
+                    <div class="tip-title">🧘 Notes:</div>
+                    <ul>{notes_list}</ul>
+                </div>
+                """, unsafe_allow_html=True)
 
                 # # SHAP Display
                 # st.markdown("""
