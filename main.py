@@ -2409,7 +2409,6 @@ if st.session_state.page == "app":
     # nearby doctor's page'
     elif selected == "Nearby Doctors":
         st.title("🩺 Nearby Doctors Locator")
-        st.subheader("📍 Enter Your Location")
         st.markdown("""
         <style>
         .locator-card {
@@ -2462,6 +2461,7 @@ if st.session_state.page == "app":
                 st.success(f"Longitude: {lon}")
             else:
                 st.error("Location not found!")
+        st.subheader("📍 Enter Your Location")
         show_nearby_doctors()
         # st.rerun()
         
