@@ -1876,6 +1876,10 @@ if st.session_state.page == "app":
             DiabetesPedigreeFunction = st.text_input('Diabetes Pedigree Function value',value=dpf_value)
         with col2:
             Age = st.text_input('Age of the Person')
+
+        st.info("💡 Get input values from blood reports or prescriptions.")
+        with st.expander("ℹ️ More Info"):
+            st.write("These values are usually available in lab reports like CBC, glucose test, thyroid profile, etc.")
         
         # Predict Button
         if st.button('Diabetes Test Result'):
