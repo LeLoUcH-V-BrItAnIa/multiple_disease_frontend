@@ -538,7 +538,7 @@ st.markdown("""
 working_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Load models
-diabetes_model_new = pickle.load(open(f'{working_dir}/saved_models/diabetes_model_new.sav', 'rb'))
+diabetes_model_new = pickle.load(open(f'{working_dir}/saved_models/diabetes_model_new.pkl', 'rb'))
 diabetes_model = pickle.load(open(f'{working_dir}/saved_models/diabetes_model.sav', 'rb'))
 heart_disease_model = pickle.load(open(f'{working_dir}/saved_models/heart_disease_model.sav', 'rb'))
 parkinsons_model = pickle.load(open(f'{working_dir}/saved_models/parkinsons_model.sav', 'rb'))
@@ -1132,7 +1132,7 @@ if st.session_state.page == "app":
                     except Exception as e:
                         st.error(f"❌ Request failed: {str(e)}")
                     
-    elif selected == "Health Risk Dashboard":
+    elif selected == " Health Risk Dashboard":
         st.title("🧠 AI Multi-Disease Risk Dashboard")
 
         st.markdown("Enter your basic health details")
@@ -1580,12 +1580,16 @@ if st.session_state.page == "app":
             DiabetesPedigreeFunction = st.text_input('Diabetes Pedigree Function value')
         with col2:
             Age = st.text_input('Age of the Person')
+        # Engineered features 
+        Glucose_BMI = Glucose * BMI
+        Age_BMI = Age * BMI
+        BMI_Category = 1 if BMI < 25 else (2 if BMI < 30 else 3)
+        Age_Group = 0 if Age < 30 else (1 if Age < 50 else 20)
 
         # Predict Button
 
         if st.button('Diabetes Test Result'):
-            user_input_list = [Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin,
-                            BMI, DiabetesPedigreeFunction, Age]
+            user_input_list = [Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, DiabetesPedigreeFunction, Age , Glucose_BMI , Age_BMI , BMI_Category , Age_Group]
             # Changing the values to float 
             user_input_list = [float(x) for x in user_input_list]
             # Prediction Code 
@@ -1599,7 +1603,7 @@ if st.session_state.page == "app":
             shap_values = shap_values[0]
             feature_names = [
                 "Pregnancies", "Glucose", "BloodPressure", "SkinThickness",
-                "Insulin", "BMI", "DiabetesPedigreeFunction", "Age"
+                "Insulin", "BMI", "DiabetesPedigreeFunction", "Age" ,'BMI_Category', 'Age_Group', 'Glucose_BMI', 'Age_BMI'
             ]
             # print(shap_values)
             # Printed values 
