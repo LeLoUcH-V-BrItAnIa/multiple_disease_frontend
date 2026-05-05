@@ -5,7 +5,7 @@ import uuid
 import smtplib
 from email.mime.text import MIMEText
 import numpy as np
-from nearby_doctor import show_nearby_doctors
+from nearby_doctor import show_nearby_doctors,get_lat_long
 import matplotlib.pyplot as plt
 import os
 import pickle
@@ -2410,7 +2410,19 @@ if st.session_state.page == "app":
     elif selected == "Nearby Doctors":
         st.title("🩺 Nearby Doctors Locator")
         st.subheader("📍 Enter Your Location")
-        show_nearby_doctors()
+        st.subheader("📍 Find Latitude & Longitude")
+
+        place = st.text_input("Enter place name")
+
+        if st.button("Get Coordinates"):
+            lat, lon = get_lat_long(place)
+
+            if lat and lon:
+                st.success(f"Latitude: {lat}")
+                st.success(f"Longitude: {lon}")
+            else:
+                st.error("Location not found!")
+                show_nearby_doctors()
         # st.rerun()
         
         
