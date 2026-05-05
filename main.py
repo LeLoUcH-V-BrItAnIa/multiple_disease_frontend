@@ -918,6 +918,22 @@ if st.session_state.page == "home":
 # Sidebar
 if st.session_state.page == "app":
     with st.sidebar:
+        now = datetime.now()
+        current_time = now.strftime("%I:%M:%S %p")
+        current_date = now.strftime("%A, %d %B %Y")
+
+        st.markdown(f"""
+        <div style="
+            background: rgba(0,0,0,0.4);
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align:center;
+        ">
+            <div style="font-size:18px; color:#00FFAA;">🕒 {current_time}</div>
+            <div style="font-size:13px;">📅 {current_date}</div>
+        </div>
+        """, unsafe_allow_html=True)
         selected = option_menu(
         'PULSE MAIN MENU🧠',
         ['Diabetes Prediction', 'Heart Disease Prediction','Leukimia Risk Prediction','Kidney Disease Prediction','Thyroid Disease Prediction', 'Parkinsons Prediction', 'AI-Based Health Assistant','📊 Dashboard',
