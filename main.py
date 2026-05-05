@@ -1314,7 +1314,41 @@ if st.session_state.page == "app":
     """, unsafe_allow_html=True)
 
         st.markdown("<div class='fade-title'>🧬 Leukemia Risk Prediction using ML</div>", unsafe_allow_html=True)
+        st.markdown("""
+        <div style="
+            background: rgba(0,0,0,0.4);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        ">
+        <h3 style="color:#00FFAA;">🩸 Blood Cancer (Leukemia) Test Information</h3>
 
+        <p style="font-size:14px;">
+        These values come from your <b>Complete Blood Count (CBC) test</b> or lab reports.<br><br>
+
+        🧪 Common sources:
+        <ul>
+        <li><b>WBC (White Blood Cells)</b> → Infection / immune system indicator</li>
+        <li><b>RBC (Red Blood Cells)</b> → Oxygen-carrying cells</li>
+        <li><b>Platelets</b> → Blood clotting</li>
+        <li><b>Hemoglobin</b> → Blood health level</li>
+        </ul>
+
+        ⚠️ Important:
+        Leukemia cannot be diagnosed using basic values alone. This tool only gives a <b>risk indication</b>.<br><br>
+
+        💡 Always consult a doctor for proper diagnosis.
+        </p>
+        </div>
+        """, unsafe_allow_html=True)
+        with st.expander("ℹ️ What is CBC Test?"):
+            st.write("""
+            CBC (Complete Blood Count) is a common blood test that measures:
+            - White Blood Cells (infection)
+            - Red Blood Cells (oxygen)
+            - Platelets (clotting)
+            """)
+        
         # ---------- INPUT FIELDS ----------
         col1, col2, col3 = st.columns(3)
 
@@ -1363,8 +1397,10 @@ if st.session_state.page == "app":
             radiation, infection, chronic, immune, urban,
             wbc_rbc_ratio, bmi_con, harmful, genetic_cond
         ]]
-
-
+        st.info("💡 Get input values from blood reports or prescriptions.")
+        with st.expander("ℹ️ More Info"):
+            st.write("These values are usually available in lab reports.")
+            
         # ---------- PREDICTION & AI RECOMMENDATIONS ----------
         if st.button("Leukemia Test Result"):
             with st.spinner("Analyzing risk..."):
@@ -1379,6 +1415,8 @@ if st.session_state.page == "app":
                 diagnosis = "✅ Low risk of Leukemia"
                 st.success(diagnosis)
                 st.session_state.prediction_log.append(("Leukemia", "Low Risk"))
+
+            st.warning("⚠️ This prediction is only for risk indication. Always consult a medical professional for confirmation.")
             # Manual because xgboost doesnt support decision_state of shap 
             leukemia_input = leukemia_features[0] 
 
@@ -1530,7 +1568,29 @@ if st.session_state.page == "app":
     
     elif selected == 'Thyroid Disease Prediction':
         st.markdown("<div class='fade-title'>🦋 Thyroid Disease Prediction using ML</div>", unsafe_allow_html=True)
+        st.markdown("""
+        <div style="
+            background: rgba(0,0,0,0.4);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        ">
+        <h3 style="color:#00FFAA;">🦋 Thyroid Test Information</h3>
 
+        <p style="font-size:14px;">
+        These values come from a <b>thyroid blood test</b>.<br><br>
+
+        🧪 Examples:
+        <ul>
+        <li><b>TSH</b> → Thyroid hormone test</li>
+        <li><b>TT4 / FTI</b> → Hormone levels</li>
+        <li><b>T4U</b> → Thyroid binding test</li>
+        </ul>
+
+        💡 Ask for a “Thyroid Profile Test” to get these values.
+        </p>
+        </div>
+        """, unsafe_allow_html=True)
         col1, col2, col3 = st.columns(3)
 
         with col1:
@@ -1557,6 +1617,10 @@ if st.session_state.page == "app":
         with col1:
             T4U_measured = st.selectbox("T4U Measured", [0,1])
 
+        st.info("💡 Get input values from blood reports or prescriptions.")
+        with st.expander("ℹ️ More Info"):
+            st.write("These values are usually available in lab reports.")
+    
         # Predict Button
         if st.button('Thyroid Test Result'):
 
@@ -1630,7 +1694,30 @@ if st.session_state.page == "app":
     
     elif selected == 'Kidney Disease Prediction':
             st.markdown("<div class='fade-title'>🧬 Kidney Disease Prediction using ML</div>", unsafe_allow_html=True)
+            st.markdown("""
+            <div style="
+                background: rgba(0,0,0,0.4);
+                padding: 15px;
+                border-radius: 12px;
+                margin-bottom: 15px;
+            ">
+            <h3 style="color:#00FFAA;">🧬 Kidney Report Information</h3>
 
+            <p style="font-size:14px;">
+            These values are from your <b>blood and urine test reports</b>.<br><br>
+
+            🧪 Examples:
+            <ul>
+            <li><b>Hemoglobin</b> → CBC blood test</li>
+            <li><b>Creatinine</b> → Kidney function test</li>
+            <li><b>Sodium</b> → Electrolyte panel</li>
+            <li><b>Glucose</b> → Blood sugar test</li>
+            </ul>
+
+            💡 You can find these in lab reports from hospitals or diagnostic centers.
+            </p>
+            </div>
+            """, unsafe_allow_html=True)
             col1, col2, col3 = st.columns(3)
 
             with col1:
@@ -1656,7 +1743,10 @@ if st.session_state.page == "app":
 
             with col1:
                 rc_5 = st.selectbox("RBC = 5.2?", [0,1])
-
+            
+            st.info("💡 Get input values from blood reports or prescriptions.")
+            with st.expander("ℹ️ More Info"):
+                st.write("These values are usually available in lab reports.")
             # Predict Button
             if st.button('Kidney Test Result'):
 
