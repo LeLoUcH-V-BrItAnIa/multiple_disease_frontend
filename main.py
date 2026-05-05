@@ -2422,7 +2422,7 @@ if st.session_state.page == "app":
                 st.success(f"Longitude: {lon}")
             else:
                 st.error("Location not found!")
-                show_nearby_doctors()
+        show_nearby_doctors()
         # st.rerun()
         
         
