@@ -1,9 +1,8 @@
 # Libraries 
 import pandas as pd
+import xgboost as xgb
 import uuid
 import smtplib
-import warnings
-warnings.filterwarnings("ignore")
 from email.mime.text import MIMEText
 import numpy as np
 from nearby_doctor import show_nearby_doctors
@@ -544,7 +543,9 @@ working_dir = os.path.dirname(os.path.abspath(__file__))
 diabetes_model = pickle.load(open(f'{working_dir}/saved_models/diabetes_model.sav', 'rb'))
 heart_disease_model = pickle.load(open(f'{working_dir}/saved_models/heart_disease_model.sav', 'rb'))
 parkinsons_model = pickle.load(open(f'{working_dir}/saved_models/parkinsons_model.sav', 'rb'))
-leukemia_model = pickle.load(open(f'{working_dir}/saved_models/leukimia_model.sav', 'rb'))
+# leukemia_model = pickle.load(open(f'{working_dir}/saved_models/leukimia_model.sav', 'rb'))
+leukemia_model = xgb.XGBClassifier()
+leukemia_model.load_model(f'{working_dir}/saved_models/leukemia_model.json')
 
 # ✅ Homepage Section
 if st.session_state.page == "home":
