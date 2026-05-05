@@ -19,7 +19,7 @@ def get_location():
 # Fetch doctors from OSM (Overpass API)
 # -------------------------------
 def fetch_doctors(lat, lon, radius=3000, specialist="All"):
-    url = "http://overpass-api.de/api/interpreter"
+    url = "https://overpass.kumi.systems/api/interpreter"
 
     query = f"""
     [out:json];
