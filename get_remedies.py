@@ -94,6 +94,65 @@ Result: {r.get('result')}
 
 # -------- Prompt Builders --------
 
+def build_kidney_prompt(inputs, prediction, history_summary):
+        condition = "has kidney disease" if prediction == 1 else "does not have kidney disease"
+        fields = "\n".join([f"{k}: {v}" for k, v in inputs.items()])
+
+        return f"""
+        You are an advanced AI health advisor.
+
+        CURRENT PATIENT DATA:
+        {fields}
+
+        CURRENT PREDICTION:
+        The person {condition}.
+
+        PATIENT HISTORY:
+        {history_summary}
+
+        TASK:
+        - Give 2 diet tips
+        - 2 lifestyle improvements
+        - 1 long-term kidney health advice
+
+        Respond in JSON:
+        {{
+        "diet_tips": [],
+        "lifestyle_tips": [],
+        "notes": []
+        }}
+        """
+
+
+def build_thyroid_prompt(inputs, prediction, history_summary):
+    condition = "has thyroid disorder" if prediction == 1 else "has normal thyroid function"
+    fields = "\n".join([f"{k}: {v}" for k, v in inputs.items()])
+
+    return f"""
+        You are an advanced AI health advisor.
+
+        CURRENT PATIENT DATA:
+        {fields}
+
+        CURRENT PREDICTION:
+        The person {condition}.
+
+        PATIENT HISTORY:
+        {history_summary}
+
+        TASK:
+        - Give 2 diet tips
+        - 2 lifestyle improvements
+        - 1 long-term thyroid health advice
+
+        Respond in JSON:
+        {{
+        "diet_tips": [],
+        "lifestyle_tips": [],
+        "notes": []
+        }}
+        """
+
 def build_diabetes_prompt(inputs, prediction,history_summary):
     condition = "diabetic" if prediction == 1 else "not diabetic"
     fields = "\n".join([f"{k}: {v}" for k, v in inputs.items()])
@@ -239,6 +298,11 @@ def get_remedies(user_inputs, prediction, disease , username):
         prompt = build_parkinsons_prompt(user_inputs, prediction,history_summary)
     elif disease == "leukemia":
         prompt = build_leukemia_prompt(user_inputs, prediction,history_summary)
+    elif disease == "kidney":
+        prompt = build_kidney_prompt(user_inputs, prediction, history_summary)
+
+    elif disease == "thyroid":
+        prompt = build_thyroid_prompt(user_inputs, prediction, history_summary)
     else:
         return {"error": "Unsupported disease type"}
 
