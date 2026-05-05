@@ -2089,6 +2089,30 @@ if st.session_state.page == "app":
             ul li:nth-child(5) { animation-delay: 1.5s; }
             </style>
         """, unsafe_allow_html=True)
+        st.markdown("""
+        <div style="
+            background: rgba(0,0,0,0.4);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        ">
+        <h3 style="color:#00FFAA;">❤️ Where do these values come from?</h3>
+
+        <p style="font-size:14px;">
+        These values are taken from your <b>medical reports or checkups</b>.<br><br>
+
+        📊 Examples:
+        <ul>
+        <li><b>Cholesterol</b> → Blood test report</li>
+        <li><b>Blood Pressure</b> → BP machine / doctor check</li>
+        <li><b>Max Heart Rate</b> → ECG / fitness test</li>
+        <li><b>Chest Pain Type</b> → Doctor diagnosis</li>
+        </ul>
+
+        💡 Tip: If unsure, use approximate values or consult your report.
+        </p>
+        </div>
+        """, unsafe_allow_html=True)
         col1, col2, col3 = st.columns(3)
         with col1:
             age = st.text_input('Age')
@@ -2116,6 +2140,9 @@ if st.session_state.page == "app":
            ca = st.selectbox("Major Vessels", [0,1,2,3])
         with col1:
             thal = st.selectbox("Thalassemia", [0,1,2,3])
+        st.info("💡 Get input values from blood reports or prescriptions.")
+        with st.expander("ℹ️ More Info"):
+            st.write("These values are usually available in lab reports.")
 
         if st.button('Heart Disease Test Result'):
             user_input = [age, sex, cp, trestbps, chol, fbs, restecg, thalach,
@@ -2332,6 +2359,29 @@ if st.session_state.page == "app":
             </style>
         """, unsafe_allow_html=True)
 
+        st.markdown("""
+            <div style="
+                background: rgba(0,0,0,0.4);
+                padding: 15px;
+                border-radius: 12px;
+                margin-bottom: 15px;
+            ">
+            <h3 style="color:#00FFAA;">🧠 About Parkinson’s Inputs</h3>
+
+            <p style="font-size:14px;">
+            These values come from <b>voice recordings and medical analysis</b>.<br><br>
+
+            🎤 Examples:
+            <ul>
+            <li>Voice frequency → Audio analysis</li>
+            <li>Jitter/Shimmer → Voice stability measurement</li>
+            <li>NHR/HNR → Noise in speech</li>
+            </ul>
+
+            💡 These are usually measured using specialized tools — not manually.
+            </p>
+            </div>
+            """, unsafe_allow_html=True)
         col1, col2, col3, col4, col5 = st.columns(5)
         with col1:
             fo = st.text_input('MDVP:Fo(Hz)')
@@ -2377,6 +2427,9 @@ if st.session_state.page == "app":
             D2 = st.text_input('D2')
         with col2:
             PPE = st.text_input('PPE')
+        st.info("💡 Get input values from blood reports or prescriptions.")
+        with st.expander("ℹ️ More Info"):
+            st.write("These values are usually available in lab reports.")
 
         if st.button("Parkinson's Test Result"):
             user_input = [fo, fhi, flo, Jitter_percent, Jitter_Abs, RAP, PPQ, DDP,
