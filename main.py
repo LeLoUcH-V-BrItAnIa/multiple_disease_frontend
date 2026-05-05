@@ -539,7 +539,7 @@ working_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Load models
 diabetes_model_new = pickle.load(open(f'{working_dir}/saved_models/diabetes_model_new.pkl', 'rb'))
-diabetes_model = pickle.load(open(f'{working_dir}/saved_models/diabetes_model.sav', 'rb'))
+# diabetes_model = pickle.load(open(f'{working_dir}/saved_models/diabetes_model.sav', 'rb'))
 heart_disease_model = pickle.load(open(f'{working_dir}/saved_models/heart_disease_model.sav', 'rb'))
 parkinsons_model = pickle.load(open(f'{working_dir}/saved_models/parkinsons_model.sav', 'rb'))
 leukemia_model = pickle.load(open(f'{working_dir}/saved_models/leukimia_model.sav', 'rb'))
@@ -1162,7 +1162,7 @@ if st.session_state.page == "app":
             diabetes_input = [
                 0, glucose, bp, 20, 80, bmi, 0.5, age
             ]
-            diab = diabetes_model.predict([diabetes_input])[0]
+            diab = diabetes_model_new.predict([diabetes_input])[0]
 
             # ===== HEART =====
             heart_input = [
@@ -1598,7 +1598,7 @@ if st.session_state.page == "app":
             # Synthetic data 
             background_data = np.random.rand(50,8)
             # Shap explainer 
-            explainer = shap.KernelExplainer(diabetes_model.decision_function, background_data)
+            explainer = shap.KernelExplainer(diabetes_model_new.decision_function, background_data)
             input_array = np.array([user_input_list])
             shap_values = explainer.shap_values(input_array)
             shap_values = shap_values[0]
