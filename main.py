@@ -27,6 +27,7 @@ from explainable_ai import get_shap_explanation
 from input_graph import plot_user_vs_risk
 import time
 import certifi
+from datetime import datetime
 
 st.set_page_config(page_title="Pulse Auth", 
                    layout="wide", 
