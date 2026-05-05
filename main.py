@@ -2710,62 +2710,87 @@ if st.session_state.page == "app":
     elif selected == "AI Chat Assistant":
         st.title("🤖 AI Health Expert Chatbot")
 
-        # Load API key securely
         API_KEY = os.getenv("GEMINI_API_KEY")
         if not API_KEY:
-            st.error("🔑 API Key is missing. Please check your .env file.")
-        else:
-            import google.generativeai as gen_ai
-            gen_ai.configure(api_key=API_KEY)
+            st.error("🔑 API Key is missing.")
+            st.stop()
 
-            try:
-                # You can change the model if needed
-                model = gen_ai.GenerativeModel("models/gemma-3n-e2b-it")  # Recommended stable model
-            except Exception as e:
-                st.error(f"Error loading Gemini model: {e}")
-                st.stop()
+        import google.generativeai as gen_ai
+        gen_ai.configure(api_key=API_KEY)
 
-            # Initialize chat session
-            if "chat_session" not in st.session_state:
-                st.session_state.chat_session = model.start_chat(history=[])
+        model = gen_ai.GenerativeModel("models/gemma-3n-e2b-it")
 
-            st.markdown("💬 Ask me anything about diseases, symptoms, fitness, diet, or mental health.")
+        # -------- CHAT MEMORY --------
+        if "chat_history" not in st.session_state:
+            st.session_state.chat_history = []
 
-            # Show chat history
-            for message in st.session_state.chat_session.history:
-                with st.chat_message(message.role):
-                    st.markdown(message.parts[0].text)
+        st.markdown("💬 Ask anything about diseases, symptoms, fitness, or mental health.")
 
-            # Chat input
-            user_prompt = st.chat_input("💬 Ask your health question...")
+        # -------- SHOW CHAT --------
+        for msg in st.session_state.chat_history:
+            with st.chat_message(msg["role"]):
+                st.markdown(msg["content"])
+
+        # -------- INPUT --------
+        user_prompt = st.chat_input("💬 Ask your health question...")
+
         if user_prompt:
-            # User message bubble
-            st.markdown(f"""
-                <div style='background:#4CAF50; color:white; padding:10px 15px; border-radius:15px; 
-                            max-width:70%; margin:10px 0; float:right;'>
-                    {user_prompt}
-                </div>
-                <div style='clear:both;'></div>
-            """, unsafe_allow_html=True)
+            # Save user message
+            st.session_state.chat_history.append({
+                "role": "user",
+                "content": user_prompt
+            })
+
+            with st.chat_message("user"):
+                st.markdown(user_prompt)
+
+            # -------- BUILD CONTEXT --------
+            recent_history = st.session_state.chat_history[-5:]  # last 5 messages only
+
+            history_text = "\n".join([
+                f"{msg['role']}: {msg['content']}"
+                for msg in recent_history
+            ])
+
+            # -------- INTELLIGENT PROMPT --------
+            prompt = f"""
+            You are an expert AI medical assistant.
+
+            Guidelines:
+            - Give accurate, easy-to-understand health explanations
+            - DO NOT prescribe medicines
+            - Suggest lifestyle, diet, and precautions
+            - If serious symptoms → advise doctor consultation
+            - Use a professional but friendly tone
+
+            Conversation Context:
+            {history_text}
+
+            User Question:
+            {user_prompt}
+
+            Answer:
+            """
 
             try:
-                gemini_response = st.session_state.chat_session.send_message(
-                    f"You are a medical assistant. Answer the following in health-expert tone:\n{user_prompt}"
+                response = model.generate_content(
+                    prompt,
+                    generation_config={"temperature": 0.4}
                 )
 
-                if gemini_response and hasattr(gemini_response, "text"):
-                    # Assistant message bubble
-                    st.markdown(f"""
-                        <div style='background:#222; color:#FFD700; padding:10px 15px; border-radius:15px; 
-                                    max-width:70%; margin:10px 0; float:left;'>
-                            {gemini_response.text}
-                        </div>
-                        <div style='clear:both;'></div>
-                    """, unsafe_allow_html=True)
-                else:
-                    st.error("⚠️ No valid response received.")
+                bot_reply = response.text
+
+                # Save response
+                st.session_state.chat_history.append({
+                    "role": "assistant",
+                    "content": bot_reply
+                })
+
+                with st.chat_message("assistant"):
+                    st.markdown(bot_reply)
+
             except Exception as e:
-                st.error(f"❌ API response error: {e}")
+                st.error(f"❌ Error: {e}")
         
     # About & Developer Page
     elif selected == "About & Developer":
