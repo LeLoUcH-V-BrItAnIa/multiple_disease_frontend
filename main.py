@@ -1550,28 +1550,28 @@ if st.session_state.page == "app":
                 # Prediction
                 kidney_prediction = kidney_model.predict([user_input_list])
 
-                # 🔥 SHAP (same style as diabetes)
-                background_data = np.random.rand(50,10)
-                explainer = shap.KernelExplainer(kidney_model.predict, background_data)
+                # # 🔥 SHAP (same style as diabetes)
+                # background_data = np.random.rand(50,10)
+                # explainer = shap.KernelExplainer(kidney_model.predict, background_data)
 
-                input_array = np.array([user_input_list])
-                shap_values = explainer.shap_values(input_array)
-                shap_values = shap_values[0]
+                # input_array = np.array([user_input_list])
+                # shap_values = explainer.shap_values(input_array)
+                # shap_values = shap_values[0]
 
-                feature_names = [
-                    'hemo','sg','al','htn_yes','sc',
-                    'sod','bgr','wc_11000','wc_9800','rc_5.2'
-                ]
+                # feature_names = [
+                #     'hemo','sg','al','htn_yes','sc',
+                #     'sod','bgr','wc_11000','wc_9800','rc_5.2'
+                # ]
 
-                shap_dict = {}
-                for i in range(len(feature_names)):
-                    shap_dict[feature_names[i]] = shap_values[i]
+                # shap_dict = {}
+                # for i in range(len(feature_names)):
+                #     shap_dict[feature_names[i]] = shap_values[i]
 
-                sorted_features = sorted(shap_dict.items(), key=lambda x: abs(x[1]), reverse=True)
-                top_features = sorted_features[:5]
+                # sorted_features = sorted(shap_dict.items(), key=lambda x: abs(x[1]), reverse=True)
+                # top_features = sorted_features[:5]
 
-                max_val = max(abs(v) for _, v in top_features)
-                normalized = [(f, v, abs(v)/max_val) for f, v in top_features]
+                # max_val = max(abs(v) for _, v in top_features)
+                # normalized = [(f, v, abs(v)/max_val) for f, v in top_features]
 
                 # Prediction Output
                 if kidney_prediction[0] == 1:
@@ -1581,40 +1581,40 @@ if st.session_state.page == "app":
                     st.success('✅ The person does not have Kidney Disease')
                     st.session_state.prediction_log.append(("Kidney Disease", "Negative"))
 
-                # SHAP Display
-                st.markdown("""
-                    <div style="
-                        background: rgba(0,0,0,0.4);
-                        padding: 20px;
-                        border-radius: 15px;
-                    ">
-                    <h3 style="color:#00FFAA;">🧠 AI Diagnosis Insight</h3>
-                    </div>
-                """, unsafe_allow_html=True)
+                # # SHAP Display
+                # st.markdown("""
+                #     <div style="
+                #         background: rgba(0,0,0,0.4);
+                #         padding: 20px;
+                #         border-radius: 15px;
+                #     ">
+                #     <h3 style="color:#00FFAA;">🧠 AI Diagnosis Insight</h3>
+                #     </div>
+                # """, unsafe_allow_html=True)
 
-                for feature, value, norm in normalized:
-                    bar_length = int(norm * 20)
-                    bar = "█" * bar_length
+                # for feature, value, norm in normalized:
+                #     bar_length = int(norm * 20)
+                #     bar = "█" * bar_length
 
-                    if value > 0:
-                        st.markdown(
-                            f"<span style='color:#ff4b4b'><b>{feature}</b></span> "
-                            f"{bar} +{round(value,2)} ↑",
-                            unsafe_allow_html=True
-                        )
-                    else:
-                        st.markdown(
-                            f"<span style='color:#4CAF50'><b>{feature}</b></span> "
-                            f"{bar} {round(value,2)} ↓",
-                            unsafe_allow_html=True
-                        )
+                #     if value > 0:
+                #         st.markdown(
+                #             f"<span style='color:#ff4b4b'><b>{feature}</b></span> "
+                #             f"{bar} +{round(value,2)} ↑",
+                #             unsafe_allow_html=True
+                #         )
+                #     else:
+                #         st.markdown(
+                #             f"<span style='color:#4CAF50'><b>{feature}</b></span> "
+                #             f"{bar} {round(value,2)} ↓",
+                #             unsafe_allow_html=True
+                #         )
 
-                # SHAP Graph
-                st.subheader("📊 Feature Impact Visualization")
-                import matplotlib.pyplot as plt
-                plt.clf()
-                shap.summary_plot(shap_values.reshape(1,-1), input_array, feature_names=feature_names, show=False)
-                st.pyplot(plt.gcf())
+                # # SHAP Graph
+                # st.subheader("📊 Feature Impact Visualization")
+                # import matplotlib.pyplot as plt
+                # plt.clf()
+                # shap.summary_plot(shap_values.reshape(1,-1), input_array, feature_names=feature_names, show=False)
+                # st.pyplot(plt.gcf())
 
         
     # Diabetes Prediction Page
