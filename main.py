@@ -1511,84 +1511,116 @@ if st.session_state.page == "app":
                 )
                 st.info("✅ Your AI health recommendation has been saved to your history.")
 
+        elif selected == 'Kidney Disease Prediction':
+            st.markdown("<div class='fade-title'>🧬 Kidney Disease Prediction using ML</div>", unsafe_allow_html=True)
 
+            col1, col2, col3 = st.columns(3)
 
+            with col1:
+                hemo = st.text_input('Hemoglobin')
+            with col2:
+                sg = st.text_input('Specific Gravity')
+            with col3:
+                al = st.text_input('Albumin')
 
-    elif selected == 'Kidney Disease Prediction':
-        st.markdown("<div class='fade-title'>🧬 Kidney Disease Prediction</div>", unsafe_allow_html=True)
+            with col1:
+                htn_yes = st.selectbox("Hypertension (Yes=1, No=0)", [0,1])
+            with col2:
+                sc = st.text_input('Serum Creatinine')
+            with col3:
+                sod = st.text_input('Sodium')
 
-        col1, col2, col3 = st.columns(3)
+            with col1:
+                bgr = st.text_input('Blood Glucose Random')
+            with col2:
+                wc_11000 = st.selectbox("WBC Count 11000?", [0,1])
+            with col3:
+                wc_9800 = st.selectbox("WBC Count 9800?", [0,1])
 
-        with col1:
-            age = st.number_input("Age", 1, 120, 40)
-            bp = st.number_input("Blood Pressure", 50, 200, 80)
-            sg = st.number_input("Specific Gravity", 1.0, 1.05, 1.02)
+            with col1:
+                rc_5 = st.selectbox("RBC = 5.2?", [0,1])
 
-        with col2:
-            al = st.number_input("Albumin", 0, 5, 1)
-            su = st.number_input("Sugar", 0, 5, 0)
-            bgr = st.number_input("Blood Glucose Random", 50, 300, 120)
+            # Predict Button
+            if st.button('Kidney Test Result'):
 
-        with col3:
-            bu = st.number_input("Blood Urea", 10, 200, 40)
-            sc = st.number_input("Serum Creatinine", 0.1, 15.0, 1.2)
-            hemo = st.number_input("Hemoglobin", 3.0, 20.0, 13.5)
+                user_input_list = [
+                    'hemo', 'sg', 'al', 'htn_yes', 'sc',
+                    'sod, bgr', 'wc_11000', 'wc_9800', 'rc_5.2'
+                ]
 
-        if st.button("Kidney Test Result"):
+                # Convert to float
+                user_input_list = [float(x) for x in user_input_list]
 
-            kidney_input = [age, bp, sg, al, su, bgr, bu, sc, hemo]
+                # Prediction
+                kidney_prediction = kidney_model.predict([user_input_list])
 
-            input_df = pd.DataFrame([kidney_input])
+                # 🔥 SHAP (same style as diabetes)
+                background_data = np.random.rand(50,10)
+                explainer = shap.KernelExplainer(kidney_model.predict, background_data)
 
-            prediction = kidney_model.predict(input_df)
+                input_array = np.array([user_input_list])
+                shap_values = explainer.shap_values(input_array)
+                shap_values = shap_values[0]
 
-            if prediction[0] == 1:
-                st.warning("⚠️ High risk of Kidney Disease")
-            else:
-                st.success("✅ Low risk of Kidney Disease")
+                feature_names = [
+                    'hemo','sg','al','htn_yes','sc',
+                    'sod','bgr','wc_11000','wc_9800','rc_5.2'
+                ]
 
-    elif selected == 'Thyroid Disease Prediction':
-        thyroid_features = pickle.load(open(f'{working_dir}/saved_models/thyroid_features.sav', 'rb'))
-        st.markdown("<div class='fade-title'>🦋 Thyroid Disease Prediction using ML</div>", unsafe_allow_html=True)
+                shap_dict = {}
+                for i in range(len(feature_names)):
+                    shap_dict[feature_names[i]] = shap_values[i]
 
-        st.write("Enter patient details:")
+                sorted_features = sorted(shap_dict.items(), key=lambda x: abs(x[1]), reverse=True)
+                top_features = sorted_features[:5]
 
-        user_input = {}
+                max_val = max(abs(v) for _, v in top_features)
+                normalized = [(f, v, abs(v)/max_val) for f, v in top_features]
 
-        # 🔥 Dynamic UI based on saved features
-        for feature in thyroid_features:
+                # Prediction Output
+                if kidney_prediction[0] == 1:
+                    st.warning('⚠️ The person has Kidney Disease')
+                    st.session_state.prediction_log.append(("Kidney Disease", "Positive"))
+                else:
+                    st.success('✅ The person does not have Kidney Disease')
+                    st.session_state.prediction_log.append(("Kidney Disease", "Negative"))
 
-            # Convert feature name to readable label
-            label = feature.replace("_", " ").title()
+                # SHAP Display
+                st.markdown("""
+                    <div style="
+                        background: rgba(0,0,0,0.4);
+                        padding: 20px;
+                        border-radius: 15px;
+                    ">
+                    <h3 style="color:#00FFAA;">🧠 AI Diagnosis Insight</h3>
+                    </div>
+                """, unsafe_allow_html=True)
 
-            # 🧠 Smart field type handling
-            if feature in ['sex', 'on_thyroxine', 'query_on_thyroxine', 'on_antithyroid_medication',
-                        'sick', 'pregnant', 'thyroid_surgery', 'i131_treatment',
-                        'query_hypothyroid', 'query_hyperthyroid', 'lithium',
-                        'goitre', 'tumor', 'hypopituitary', 'psych']:
-                
-                user_input[feature] = st.selectbox(label, [0, 1])
+                for feature, value, norm in normalized:
+                    bar_length = int(norm * 20)
+                    bar = "█" * bar_length
 
-            else:
-                user_input[feature] = st.number_input(label, value=0.0)
+                    if value > 0:
+                        st.markdown(
+                            f"<span style='color:#ff4b4b'><b>{feature}</b></span> "
+                            f"{bar} +{round(value,2)} ↑",
+                            unsafe_allow_html=True
+                        )
+                    else:
+                        st.markdown(
+                            f"<span style='color:#4CAF50'><b>{feature}</b></span> "
+                            f"{bar} {round(value,2)} ↓",
+                            unsafe_allow_html=True
+                        )
 
-        # 🔍 Prediction Button
-        if st.button("Thyroid Test Result"):
+                # SHAP Graph
+                st.subheader("📊 Feature Impact Visualization")
+                import matplotlib.pyplot as plt
+                plt.clf()
+                shap.summary_plot(shap_values.reshape(1,-1), input_array, feature_names=feature_names, show=False)
+                st.pyplot(plt.gcf())
 
-            input_df = pd.DataFrame([user_input])
-
-            prediction = thyroid_model.predict(input_df)
-
-            # Optional probability
-            if hasattr(thyroid_model, "predict_proba"):
-                prob = thyroid_model.predict_proba(input_df)[0][1]
-                st.write(f"💡 Risk Probability: {round(prob*100, 2)}%")
-
-            # Output
-            if prediction[0] == 1:
-                st.warning("⚠️ Thyroid Disorder Detected")
-            else:
-                st.success("✅ Normal Thyroid Function")
+        
     # Diabetes Prediction Page
     elif selected == 'Diabetes Prediction':
         st.markdown("<div class='fade-title'>🩸Diabetes Prediction using ML</div>", unsafe_allow_html=True)
