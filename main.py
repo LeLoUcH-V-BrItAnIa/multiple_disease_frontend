@@ -2410,6 +2410,15 @@ if st.session_state.page == "app":
     elif selected == "Nearby Doctors":
         st.title("🩺 Nearby Doctors Locator")
         st.subheader("📍 Enter Your Location")
+        st.markdown("""
+            ### 📘 What is Latitude & Longitude?
+
+            - **Latitude** → Horizontal position (North/South)
+            - **Longitude** → Vertical position (East/West)
+
+            Example:
+            - Kolkata → Lat: 22.57, Lon: 88.36
+            """)
         st.subheader("📍 Find Latitude & Longitude")
 
         place = st.text_input("Enter place name")
