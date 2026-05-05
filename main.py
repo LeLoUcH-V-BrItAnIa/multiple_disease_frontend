@@ -1732,6 +1732,7 @@ if st.session_state.page == "app":
         
     # Diabetes Prediction Page
     elif selected == 'Diabetes Prediction':
+        st.markdown("<div class='fade-title'>🩸Diabetes Prediction using ML</div>", unsafe_allow_html=True)
         st.markdown("""
         <div style="
             background: rgba(0,0,0,0.4);
@@ -1751,8 +1752,6 @@ if st.session_state.page == "app":
         </p>
         </div>
         """, unsafe_allow_html=True)
-        
-        st.markdown("<div class='fade-title'>🩸Diabetes Prediction using ML</div>", unsafe_allow_html=True)
         st.subheader("🧬 Family History of Diabetes")
 
         family_history = st.selectbox(
