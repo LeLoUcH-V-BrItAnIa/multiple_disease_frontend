@@ -91,7 +91,44 @@ Result: {r.get('result')}
 """
 
     return summary
+def build_leukemia_interpretation_prompt(inputs):
+    fields = "\n".join([f"{k}: {v}" for k, v in inputs.items()])
 
+    return f"""
+        You are a medical assistant AI.
+
+        PATIENT BLOOD REPORT (CBC VALUES):
+        {fields}
+
+        TASK:
+        Explain these values in simple terms like a doctor would.
+
+        Rules:
+        - Keep it very simple (non-medical language)
+        - Highlight abnormal values
+        - Mention possible risks (like infection, anemia, leukemia risk)
+        - Do NOT give a final diagnosis
+
+        Respond in JSON:
+        {{
+        "summary": "",
+        "key_points": []
+        }}
+        """
+
+
+def get_cbc_interpretation(inputs):
+    prompt = build_leukemia_interpretation_prompt(inputs)
+
+    response = model.generate_content(prompt)
+
+    try:
+        return json.loads(response.text)
+    except:
+        return {
+            "summary": "Unable to interpret report.",
+            "key_points": []
+        }
 # -------- Prompt Builders --------
 
 def build_kidney_prompt(inputs, prediction, history_summary):
