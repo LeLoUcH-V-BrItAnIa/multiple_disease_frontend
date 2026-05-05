@@ -1675,7 +1675,7 @@ if st.session_state.page == "app":
                     username=st.session_state.username,
                     disease="Kidney Disease Risk Prediction",
                     input_data=record_data,
-                    result=int(kidney_input_dict),
+                    result=int(kidney_prediction),
                     ai_suggestions=ai_response
                     )
                     st.info("✅ Your AI health recommendation has been saved to your history.")
