@@ -1603,7 +1603,7 @@ if st.session_state.page == "app":
                 record_data = thyroid_input_dict
                 save_prediction(
                 username=st.session_state.username,
-                disease="Leukemia Risk Prediction",
+                disease="Thyroid Disease Prediction",
                 input_data=record_data,
                 result=int(thyroid_prediction),
                 ai_suggestions=ai_response
