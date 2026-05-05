@@ -1751,6 +1751,42 @@ if st.session_state.page == "app":
         </p>
         </div>
         """, unsafe_allow_html=True)
+        st.subheader("🧬 Family History of Diabetes")
+
+        family_history = st.selectbox(
+            "Select your family history:",
+            [
+                "No family history",
+                "Distant relatives (grandparents, uncles)",
+                "One parent has diabetes",
+                "Both parents / multiple close relatives"
+            ]
+        )
+        # Calculate Diabetes Pedigree Function (hidden logic)
+        if family_history == "No family history":
+            dpf_value = 0.2
+        elif family_history == "Distant relatives (grandparents, uncles)":
+            dpf_value = 0.4
+        elif family_history == "One parent has diabetes":
+            dpf_value = 0.7
+        else:
+            dpf_value = 1.0
+        if dpf_value < 0.4:
+            st.success("🟢 Low genetic risk")
+        elif dpf_value < 0.8:
+            st.warning("🟡 Moderate genetic risk")
+        else:
+            st.error("🔴 High genetic risk")
+        st.markdown(f"""
+            <div style="
+                background: rgba(0,0,0,0.4);
+                padding: 12px;
+                border-radius: 10px;
+                margin-bottom: 10px;
+            ">
+            <b style="color:#00FFAA;">🧬 Diabetes Pedigree Function:</b> {round(dpf_value, 2)}
+            </div>
+            """, unsafe_allow_html=True)
         st.markdown("<div class='fade-title'>🩸Diabetes Prediction using ML</div>", unsafe_allow_html=True)
         st.markdown("""
             <style>
@@ -1820,7 +1856,7 @@ if st.session_state.page == "app":
         with col3:
             BMI = st.text_input('BMI value')
         with col1:
-            DiabetesPedigreeFunction = st.text_input('Diabetes Pedigree Function value')
+            DiabetesPedigreeFunction = st.text_input('Diabetes Pedigree Function value',value=dpf_value)
         with col2:
             Age = st.text_input('Age of the Person')
         
