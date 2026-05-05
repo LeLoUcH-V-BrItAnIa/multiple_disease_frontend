@@ -13,7 +13,7 @@ import streamlit as st
 from streamlit_lottie import st_lottie
 from streamlit_option_menu import option_menu
 import requests
-from get_remedies import get_remedies,generate_dashboard_insights,ai_suggest_username
+from get_remedies import get_remedies,generate_dashboard_insights,ai_suggest_username,get_cbc_interpretation
 import google.generativeai as genai
 from dotenv import load_dotenv
 from pymongo import MongoClient
@@ -1400,7 +1400,7 @@ if st.session_state.page == "app":
         st.info("💡 Get input values from blood reports or prescriptions.")
         with st.expander("ℹ️ More Info"):
             st.write("These values are usually available in lab reports.")
-            
+
         # ---------- PREDICTION & AI RECOMMENDATIONS ----------
         if st.button("Leukemia Test Result"):
             with st.spinner("Analyzing risk..."):
@@ -1417,6 +1417,31 @@ if st.session_state.page == "app":
                 st.session_state.prediction_log.append(("Leukemia", "Low Risk"))
 
             st.warning("⚠️ This prediction is only for risk indication. Always consult a medical professional for confirmation.")
+            # Prepare input dictionary
+            cbc_input = {
+                "WBC": wbc,
+                "RBC": rbc,
+                "Hemoglobin": hemoglobin,
+                "Platelets": platelet
+            }
+
+            # 🔥 AI Interpretation
+            with st.spinner("Analyzing blood report..."):
+                cbc_ai = get_cbc_interpretation(cbc_input)
+            # Display
+            st.markdown("""
+            <div class="ai-card">
+                <div class="ai-title">🧠 AI Blood Report Interpretation</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            st.write("📌 Summary:")
+            st.write(cbc_ai.get("summary", ""))
+
+            st.write("🔍 Key Observations:")
+            for point in cbc_ai.get("key_points", []):
+                st.write(f"• {point}")
+            st.warning("⚠️ This is an AI-based interpretation and not a medical diagnosis.")
             # Manual because xgboost doesnt support decision_state of shap 
             leukemia_input = leukemia_features[0] 
 
