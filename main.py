@@ -2,6 +2,8 @@
 import pandas as pd
 import uuid
 import smtplib
+import warnings
+warnings.filterwarnings("ignore")
 from email.mime.text import MIMEText
 import numpy as np
 from nearby_doctor import show_nearby_doctors
