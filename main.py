@@ -1598,10 +1598,10 @@ if st.session_state.page == "app":
             # Synthetic data 
             background_data = np.random.rand(50,8)
             # Shap explainer 
-            explainer = shap.KernelExplainer(diabetes_model_new.predict_proba, background_data)
+            explainer = shap.TreeExplainer(diabetes_model_new)
             input_array = np.array([user_input_list])
             shap_values = explainer.shap_values(input_array)
-            shap_values = shap_values[0]
+            shap_values = shap_values[1]
             feature_names = [
                 "Pregnancies", "Glucose", "BloodPressure", "SkinThickness",
                 "Insulin", "BMI", "DiabetesPedigreeFunction", "Age" ,'BMI_Category', 'Age_Group', 'Glucose_BMI', 'Age_BMI'
