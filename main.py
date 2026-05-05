@@ -1771,6 +1771,8 @@ if st.session_state.page == "app":
             dpf_value = 0.7
         else:
             dpf_value = 1.0
+        
+        st.markdown("<div class='fade-title'>🩸Diabetes Prediction using ML</div>", unsafe_allow_html=True)
         if dpf_value < 0.4:
             st.success("🟢 Low genetic risk")
         elif dpf_value < 0.8:
@@ -1787,7 +1789,6 @@ if st.session_state.page == "app":
             <b style="color:#00FFAA;">🧬 Diabetes Pedigree Function:</b> {round(dpf_value, 2)}
             </div>
             """, unsafe_allow_html=True)
-        st.markdown("<div class='fade-title'>🩸Diabetes Prediction using ML</div>", unsafe_allow_html=True)
         st.markdown("""
             <style>
             @keyframes fadeIn {
