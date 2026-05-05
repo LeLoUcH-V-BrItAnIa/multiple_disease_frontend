@@ -1510,6 +1510,57 @@ if st.session_state.page == "app":
                 ai_suggestions=ai_response
                 )
                 st.info("✅ Your AI health recommendation has been saved to your history.")
+    elif selected == 'Thyroid Disease Prediction':
+        st.markdown("<div class='fade-title'>🦋 Thyroid Disease Prediction using ML</div>", unsafe_allow_html=True)
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            TSH = st.text_input('TSH Level')
+        with col2:
+            FTI = st.text_input('FTI Value')
+        with col3:
+            TT4 = st.text_input('TT4 Value')
+
+        with col1:
+            age = st.text_input('Age')
+        with col2:
+            sex = st.selectbox("Sex (Male=1, Female=0)", [0,1])
+        with col3:
+            on_thyroxine = st.selectbox("On Thyroxine", [0,1])
+
+        with col1:
+            thyroid_surgery = st.selectbox("Thyroid Surgery", [0,1])
+        with col2:
+            query_hypothyroid = st.selectbox("Query Hypothyroid", [0,1])
+        with col3:
+            FTI_measured = st.selectbox("FTI Measured", [0,1])
+
+        with col1:
+            T4U_measured = st.selectbox("T4U Measured", [0,1])
+
+        # Predict Button
+        if st.button('Thyroid Test Result'):
+
+            user_input_list = [
+                TSH, FTI, on_thyroxine, TT4, sex,
+                age, thyroid_surgery, query_hypothyroid,
+                FTI_measured, T4U_measured
+            ]
+
+            # Convert to float
+            user_input_list = [float(x) for x in user_input_list]
+
+            # Prediction
+            thyroid_prediction = thyroid_model.predict([user_input_list])
+
+            # Output
+            if thyroid_prediction[0] == 1:
+                st.warning('⚠️ Thyroid Disorder Detected')
+                st.session_state.prediction_log.append(("Thyroid Disease", "Positive"))
+            else:
+                st.success('✅ Normal Thyroid Function')
+                st.session_state.prediction_log.append(("Thyroid Disease", "Negative"))
     elif selected == 'Kidney Disease Prediction':
             st.markdown("<div class='fade-title'>🧬 Kidney Disease Prediction using ML</div>", unsafe_allow_html=True)
 
