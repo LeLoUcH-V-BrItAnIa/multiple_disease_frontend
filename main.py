@@ -1559,8 +1559,9 @@ if st.session_state.page == "app":
                 st.warning('⚠️ Thyroid Disorder Detected')
                 st.session_state.prediction_log.append(("Thyroid Disease", "Positive"))
             else:
-                st.success('✅ Normal Thyroid Function')
+                st.success('✅ Normal')
                 st.session_state.prediction_log.append(("Thyroid Disease", "Negative"))
+    
     elif selected == 'Kidney Disease Prediction':
             st.markdown("<div class='fade-title'>🧬 Kidney Disease Prediction using ML</div>", unsafe_allow_html=True)
 
