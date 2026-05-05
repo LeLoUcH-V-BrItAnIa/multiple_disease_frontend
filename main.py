@@ -1598,7 +1598,7 @@ if st.session_state.page == "app":
             # Synthetic data 
             background_data = np.random.rand(50,8)
             # Shap explainer 
-            explainer = shap.KernelExplainer(diabetes_model_new.decision_function, background_data)
+            explainer = shap.KernelExplainer(diabetes_model_new.predict_proba, background_data)
             input_array = np.array([user_input_list])
             shap_values = explainer.shap_values(input_array)
             shap_values = shap_values[0]
