@@ -1651,14 +1651,14 @@ if st.session_state.page == "app":
                         username=st.session_state.username
                     )
 
-                # Display
+                # Format AI suggestions into animated HTML card
                 diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
                 lifestyle_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("lifestyle_tips", [])])
                 notes_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("notes", [])])
 
-                st.markdown(f"""
+                card_html = f"""
                 <div class="ai-card">
-                    <div class="ai-title">💡 AI-Powered Kidney Health Suggestions</div>
+                    <div class="ai-title">💡 AI-Powered Health Suggestions</div>
                     <div class="tip-title">🍽 Diet Tips:</div>
                     <ul>{diet_list}</ul>
                     <div class="tip-title">🏃 Lifestyle Tips:</div>
@@ -1666,8 +1666,19 @@ if st.session_state.page == "app":
                     <div class="tip-title">🧘 Notes:</div>
                     <ul>{notes_list}</ul>
                 </div>
-                """, unsafe_allow_html=True)
-
+                """
+                st.markdown(card_html, unsafe_allow_html=True)
+                # 🔹 Save prediction record for logged-in user
+                if st.session_state.logged_in:
+                    record_data = kidney_input_dict
+                    save_prediction(
+                    username=st.session_state.username,
+                    disease="Kidney Disease Risk Prediction",
+                    input_data=record_data,
+                    result=int(kidney_input_dict),
+                    ai_suggestions=ai_response
+                    )
+                    st.info("✅ Your AI health recommendation has been saved to your history.")
                 # # SHAP Display
                 # st.markdown("""
                 #     <div style="
