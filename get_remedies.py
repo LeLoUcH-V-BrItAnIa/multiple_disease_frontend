@@ -86,43 +86,58 @@ def build_user_history_summary(records):
 
     for r in records[:10]:  # last 10 records only
         summary += f"""
-Disease: {r.get('disease')}
-Result: {r.get('result')}
-"""
+        Disease: {r.get('disease')}
+        Result: {r.get('result')}
+        """
 
     return summary
+
 def build_leukemia_interpretation_prompt(inputs):
     fields = "\n".join([f"{k}: {v}" for k, v in inputs.items()])
-
     return f"""
         You are a medical assistant AI.
 
-        PATIENT BLOOD REPORT (CBC VALUES):
-        {fields}
+        IMPORTANT:
+        Respond ONLY in valid JSON format.
+        DO NOT add any explanation outside JSON.
 
-        TASK:
-        Explain these values in simple terms like a doctor would.
-
-        Rules:
-        - Keep it very simple (non-medical language)
-        - Highlight abnormal values
-        - Mention possible risks (like infection, anemia, leukemia risk)
-        - Do NOT give a final diagnosis
-
-        Respond in JSON:
+        FORMAT:
         {{
-        "summary": "",
-        "key_points": []
+        "summary": "...",
+        "key_points": ["...", "..."]
         }}
+
+        DATA:
+        {fields}
         """
+                
 
 
 def get_cbc_interpretation(inputs):
     prompt = build_leukemia_interpretation_prompt(inputs)
 
     response = model.generate_content(prompt)
+    print(response.text)
+    try:
+        text = response.text.strip()
 
-    return json.loads(response.text)
+        # 🔥 Extract JSON from messy response
+        json_match = re.search(r"\{.*\}", text, re.DOTALL)
+
+        if json_match:
+            return json.loads(json_match.group())
+        else:
+            raise ValueError("No JSON found")
+
+    except Exception as e:
+        return {
+            "summary": "AI could not properly interpret the report.",
+            "key_points": [
+                "Try again or check input values.",
+                "Ensure values are realistic.",
+                "AI response format was invalid."
+            ]
+        }
     
 # -------- Prompt Builders --------
 
