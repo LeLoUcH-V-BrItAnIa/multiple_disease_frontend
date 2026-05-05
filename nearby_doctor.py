@@ -14,11 +14,33 @@ def get_location():
 
     return lat, lon
 
+import requests
 
+def get_lat_long(place):
+    url = "https://nominatim.openstreetmap.org/search"
+
+    params = {
+        "q": place,
+        "format": "json",
+        "limit": 1
+    }
+
+    headers = {
+        "User-Agent": "health-app"
+    }
+
+    response = requests.get(url, params=params, headers=headers)
+    data = response.json()
+
+    if data:
+        return data[0]["lat"], data[0]["lon"]
+    else:
+        return None, None
 # -------------------------------
 # Fetch doctors from OSM (Overpass API)
 # -------------------------------
 def fetch_doctors(lat, lon, radius=3000, specialist="All"):
+    
     url = "https://overpass.openstreetmap.fr/api/interpreter"
 
     query = f"""
