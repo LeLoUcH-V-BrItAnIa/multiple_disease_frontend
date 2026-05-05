@@ -1131,26 +1131,26 @@ if st.session_state.page == "app":
                                 <div>{'<br>'.join(notes) if notes else 'No notes available.'}</div>
                             </div>
                             """, unsafe_allow_html=True)
-                            # 🔹 Save prediction record for logged-in user
-                            if st.session_state.logged_in:
-                                record_data = {
-                                    "symptoms": symptoms,
-                                    "mood": mood,
-                                    "age": age,
-                                    "gender": gender
-                                }
-                                save_prediction(
-                                    username=st.session_state.username,
-                                    disease="General Health Recommendation",
-                                    input_data=record_data,
-                                    result="AI Suggestions Provided",
-                                    ai_suggestions={
-                                        "diet_tips": diet_tips,
-                                        "lifestyle_tips": lifestyle_tips,
-                                        "notes": notes
-                                    }
-                                )
-                                st.info("✅ Your AI health recommendation has been saved to your history.")
+                            # # 🔹 Save prediction record for logged-in user
+                            # if st.session_state.logged_in:
+                            #     record_data = {
+                            #         "symptoms": symptoms,
+                            #         "mood": mood,
+                            #         "age": age,
+                            #         "gender": gender
+                            #     }
+                            #     save_prediction(
+                            #         username=st.session_state.username,
+                            #         disease="General Health Recommendation",
+                            #         input_data=record_data,
+                            #         result="AI Suggestions Provided",
+                            #         ai_suggestions={
+                            #             "diet_tips": diet_tips,
+                            #             "lifestyle_tips": lifestyle_tips,
+                            #             "notes": notes
+                            #         }
+                            #     )
+                            #     st.info("✅ Your AI health recommendation has been saved to your history.")
 
                         else:
                             st.error("❌ Error from backend")
@@ -2754,28 +2754,34 @@ if st.session_state.page == "app":
 
             # -------- INTELLIGENT PROMPT --------
             prompt = f"""
-            You are an expert AI medical assistant.
+            You are a medical AI assistant.
 
-            Guidelines:
-            - Give accurate, easy-to-understand health explanations
-            - DO NOT prescribe medicines
-            - Suggest lifestyle, diet, and precautions
-            - If serious symptoms → advise doctor consultation
-            - Use a professional but friendly tone
+            STRICT RULES:
+            - Keep answers SHORT (max 3–4 lines)
+            - Be clear and direct
+            - No long paragraphs
+            - No unnecessary explanation
+            - Do NOT prescribe medicines
+            - Always add: "Consult a doctor if symptoms persist"
 
-            Conversation Context:
+            Context:
             {history_text}
 
             User Question:
             {user_prompt}
 
-            Answer:
+            Give:
+            - 1–2 line explanation
+            - 2 bullet suggestions (if needed)
             """
 
             try:
                 response = model.generate_content(
                     prompt,
-                    generation_config={"temperature": 0.4}
+                    generation_config={
+                            "temperature": 0.3,
+                            "max_output_tokens": 120   # 🔥 THIS LIMITS LENGTH
+                        }
                 )
 
                 bot_reply = response.text
