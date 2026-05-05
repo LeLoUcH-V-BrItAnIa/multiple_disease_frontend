@@ -1510,8 +1510,7 @@ if st.session_state.page == "app":
                 ai_suggestions=ai_response
                 )
                 st.info("✅ Your AI health recommendation has been saved to your history.")
-
-        elif selected == 'Kidney Disease Prediction':
+    elif selected == 'Kidney Disease Prediction':
             st.markdown("<div class='fade-title'>🧬 Kidney Disease Prediction using ML</div>", unsafe_allow_html=True)
 
             col1, col2, col3 = st.columns(3)
