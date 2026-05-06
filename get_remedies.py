@@ -107,10 +107,13 @@ def get_cbc_interpretation(inputs):
         text = text.replace("```json", "").replace("```", "").strip()
 
         # 🔥 Extract JSON safely
-        json_match = re.search(r'\{.*\}', text, re.DOTALL)
+        # 🔥 Find ALL JSON objects
+        matches = re.findall(r'\{[\s\S]*?\}', text)
 
-        if json_match:
-            parsed = json.loads(json_match.group())
+        if matches:
+
+            # ✅ Take ONLY last JSON object
+            parsed = json.loads(matches[-1])
 
             # Safety fallback
             if "summary" not in parsed:
