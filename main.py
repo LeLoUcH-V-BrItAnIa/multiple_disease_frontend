@@ -2758,6 +2758,9 @@ if st.session_state.page == "app":
                         ai_suggestions=ai_response
                     )
                     st.info("✅ Your Parkinson's prediction and AI suggestions have been saved.")
+    
+    
+    
     # AI chat assitant 
     elif selected == "AI Chat Assistant":
         st.title("🤖 AI Health Expert Chatbot")
@@ -2785,7 +2788,21 @@ if st.session_state.page == "app":
 
         # -------- INPUT --------
         user_prompt = st.chat_input("💬 Ask your health question...")
+        def clean_chat_response(text):
 
+            # If model leaks reasoning, extract only final useful part
+            if "Headaches can be caused" in text:
+                lines = text.split("Headaches can be caused")
+                return "Headaches can be caused" + lines[-1]
+
+            # Generic fallback → keep last meaningful section
+            parts = text.strip().split("\n\n")
+
+            if len(parts) > 1:
+                return parts[-1].strip()
+
+            return text.strip()
+        
         if user_prompt:
             # Save user message
             st.session_state.chat_history.append({
@@ -2836,7 +2853,8 @@ if st.session_state.page == "app":
                         }
                 )
 
-                bot_reply = response.text
+                # bot_reply = response.text
+                bot_reply = clean_chat_response(response.text)
 
                 # Save response
                 st.session_state.chat_history.append({
