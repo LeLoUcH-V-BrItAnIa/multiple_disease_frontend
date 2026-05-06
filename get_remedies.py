@@ -14,7 +14,7 @@ genai.configure(api_key=API_KEY)#Fix It
 
 
 # Load Gemini model
-model = genai.GenerativeModel("models/gemma-3n-e2b-it")
+model = genai.GenerativeModel("models/gemma-4-31b-it")
 
 
 def ai_suggest_username(email):
