@@ -40,42 +40,66 @@ def get_lat_long(place):
 # Fetch doctors from OSM (Overpass API)
 # -------------------------------
 def fetch_doctors(lat, lon, radius=3000, specialist="All"):
-    
-    url = "https://overpass.openstreetmap.fr/api/interpreter"
+
+    OVERPASS_URLS = [
+        "https://overpass-api.de/api/interpreter",
+        "https://overpass.openstreetmap.fr/api/interpreter",
+        "https://overpass.kumi.systems/api/interpreter",
+        "https://lz4.overpass-api.de/api/interpreter"
+    ]
 
     query = f"""
-    [out:json];
+    [out:json][timeout:25];
     (
       node["amenity"="hospital"](around:{radius},{lat},{lon});
       node["amenity"="clinic"](around:{radius},{lat},{lon});
       node["amenity"="doctors"](around:{radius},{lat},{lon});
     );
-    out;
+    out body;
     """
 
+    data = None
 
-    try:
-        response = requests.get(url, params={'data': query}, timeout=10)
+    # 🔥 Try all servers
+    for url in OVERPASS_URLS:
 
-        if response.status_code != 200:
-            st.error("❌ Overpass API error. Try again later.")
-            return pd.DataFrame()
-            
+        try:
+            response = requests.get(
+                url,
+                params={"data": query},
+                timeout=20,
+                headers={"User-Agent": "Pulse-App"}
+            )
 
-        data = response.json()
-    except Exception as e:
-        st.error(f"⚠️ Unexpected error: {str(e)}")
+            if response.status_code == 200:
+
+                temp_data = response.json()
+
+                if "elements" in temp_data:
+                    data = temp_data
+                    break
+
+        except Exception as e:
+            print(f"Failed server: {url} | {e}")
+
+    # ❌ All servers failed
+    if not data or "elements" not in data:
+        st.error("❌ Could not fetch nearby doctors right now.")
         return pd.DataFrame()
-
 
     doctors = []
 
-    for element in data['elements']:
-        tags = element.get('tags', {})
-        name = tags.get('name', 'Unknown').lower()
+    for element in data.get("elements", []):
 
-        lat_d = element['lat']
-        lon_d = element['lon']
+        tags = element.get("tags", {})
+
+        name = tags.get("name", "Unknown")
+
+        lat_d = element.get("lat")
+        lon_d = element.get("lon")
+
+        if lat_d is None or lon_d is None:
+            continue
 
         distance = geodesic((lat, lon), (lat_d, lon_d)).km
 
@@ -90,7 +114,7 @@ def fetch_doctors(lat, lon, radius=3000, specialist="All"):
     df = pd.DataFrame(doctors)
 
     # -------------------------------
-    # 🔍 FILTER LOGIC
+    # 🔍 Specialist Filter
     # -------------------------------
     if specialist != "All" and not df.empty:
 
@@ -103,10 +127,18 @@ def fetch_doctors(lat, lon, radius=3000, specialist="All"):
 
         selected_keywords = keywords.get(specialist, [])
 
-        df = df[
-            df["Name"].str.contains('|'.join(selected_keywords)) |
-            df["Tags"].str.contains('|'.join(selected_keywords))
-        ]
+        if selected_keywords:
+
+            pattern = "|".join(selected_keywords)
+
+            df = df[
+                df["Name"].str.contains(pattern, case=False, na=False) |
+                df["Tags"].str.contains(pattern, case=False, na=False)
+            ]
+
+    # 🔥 Sort nearest first
+    if not df.empty:
+        df = df.sort_values(by="Distance (km)")
 
     return df
 
