@@ -2887,6 +2887,8 @@ if st.session_state.page == "app":
 
             Question:
             {user_prompt}
+            Based on this context:
+            {history_text}
             """
 
             try:
