@@ -1,4 +1,9 @@
 # Libraries 
+import warnings
+from sklearn.exceptions import InconsistentVersionWarning
+
+warnings.filterwarnings("ignore", category=InconsistentVersionWarning)
+
 import pandas as pd
 import xgboost as xgb
 import uuid
