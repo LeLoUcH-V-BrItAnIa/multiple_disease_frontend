@@ -316,49 +316,30 @@ def extract_json(text):
         }
     
 import re
+import re
 
-def clean_ai_response(text):
+def clean_dashboard_response(text):
+    # Extract only from first 🔹 onwards
+    match = re.search(r"(🔹.*)", text, re.DOTALL)
 
-    # Remove internal reasoning/meta sections
-    forbidden_patterns = [
-        r"Role:.*",
-        r"Input Data:.*",
-        r"Constraint.*",
-        r"Requirements:.*",
-        r"Format:.*",
-        r"Check:.*",
-        r"Forbidden words.*",
-        r"Max 4 bullet points.*",
-        r"Short/Clean.*",
-    ]
+    if match:
+        cleaned = match.group(1)
 
-    lines = text.split("\n")
+        # Remove extra leaked reasoning if present
+        stop_words = [
+            "Check for forbidden words",
+            "Format:",
+            "Length:",
+            "Short/Clean?"
+        ]
 
-    cleaned_lines = []
+        for word in stop_words:
+            if word in cleaned:
+                cleaned = cleaned.split(word)[0]
 
-    for line in lines:
-        skip = False
+        return cleaned.strip()
 
-        for pattern in forbidden_patterns:
-            if re.match(pattern, line.strip(), re.IGNORECASE):
-                skip = True
-                break
-
-        # Skip empty spam lines
-        if not skip and line.strip():
-            cleaned_lines.append(line)
-
-    # Keep only final useful section
-    final_text = "\n".join(cleaned_lines)
-
-    # OPTIONAL:
-    # Find first bullet point and trim before it
-    bullet_index = final_text.find("🔹")
-
-    if bullet_index != -1:
-        final_text = final_text[bullet_index:]
-
-    return final_text.strip()
+    return text.strip()
 
 # for dashboard insights 
 def generate_dashboard_insights(df): 
@@ -399,5 +380,5 @@ def generate_dashboard_insights(df):
     model = genai.GenerativeModel("models/gemma-4-31b-it")
     response = model.generate_content(prompt)
 
-    cleaned = clean_ai_response(response.text)
+    cleaned = clean_dashboard_response(response.text)
     return cleaned
