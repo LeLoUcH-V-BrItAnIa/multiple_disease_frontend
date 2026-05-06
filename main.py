@@ -1253,7 +1253,7 @@ if st.session_state.page == "app":
             """
 
             try:
-                model = genai.GenerativeModel("models/gemma-4-31b-it")
+                model = genai.GenerativeModel("models/gemma-4-26b-a4b-it")
                 response = model.generate_content(prompt)
 
                 st.subheader("🤖 AI Health Summary")
@@ -1429,24 +1429,24 @@ if st.session_state.page == "app":
                 "Hemoglobin": hemoglobin,
                 "Platelets": platelet
             }
-
+            # haha
             # 🔥 AI Interpretation
-            # with st.spinner("Analyzing blood report..."):
-            #     cbc_ai = get_cbc_interpretation(cbc_input)
-            # # Display
-            # st.markdown("""
-            # <div class="ai-card">
-            #     <div class="ai-title">🧠 AI Blood Report Interpretation</div>
-            # </div>
-            # """, unsafe_allow_html=True)
+            with st.spinner("Analyzing blood report..."):
+                cbc_ai = get_cbc_interpretation(cbc_input)
+            # Display
+            st.markdown("""
+            <div class="ai-card">
+                <div class="ai-title">🧠 AI Blood Report Interpretation</div>
+            </div>
+            """, unsafe_allow_html=True)
 
-            # st.write("📌 Summary:")
-            # st.write(cbc_ai.get("summary", ""))
+            st.write("📌 Summary:")
+            st.write(cbc_ai.get("summary", ""))
 
-            # st.write("🔍 Key Observations:")
-            # for point in cbc_ai.get("key_points", []):
-            #     st.write(f"• {point}")
-            # st.warning("⚠️ This is an AI-based interpretation and not a medical diagnosis.")
+            st.write("🔍 Key Observations:")
+            for point in cbc_ai.get("key_points", []):
+                st.write(f"• {point}")
+            st.warning("⚠️ This is an AI-based interpretation and not a medical diagnosis.")
             # Manual because xgboost doesnt support decision_state of shap 
             leukemia_input = leukemia_features[0] 
 
