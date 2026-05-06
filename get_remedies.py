@@ -328,18 +328,27 @@ def generate_dashboard_insights(df):
     """
 
     prompt = f"""
-    You are a health analytics AI.
+        You are a smart health dashboard AI.
 
-    Analyze this user's health prediction dashboard data:
+        Analyze the user's health prediction summary below.
 
-    {summary}
+        {summary}
 
-    Give:
-    - 2-3 short insights about trends or risks
-    - 1 motivational or advisory note
+        IMPORTANT RULES:
+        - ONLY give final insights
+        - DO NOT explain your thinking
+        - DO NOT mention words like:
+        "Role", "Input Data", "Requirements", "Formatting", "Check"
+        - Keep response short and clean
+        - Maximum 4 bullet points
+        - Friendly and professional tone
 
-    Keep it simple, friendly, and helpful.
-    """
+        Format:
+        🔹 Insight 1
+        🔹 Insight 2
+        🔹 Insight 3
+        💡 Advisory Note
+        """
 
     model = genai.GenerativeModel("models/gemma-4-31b-it")
     response = model.generate_content(prompt)
