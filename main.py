@@ -1429,7 +1429,7 @@ if st.session_state.page == "app":
                 "Hemoglobin": hemoglobin,
                 "Platelets": platelet
             }
-
+            # haha
             # 🔥 AI Interpretation
             with st.spinner("Analyzing blood report..."):
                 cbc_ai = get_cbc_interpretation(cbc_input)
