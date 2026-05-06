@@ -2778,7 +2778,7 @@ if st.session_state.page == "app":
         import google.generativeai as gen_ai
         gen_ai.configure(api_key=API_KEY)
 
-        model = gen_ai.GenerativeModel("models/gemma-4-31b-it")
+        model = gen_ai.GenerativeModel("models/gemini-2.0-flash-lite-001")
 
         # -------- CHAT MEMORY --------
         if "chat_history" not in st.session_state:
