@@ -1422,31 +1422,7 @@ if st.session_state.page == "app":
                 st.session_state.prediction_log.append(("Leukemia", "Low Risk"))
 
             st.warning("⚠️ This prediction is only for risk indication. Always consult a medical professional for confirmation.")
-            # Prepare input dictionary
-            cbc_input = {
-                "WBC": wbc,
-                "RBC": rbc,
-                "Hemoglobin": hemoglobin,
-                "Platelets": platelet
-            }
-            # haha
-            # 🔥 AI Interpretation
-            with st.spinner("Analyzing blood report..."):
-                cbc_ai = get_cbc_interpretation(cbc_input)
-            # Display
-            st.markdown("""
-            <div class="ai-card">
-                <div class="ai-title">🧠 AI Blood Report Interpretation</div>
-            </div>
-            """, unsafe_allow_html=True)
-
-            st.write("📌 Summary:")
-            st.write(cbc_ai.get("summary", ""))
-
-            st.write("🔍 Key Observations:")
-            for point in cbc_ai.get("key_points", []):
-                st.write(f"• {point}")
-            st.warning("⚠️ This is an AI-based interpretation and not a medical diagnosis.")
+            
             # Manual because xgboost doesnt support decision_state of shap 
             leukemia_input = leukemia_features[0] 
 
@@ -1584,6 +1560,7 @@ if st.session_state.page == "app":
             </div>
             """
             st.markdown(card_html, unsafe_allow_html=True)
+            # hahahahahahha
             # 🔹 Save prediction record for logged-in user
             if st.session_state.logged_in:
                 record_data = user_inputs_dict_for_leukemia
@@ -1595,6 +1572,32 @@ if st.session_state.page == "app":
                 ai_suggestions=ai_response
                 )
                 st.info("✅ Your AI health recommendation has been saved to your history.")
+                # Prepare input dictionary
+                # hehe
+            if st.button('Generate Blood Report Insights'):
+                cbc_input = {
+                    "WBC": wbc,
+                    "RBC": rbc,
+                    "Hemoglobin": hemoglobin,
+                    "Platelets": platelet
+                }
+                # 🔥 AI Interpretation
+                with st.spinner("Analyzing blood report..."):
+                    cbc_ai = get_cbc_interpretation(cbc_input)
+                # Display
+                st.markdown("""
+                <div class="ai-card">
+                    <div class="ai-title">🧠 AI Blood Report Interpretation</div>
+                </div>
+                """, unsafe_allow_html=True)
+
+                st.write("📌 Summary:")
+                st.write(cbc_ai.get("summary", ""))
+
+                st.write("🔍 Key Observations:")
+                for point in cbc_ai.get("key_points", []):
+                    st.write(f"• {point}")
+                st.warning("⚠️ This is an AI-based interpretation and not a medical diagnosis.")
     
     elif selected == 'Thyroid Disease Prediction':
         st.markdown("<div class='fade-title'>🦋 Thyroid Disease Prediction using ML</div>", unsafe_allow_html=True)
