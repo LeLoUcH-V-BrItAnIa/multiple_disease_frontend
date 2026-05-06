@@ -2883,20 +2883,12 @@ if st.session_state.page == "app":
 
             # -------- INTELLIGENT PROMPT --------
             prompt = f"""
-            Respond as a concise healthcare assistant.
-
-            Rules:
-            - Briefly answer the user's question
-            - Then provide 2 short health suggestions
-            - Keep responses natural and short
-            - No medicine prescriptions
-            - End with: "Consult a doctor if symptoms persist"
-
-            Context:
-            {history_text}
+            Give a short, simple, and helpful health-related answer.
 
             Question:
             {user_prompt}
+            Based on this context:
+            {history_text}
             """
 
             try:
