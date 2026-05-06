@@ -2790,75 +2790,36 @@ if st.session_state.page == "app":
         for msg in st.session_state.chat_history:
             with st.chat_message(msg["role"]):
                 st.markdown(msg["content"])
+        import re
         def clean_chat_response(text):
+
             if not text:
                 return "⚠️ No response generated."
 
             # Remove markdown
             text = text.replace("```", "").strip()
 
-            lines = text.split("\n")
+            # 🔥 Find ALL possible final answers
+            matches = re.findall(
+                r'([A-Z].*?Consult a doctor if symptoms persist\.)',
+                text,
+                re.DOTALL
+            )
 
-            explanation = ""
-            bullets = []
-            doctor_note = ""
+            # Return LAST clean answer
+            if matches:
+                final_answer = matches[-1].strip()
 
-            for line in lines:
+                # Clean extra spaces
+                final_answer = re.sub(r'\s+', ' ', final_answer)
 
-                line = line.strip()
+                # Restore line breaks before bullets
+                final_answer = final_answer.replace(" •", "\n•")
 
-                if not line:
-                    continue
+                return final_answer
 
-                # ❌ Skip garbage/meta lines
-                bad_words = [
-                    "Role:",
-                    "STRICT RULES",
-                    "Context:",
-                    "User Question:",
-                    "Medical AI assistant"
-                ]
-
-                if any(bad.lower() in line.lower() for bad in bad_words):
-                    continue
-
-                # ✅ Doctor note
-                if "consult a doctor" in line.lower():
-                    doctor_note = line
-                    continue
-
-                # ✅ Bullet points
-                if "•" in line:
-                    split_bullets = line.split("•")
-
-                    for b in split_bullets:
-                        b = b.strip()
-
-                        if b:
-                            bullets.append(f"• {b}")
-
-                    continue
-
-                # ✅ Explanation
-                if not explanation and len(line) > 25:
-                    explanation = line
-
-            # 🔥 Fallback explanation if missing
-            if not explanation:
-                explanation = "Here are some general health suggestions."
-
-            # -----------------------
-            # Build final response
-            # -----------------------
-            final_response = explanation + "\n\n"
-
-            if bullets:
-                final_response += "\n".join(bullets[:2]) + "\n\n"
-
-            if doctor_note:
-                final_response += doctor_note
-
-            return final_response.strip()
+            # Fallback
+            return text.strip()
         # -------- INPUT --------
         user_prompt = st.chat_input("💬 Ask your health question...")
         
