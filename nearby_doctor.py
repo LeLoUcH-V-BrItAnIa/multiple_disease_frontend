@@ -41,7 +41,7 @@ def get_lat_long(place):
 # -------------------------------
 def fetch_doctors(lat, lon, radius=3000, specialist="All"):
     
-    url = "https://overpass.openstreetmap.fr/api/interpreter"
+    url = "https://overpass.openstreetmap.fr/api/interpreterr"
 
     query = f"""
     [out:json];
