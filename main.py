@@ -1573,6 +1573,7 @@ if st.session_state.page == "app":
                 )
                 st.info("✅ Your AI health recommendation has been saved to your history.")
                 # Prepare input dictionary
+                # hehe
             if st.button('Generate Blood Report Insights'):
                 cbc_input = {
                     "WBC": wbc,
