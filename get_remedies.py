@@ -18,14 +18,32 @@ model = genai.GenerativeModel("models/gemma-4-31b-it")
 
 
 def ai_suggest_username(email):
-    prompt = f"Suggest a short, cool username based on this email: {email}. Only return username, no explanation."
+
+    prompt = f"""
+Suggest ONE short cool username based on this email.
+
+Email:
+{email}
+
+Return ONLY the username.
+"""
 
     try:
-        response = model.generate_content(prompt)
-        return response.text.strip()
-    except:
-        return "Error" # fallback
+        response = model.generate_content(
+            prompt,
+            generation_config={
+                "temperature": 0.5,
+                "max_output_tokens": 20
+            }
+        )
 
+        username = response.text.strip().split("\n")[-1]
+        username = username.replace("Username:", "").strip()
+
+        return username
+
+    except:
+        return "neo_user"
 # History summary function 
 def build_user_history_summary(records):
     if not records:
