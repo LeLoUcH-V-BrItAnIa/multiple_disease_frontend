@@ -2791,7 +2791,6 @@ if st.session_state.page == "app":
             with st.chat_message(msg["role"]):
                 st.markdown(msg["content"])
         def clean_chat_response(text):
-
             if not text:
                 return "⚠️ No response generated."
 
@@ -2808,32 +2807,50 @@ if st.session_state.page == "app":
 
                 line = line.strip()
 
-                # Skip empty lines
                 if not line:
                     continue
 
-                # Capture explanation
-                if (
-                    not explanation and
-                    not line.startswith("•") and
-                    "consult a doctor" not in line.lower() and
-                    len(line) > 20
-                ):
-                    explanation = line
+                # ❌ Skip garbage/meta lines
+                bad_words = [
+                    "Role:",
+                    "STRICT RULES",
+                    "Context:",
+                    "User Question:",
+                    "Medical AI assistant"
+                ]
 
-                # Capture bullet points
-                if line.startswith("•"):
-                    bullets.append(line)
+                if any(bad.lower() in line.lower() for bad in bad_words):
+                    continue
 
-                # Capture doctor note
+                # ✅ Doctor note
                 if "consult a doctor" in line.lower():
                     doctor_note = line
+                    continue
 
-            # Build final clean response
-            final_response = ""
+                # ✅ Bullet points
+                if "•" in line:
+                    split_bullets = line.split("•")
 
-            if explanation:
-                final_response += explanation + "\n\n"
+                    for b in split_bullets:
+                        b = b.strip()
+
+                        if b:
+                            bullets.append(f"• {b}")
+
+                    continue
+
+                # ✅ Explanation
+                if not explanation and len(line) > 25:
+                    explanation = line
+
+            # 🔥 Fallback explanation if missing
+            if not explanation:
+                explanation = "Here are some general health suggestions."
+
+            # -----------------------
+            # Build final response
+            # -----------------------
+            final_response = explanation + "\n\n"
 
             if bullets:
                 final_response += "\n".join(bullets[:2]) + "\n\n"
