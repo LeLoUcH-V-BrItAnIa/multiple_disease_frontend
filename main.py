@@ -1248,7 +1248,7 @@ if st.session_state.page == "app":
             """
 
             try:
-                model = genai.GenerativeModel("models/gemma-3n-e2b-it")
+                model = genai.GenerativeModel("models/gemma-4-31b-it")
                 response = model.generate_content(prompt)
 
                 st.subheader("🤖 AI Health Summary")
