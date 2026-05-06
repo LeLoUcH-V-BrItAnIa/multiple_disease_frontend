@@ -42,49 +42,79 @@ def build_user_history_summary(records):
     return summary
 
 def build_leukemia_interpretation_prompt(inputs):
+
     fields = "\n".join([f"{k}: {v}" for k, v in inputs.items()])
+
     return f"""
-        You are a medical assistant AI.
+        Analyze these CBC values and return a short medical interpretation.
 
-        IMPORTANT:
-        Respond ONLY in valid JSON format.
-        DO NOT add any explanation outside JSON.
+        CBC DATA:
+        {fields}
 
-        FORMAT:
+        Return response in this EXACT JSON format:
+
         {{
-        "summary": "...",
-        "key_points": ["...", "..."]
+        "summary": "short summary here",
+        "key_points": [
+            "point 1",
+            "point 2",
+            "point 3"
+        ]
         }}
 
-        DATA:
-        {fields}
+        Return ONLY valid JSON.
         """
-                
 
+import json
+import re
 
 def get_cbc_interpretation(inputs):
+
     prompt = build_leukemia_interpretation_prompt(inputs)
 
-    response = model.generate_content(prompt)
-    print(response.text)
     try:
+        response = model.generate_content(
+            prompt,
+            generation_config={
+                "temperature": 0.1,
+                "max_output_tokens": 200
+            }
+        )
+
         text = response.text.strip()
 
-        # 🔥 Extract JSON from messy response
-        json_match = re.search(r"\{.*\}", text, re.DOTALL)
+        print("RAW AI RESPONSE:\n", text)
+
+        # 🔥 Remove markdown code blocks if present
+        text = text.replace("```json", "").replace("```", "").strip()
+
+        # 🔥 Extract JSON safely
+        json_match = re.search(r'\{.*\}', text, re.DOTALL)
 
         if json_match:
-            return json.loads(json_match.group())
-        else:
-            raise ValueError("No JSON found")
+            parsed = json.loads(json_match.group())
+
+            # Safety fallback
+            if "summary" not in parsed:
+                parsed["summary"] = "No summary generated."
+
+            if "key_points" not in parsed:
+                parsed["key_points"] = []
+
+            return parsed
+
+        raise ValueError("No valid JSON found")
 
     except Exception as e:
+
+        print("JSON ERROR:", e)
+
         return {
             "summary": "AI could not properly interpret the report.",
             "key_points": [
-                "Try again or check input values.",
-                "Ensure values are realistic.",
-                "AI response format was invalid."
+                "Try again later.",
+                "Check CBC values.",
+                "AI response formatting failed."
             ]
         }
     
