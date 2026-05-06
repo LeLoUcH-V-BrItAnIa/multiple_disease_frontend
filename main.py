@@ -2909,7 +2909,7 @@ if st.session_state.page == "app":
                 )
 
                 # bot_reply = response.text
-                bot_reply = clean_chat_response(response.text)
+                bot_reply = response.text
 
                 # Save response
                 st.session_state.chat_history.append({
