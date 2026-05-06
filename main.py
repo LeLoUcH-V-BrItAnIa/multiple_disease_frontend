@@ -2790,23 +2790,61 @@ if st.session_state.page == "app":
         for msg in st.session_state.chat_history:
             with st.chat_message(msg["role"]):
                 st.markdown(msg["content"])
-
-        # -------- INPUT --------
-        user_prompt = st.chat_input("💬 Ask your health question...")
         def clean_chat_response(text):
 
-            # If model leaks reasoning, extract only final useful part
-            if "Headaches can be caused" in text:
-                lines = text.split("Headaches can be caused")
-                return "Headaches can be caused" + lines[-1]
+            if not text:
+                return "⚠️ No response generated."
 
-            # Generic fallback → keep last meaningful section
-            parts = text.strip().split("\n\n")
+            # Remove markdown
+            text = text.replace("```", "").strip()
 
-            if len(parts) > 1:
-                return parts[-1].strip()
+            lines = text.split("\n")
 
-            return text.strip()
+            explanation = ""
+            bullets = []
+            doctor_note = ""
+
+            for line in lines:
+
+                line = line.strip()
+
+                # Skip empty lines
+                if not line:
+                    continue
+
+                # Capture explanation
+                if (
+                    not explanation and
+                    not line.startswith("•") and
+                    "consult a doctor" not in line.lower() and
+                    len(line) > 20
+                ):
+                    explanation = line
+
+                # Capture bullet points
+                if line.startswith("•"):
+                    bullets.append(line)
+
+                # Capture doctor note
+                if "consult a doctor" in line.lower():
+                    doctor_note = line
+
+            # Build final clean response
+            final_response = ""
+
+            if explanation:
+                final_response += explanation + "\n\n"
+
+            if bullets:
+                final_response += "\n".join(bullets[:2]) + "\n\n"
+
+            if doctor_note:
+                final_response += doctor_note
+
+            return final_response.strip()
+        # -------- INPUT --------
+        user_prompt = st.chat_input("💬 Ask your health question...")
+        
         
         if user_prompt:
             # Save user message
