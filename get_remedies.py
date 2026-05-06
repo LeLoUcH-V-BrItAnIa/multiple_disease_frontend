@@ -276,10 +276,7 @@ Respond in JSON:
   "notes": []
 }}
 """
-
-
 # -------- Dispatcher Function --------
-
 def get_remedies(user_inputs, prediction, disease , username):
     disease = disease.lower()
     # fetch records 
@@ -344,7 +341,7 @@ def generate_dashboard_insights(df):
     Keep it simple, friendly, and helpful.
     """
 
-    model = genai.GenerativeModel("models/gemma-3n-e2b-it")
+    model = genai.GenerativeModel("models/gemma-4-31b-it")
     response = model.generate_content(prompt)
 
     return response.text
