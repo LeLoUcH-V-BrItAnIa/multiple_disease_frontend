@@ -2883,12 +2883,20 @@ if st.session_state.page == "app":
 
             # -------- INTELLIGENT PROMPT --------
             prompt = f"""
-            Give a short, simple, and helpful health-related answer.
+            Respond as a concise healthcare assistant.
+
+            Rules:
+            - Briefly answer the user's question
+            - Then provide 2 short health suggestions
+            - Keep responses natural and short
+            - No medicine prescriptions
+            - End with: "Consult a doctor if symptoms persist"
+
+            Context:
+            {history_text}
 
             Question:
             {user_prompt}
-            Based on this context:
-            {history_text}
             """
 
             try:
@@ -2901,7 +2909,7 @@ if st.session_state.page == "app":
                 )
 
                 # bot_reply = response.text
-                bot_reply = response.text
+                bot_reply = clean_chat_response(response.text)
 
                 # Save response
                 st.session_state.chat_history.append({
