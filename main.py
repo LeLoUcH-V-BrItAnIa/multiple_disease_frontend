@@ -2903,8 +2903,8 @@ if st.session_state.page == "app":
                 response = model.generate_content(
                     prompt,
                     generation_config={
-                            "temperature": 0.3,
-                            "max_output_tokens": 120   # 🔥 THIS LIMITS LENGTH
+                            "temperature": 0.2,
+                            "max_output_tokens": 80 # 🔥 THIS LIMITS LENGTH
                         }
                 )
 
