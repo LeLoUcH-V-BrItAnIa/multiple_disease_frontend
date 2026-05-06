@@ -319,25 +319,13 @@ import re
 import re
 
 def clean_dashboard_response(text):
-    # Extract only from first 🔹 onwards
-    match = re.search(r"(🔹.*)", text, re.DOTALL)
 
-    if match:
-        cleaned = match.group(1)
+    # Find ALL sections starting with 🔹
+    matches = re.findall(r"(🔹.*?💡.*?)(?=\n\n|$)", text, re.DOTALL)
 
-        # Remove extra leaked reasoning if present
-        stop_words = [
-            "Check for forbidden words",
-            "Format:",
-            "Length:",
-            "Short/Clean?"
-        ]
-
-        for word in stop_words:
-            if word in cleaned:
-                cleaned = cleaned.split(word)[0]
-
-        return cleaned.strip()
+    # Return LAST valid section only
+    if matches:
+        return matches[-1].strip()
 
     return text.strip()
 
