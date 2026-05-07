@@ -1,8 +1,9 @@
 # Libraries 
-# import warnings
-# from sklearn.exceptions import InconsistentVersionWarning
+import warnings
+from sklearn.exceptions import InconsistentVersionWarning
 
-# warnings.filterwarnings("ignore", category=InconsistentVersionWarning)
+warnings.filterwarnings("ignore", category=InconsistentVersionWarning)
+warnings.filterwarnings("ignore")
 
 import pandas as pd
 import xgboost as xgb
@@ -1574,30 +1575,30 @@ if st.session_state.page == "app":
                 st.info("✅ Your AI health recommendation has been saved to your history.")
                 # Prepare input dictionary
                 # hehe
-            # if st.button('Generate Blood Report Insights'):
-            #     cbc_input = {
-            #         "WBC": wbc,
-            #         "RBC": rbc,
-            #         "Hemoglobin": hemoglobin,
-            #         "Platelets": platelet
-            #     }
-            #     # 🔥 AI Interpretation
-            #     with st.spinner("Analyzing blood report..."):
-            #         cbc_ai = get_cbc_interpretation(cbc_input)
-            #     # Display
-            #     st.markdown("""
-            #     <div class="ai-card">
-            #         <div class="ai-title">🧠 AI Blood Report Interpretation</div>
-            #     </div>
-            #     """, unsafe_allow_html=True)
+        if st.button('Generate Blood Report Insights'):
+            cbc_input = {
+                "WBC": wbc,
+                "RBC": rbc,
+                "Hemoglobin": hemoglobin,
+                "Platelets": platelet
+            }
+            # 🔥 AI Interpretation
+            with st.spinner("Analyzing blood report..."):
+                cbc_ai = get_cbc_interpretation(cbc_input)
+            # Display
+            st.markdown("""
+            <div class="ai-card">
+                <div class="ai-title">🧠 AI Blood Report Interpretation</div>
+            </div>
+            """, unsafe_allow_html=True)
 
-            #     st.write("📌 Summary:")
-            #     st.write(cbc_ai.get("summary", ""))
+            st.write("📌 Summary:")
+            st.write(cbc_ai.get("summary", ""))
 
-            #     st.write("🔍 Key Observations:")
-            #     for point in cbc_ai.get("key_points", []):
-            #         st.write(f"• {point}")
-            #     st.warning("⚠️ This is an AI-based interpretation and not a medical diagnosis.")
+            st.write("🔍 Key Observations:")
+            for point in cbc_ai.get("key_points", []):
+                st.write(f"• {point}")
+            st.warning("⚠️ This is an AI-based interpretation and not a medical diagnosis.")
     
     elif selected == 'Thyroid Disease Prediction':
         st.markdown("<div class='fade-title'>🦋 Thyroid Disease Prediction using ML</div>", unsafe_allow_html=True)
