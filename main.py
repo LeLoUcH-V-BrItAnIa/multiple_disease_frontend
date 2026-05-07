@@ -3023,7 +3023,7 @@ if st.session_state.page == "app":
             """)
 
             # ✅ Summary Metrics
-            col1, col2, col3, col4 , col5 ,col6= st.columns(6)
+            col1, col2, col3, col4 , col5 ,col6 ,col7= st.columns(7)
             with col1:
                 st.metric("Total Predictions", len(df))
             with col2:
@@ -3036,6 +3036,8 @@ if st.session_state.page == "app":
                 st.metric("Thyroid Cases", len(df[df["Disease"] == "Thyroid Disease Prediction"]))
             with col6:
                 st.metric("kideney Cases", len(df[df["Disease"] == "Kidney Disease Risk Prediction"]))
+            with col7:
+                st.metric("Leukimia risk Cases", len(df[df["Disease"] == "Leukemia Risk Prediction"]))
             st.subheader("🧠 AI Health Insights")
 
             try:
