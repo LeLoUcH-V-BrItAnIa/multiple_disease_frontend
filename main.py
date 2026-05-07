@@ -924,6 +924,7 @@ if st.session_state.page == "home":
 
 # Sidebar
 if st.session_state.page == "app":
+    import pytz
     with st.sidebar:
         india = pytz.timezone('Asia/Kolkata')
         now = datetime.now(india)
