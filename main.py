@@ -302,14 +302,27 @@ def show_login_register_page():
     lottie_anim = load_lottie(animation_url)
     st_lottie(lottie_anim, height=250)
     # Getting small health tips !
+    # def get_health_tip():
+    #     try:
+    #         url = "https://api.adviceslip.com/advice"
+    #         res = requests.get(url)
+    #         data = res.json()
+    #         return data['slip']['advice']
+    #     except:
+    #         return "Stay hydrated 💧 and take care of your health!"
+    import random
+
+    health_tips = [
+        "Drink enough water daily 💧",
+        "Exercise regularly 🏃",
+        "Get proper sleep 😴",
+        "Avoid too much sugar 🍭",
+        "Eat more fruits and vegetables 🥗",
+        "Take short breaks while studying 📚",
+    ]
+
     def get_health_tip():
-        try:
-            url = "https://api.adviceslip.com/advice"
-            res = requests.get(url)
-            data = res.json()
-            return data['slip']['advice']
-        except:
-            return "Stay hydrated 💧 and take care of your health!"
+        return random.choice(health_tips)
 
 
 
