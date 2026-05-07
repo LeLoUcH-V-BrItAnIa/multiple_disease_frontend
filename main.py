@@ -925,7 +925,8 @@ if st.session_state.page == "home":
 # Sidebar
 if st.session_state.page == "app":
     with st.sidebar:
-        now = datetime.now()
+        india = pytz.timezone('Asia/Kolkata')
+        now = datetime.now(india)
         current_time = now.strftime("%I:%M:%S %p")
         current_date = now.strftime("%A, %d %B %Y")
 
