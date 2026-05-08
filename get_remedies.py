@@ -417,7 +417,25 @@ def generate_dashboard_insights(df):
         """
 
     model = genai.GenerativeModel("models/gemma-4-26b-a4b-it")
-    response = model.generate_content(prompt)
+    # response = model.generate_content(prompt)
+    response = None
+
+    for attempt in range(3):
+
+        try:
+            response = model.generate_content(prompt)
+            break
+
+        except Exception as e:
+
+            print(f"Attempt {attempt+1} failed:", e)
+
+            time.sleep(2)
+
+    if response is None:
+        return {
+            "error": "AI service temporarily unavailable"
+        }
 
     cleaned = clean_dashboard_response(response.text)
     return cleaned
