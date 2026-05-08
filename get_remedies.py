@@ -429,7 +429,7 @@ def generate_dashboard_insights(df):
         except Exception as e:
 
             print(f"Attempt {attempt+1} failed:", e)
-
+            import time
             time.sleep(2)
 
     if response is None:
