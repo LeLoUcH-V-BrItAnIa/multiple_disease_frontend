@@ -1267,16 +1267,16 @@ if st.session_state.page == "app":
             - Diet suggestions
             - Lifestyle advice
             """
-        if st.button('Generate AI Insight'):
-                try:
-                    model = genai.GenerativeModel("models/gemma-4-26b-a4b-it")
-                    response = model.generate_content(prompt)
 
-                    st.subheader("🤖 AI Health Summary")
-                    st.write(response.text)
+            try:
+                model = genai.GenerativeModel("models/gemma-4-26b-a4b-it")
+                response = model.generate_content(prompt)
 
-                except Exception as e:
-                    st.error("Gemini error")
+                st.subheader("🤖 AI Health Summary")
+                st.write(response.text)
+
+            except Exception as e:
+                st.error("Gemini error")
     # Leukimia Risk Prediction Page
 
     elif selected == 'Leukimia Risk Prediction':
@@ -1551,69 +1551,69 @@ if st.session_state.page == "app":
                 "WBC/RBC Ratio": wbc_rbc_ratio,
                 "Harmful Habits": harmful
             }
-            if st.button('Get AI Insights'):
-                # Call Gemini API for AI-based suggestions
-                with st.spinner("Fetching AI health recommendations..."):
-                    ai_response = get_remedies(user_inputs_dict_for_leukemia, 
-                                            leukemia_prediction, 
-                                            disease="leukemia",
-                                            username = st.session_state.username)
 
-                # Format AI suggestions into animated HTML card
-                diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
-                lifestyle_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("lifestyle_tips", [])])
-                notes_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("notes", [])])
+            # Call Gemini API for AI-based suggestions
+            with st.spinner("Fetching AI health recommendations..."):
+                ai_response = get_remedies(user_inputs_dict_for_leukemia, 
+                                           leukemia_prediction, 
+                                           disease="leukemia",
+                                           username = st.session_state.username)
 
-                card_html = f"""
-                <div class="ai-card">
-                    <div class="ai-title">💡 AI-Powered Health Suggestions</div>
-                    <div class="tip-title">🍽 Diet Tips:</div>
-                    <ul>{diet_list}</ul>
-                    <div class="tip-title">🏃 Lifestyle Tips:</div>
-                    <ul>{lifestyle_list}</ul>
-                    <div class="tip-title">🧘 Notes:</div>
-                    <ul>{notes_list}</ul>
-                </div>
-                """
-                st.markdown(card_html, unsafe_allow_html=True)
-                # hahahahahahha
-                # 🔹 Save prediction record for logged-in user
-                if st.session_state.logged_in:
-                    record_data = user_inputs_dict_for_leukemia
-                    save_prediction(
-                    username=st.session_state.username,
-                    disease="Leukemia Risk Prediction",
-                    input_data=record_data,
-                    result=int(leukemia_prediction),
-                    ai_suggestions=ai_response
-                    )
-                    st.info("✅ Your AI health recommendation has been saved to your history.")
-                    # Prepare input dictionary
-                    # hehe
-            if st.button('Generate Blood Report Insights'):
-                cbc_input = {
-                    "WBC": wbc,
-                    "RBC": rbc,
-                    "Hemoglobin": hemoglobin,
-                    "Platelets": platelet
-                }
-                # 🔥 AI Interpretation
-                with st.spinner("Analyzing blood report..."):
-                    cbc_ai = get_cbc_interpretation(cbc_input)
-                # Display
-                st.markdown("""
-                <div class="ai-card">
-                    <div class="ai-title">🧠 AI Blood Report Interpretation</div>
-                </div>
-                """, unsafe_allow_html=True)
+            # Format AI suggestions into animated HTML card
+            diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
+            lifestyle_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("lifestyle_tips", [])])
+            notes_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("notes", [])])
 
-                st.write("📌 Summary:")
-                st.write(cbc_ai.get("summary", ""))
+            card_html = f"""
+            <div class="ai-card">
+                <div class="ai-title">💡 AI-Powered Health Suggestions</div>
+                <div class="tip-title">🍽 Diet Tips:</div>
+                <ul>{diet_list}</ul>
+                <div class="tip-title">🏃 Lifestyle Tips:</div>
+                <ul>{lifestyle_list}</ul>
+                <div class="tip-title">🧘 Notes:</div>
+                <ul>{notes_list}</ul>
+            </div>
+            """
+            st.markdown(card_html, unsafe_allow_html=True)
+            # hahahahahahha
+            # 🔹 Save prediction record for logged-in user
+            if st.session_state.logged_in:
+                record_data = user_inputs_dict_for_leukemia
+                save_prediction(
+                username=st.session_state.username,
+                disease="Leukemia Risk Prediction",
+                input_data=record_data,
+                result=int(leukemia_prediction),
+                ai_suggestions=ai_response
+                )
+                st.info("✅ Your AI health recommendation has been saved to your history.")
+                # Prepare input dictionary
+                # hehe
+        if st.button('Generate Blood Report Insights'):
+            cbc_input = {
+                "WBC": wbc,
+                "RBC": rbc,
+                "Hemoglobin": hemoglobin,
+                "Platelets": platelet
+            }
+            # 🔥 AI Interpretation
+            with st.spinner("Analyzing blood report..."):
+                cbc_ai = get_cbc_interpretation(cbc_input)
+            # Display
+            st.markdown("""
+            <div class="ai-card">
+                <div class="ai-title">🧠 AI Blood Report Interpretation</div>
+            </div>
+            """, unsafe_allow_html=True)
 
-                st.write("🔍 Key Observations:")
-                for point in cbc_ai.get("key_points", []):
-                    st.write(f"• {point}")
-                st.warning("⚠️ This is an AI-based interpretation and not a medical diagnosis.")
+            st.write("📌 Summary:")
+            st.write(cbc_ai.get("summary", ""))
+
+            st.write("🔍 Key Observations:")
+            for point in cbc_ai.get("key_points", []):
+                st.write(f"• {point}")
+            st.warning("⚠️ This is an AI-based interpretation and not a medical diagnosis.")
     
     elif selected == 'Thyroid Disease Prediction':
         st.markdown("<div class='fade-title'>🦋 Thyroid Disease Prediction using ML</div>", unsafe_allow_html=True)
@@ -1702,44 +1702,44 @@ if st.session_state.page == "app":
                 "Thyroid Surgery": thyroid_surgery,
                 "Query Hypothyroid": query_hypothyroid
             }
-            if st.button('Get AI Insights'):
-                # 🔥 AI CALL
-                with st.spinner("Fetching AI health recommendations..."):
-                    ai_response = get_remedies(
-                        thyroid_input_dict,
-                        thyroid_prediction[0],
-                        disease="thyroid",
-                        username=st.session_state.username
-                    )
 
-                # Display
-                diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
-                lifestyle_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("lifestyle_tips", [])])
-                notes_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("notes", [])])
+            # 🔥 AI CALL
+            with st.spinner("Fetching AI health recommendations..."):
+                ai_response = get_remedies(
+                    thyroid_input_dict,
+                    thyroid_prediction[0],
+                    disease="thyroid",
+                    username=st.session_state.username
+                )
 
-                st.markdown(f"""
-                <div class="ai-card">
-                    <div class="ai-title">💡 AI-Powered Thyroid Health Suggestions</div>
-                    <div class="tip-title">🍽 Diet Tips:</div>
-                    <ul>{diet_list}</ul>
-                    <div class="tip-title">🏃 Lifestyle Tips:</div>
-                    <ul>{lifestyle_list}</ul>
-                    <div class="tip-title">🧘 Notes:</div>
-                    <ul>{notes_list}</ul>
-                </div>
-                """, unsafe_allow_html=True)
-                # 🔹 Save prediction record for logged-in user
-                if st.session_state.logged_in:
-                    record_data = thyroid_input_dict
-                    save_prediction(
-                    username=st.session_state.username,
-                    disease="Thyroid Disease Prediction",
-                    input_data=record_data,
-                    result=int(thyroid_prediction),
-                    ai_suggestions=ai_response
-                    )
-                    st.info("✅ Your AI health recommendation has been saved to your history.")
-        
+            # Display
+            diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
+            lifestyle_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("lifestyle_tips", [])])
+            notes_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("notes", [])])
+
+            st.markdown(f"""
+            <div class="ai-card">
+                <div class="ai-title">💡 AI-Powered Thyroid Health Suggestions</div>
+                <div class="tip-title">🍽 Diet Tips:</div>
+                <ul>{diet_list}</ul>
+                <div class="tip-title">🏃 Lifestyle Tips:</div>
+                <ul>{lifestyle_list}</ul>
+                <div class="tip-title">🧘 Notes:</div>
+                <ul>{notes_list}</ul>
+            </div>
+            """, unsafe_allow_html=True)
+             # 🔹 Save prediction record for logged-in user
+            if st.session_state.logged_in:
+                record_data = thyroid_input_dict
+                save_prediction(
+                username=st.session_state.username,
+                disease="Thyroid Disease Prediction",
+                input_data=record_data,
+                result=int(thyroid_prediction),
+                ai_suggestions=ai_response
+                )
+                st.info("✅ Your AI health recommendation has been saved to your history.")
+    
     
     elif selected == 'Kidney Disease Prediction':
             st.markdown("<div class='fade-title'>🧬 Kidney Disease Prediction using ML</div>", unsafe_allow_html=True)
@@ -1847,44 +1847,43 @@ if st.session_state.page == "app":
                     "Sodium": sod,
                     "Blood Glucose": bgr
                 }
-                if st.button('Get AI Insights'):
-                    # 🔥 AI CALL
-                    with st.spinner("Fetching AI health recommendations..."):
-                        ai_response = get_remedies(
-                            kidney_input_dict,
-                            kidney_prediction[0],
-                            disease="kidney",
-                            username=st.session_state.username
-                        )
+                # 🔥 AI CALL
+                with st.spinner("Fetching AI health recommendations..."):
+                    ai_response = get_remedies(
+                        kidney_input_dict,
+                        kidney_prediction[0],
+                        disease="kidney",
+                        username=st.session_state.username
+                    )
 
-                    # Format AI suggestions into animated HTML card
-                    diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
-                    lifestyle_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("lifestyle_tips", [])])
-                    notes_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("notes", [])])
+                # Format AI suggestions into animated HTML card
+                diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
+                lifestyle_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("lifestyle_tips", [])])
+                notes_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("notes", [])])
 
-                    card_html = f"""
-                    <div class="ai-card">
-                        <div class="ai-title">💡 AI-Powered Health Suggestions</div>
-                        <div class="tip-title">🍽 Diet Tips:</div>
-                        <ul>{diet_list}</ul>
-                        <div class="tip-title">🏃 Lifestyle Tips:</div>
-                        <ul>{lifestyle_list}</ul>
-                        <div class="tip-title">🧘 Notes:</div>
-                        <ul>{notes_list}</ul>
-                    </div>
-                    """
-                    st.markdown(card_html, unsafe_allow_html=True)
-                    # 🔹 Save prediction record for logged-in user
-                    if st.session_state.logged_in:
-                        record_data = kidney_input_dict
-                        save_prediction(
-                        username=st.session_state.username,
-                        disease="Kidney Disease Risk Prediction",
-                        input_data=record_data,
-                        result=int(kidney_prediction),
-                        ai_suggestions=ai_response
-                        )
-                        st.info("✅ Your AI health recommendation has been saved to your history.")
+                card_html = f"""
+                <div class="ai-card">
+                    <div class="ai-title">💡 AI-Powered Health Suggestions</div>
+                    <div class="tip-title">🍽 Diet Tips:</div>
+                    <ul>{diet_list}</ul>
+                    <div class="tip-title">🏃 Lifestyle Tips:</div>
+                    <ul>{lifestyle_list}</ul>
+                    <div class="tip-title">🧘 Notes:</div>
+                    <ul>{notes_list}</ul>
+                </div>
+                """
+                st.markdown(card_html, unsafe_allow_html=True)
+                # 🔹 Save prediction record for logged-in user
+                if st.session_state.logged_in:
+                    record_data = kidney_input_dict
+                    save_prediction(
+                    username=st.session_state.username,
+                    disease="Kidney Disease Risk Prediction",
+                    input_data=record_data,
+                    result=int(kidney_prediction),
+                    ai_suggestions=ai_response
+                    )
+                    st.info("✅ Your AI health recommendation has been saved to your history.")
 
         
     # Diabetes Prediction Page
@@ -2134,41 +2133,40 @@ if st.session_state.page == "app":
                 "DiabetesPedigreeFunction": DiabetesPedigreeFunction,
                 "Age": Age
             }
-            if st.button('Get AI Insights'):
-                with st.spinner("Fetching health suggestions..."):
-                    ai_response = get_remedies(user_inputs_dict_for_diab, 
-                                            diab_prediction[0]
-                                            ,disease="diabetes",
-                                            username=st.session_state.username)
+            with st.spinner("Fetching health suggestions..."):
+                ai_response = get_remedies(user_inputs_dict_for_diab, 
+                                           diab_prediction[0]
+                                           ,disease="diabetes",
+                                           username=st.session_state.username)
 
-                # Build the HTML content for the card
-                diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
-                lifestyle_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("lifestyle_tips", [])])
-                notes_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("notes", [])])
+            # Build the HTML content for the card
+            diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
+            lifestyle_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("lifestyle_tips", [])])
+            notes_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("notes", [])])
 
-                card_html = f"""
-                <div class="ai-card">
-                    <div class="ai-title">💡 AI-Powered Health Suggestions</div>
-                    <div class="tip-title">🍽 Diet Tips:</div>
-                    <ul>{diet_list}</ul>
-                    <div class="tip-title">🏃 Lifestyle Tips:</div>
-                    <ul>{lifestyle_list}</ul>
-                    <div class="tip-title">🧘 Notes:</div>
-                    <ul>{notes_list}</ul>
-                </div>
-                """
-                st.markdown(card_html, unsafe_allow_html=True)
-                # 🔹 Save prediction record for logged-in user
-                if st.session_state.logged_in:
-                    record_data = user_inputs_dict_for_diab
-                    save_prediction(
-                    username=st.session_state.username,
-                    disease="Diabetes Prediction",
-                    input_data=record_data,
-                    result=int(diab_prediction[0]),
-                    ai_suggestions= ai_response
-                    )
-                    st.info("✅ Your AI health recommendation has been saved to your history.")
+            card_html = f"""
+            <div class="ai-card">
+                <div class="ai-title">💡 AI-Powered Health Suggestions</div>
+                <div class="tip-title">🍽 Diet Tips:</div>
+                <ul>{diet_list}</ul>
+                <div class="tip-title">🏃 Lifestyle Tips:</div>
+                <ul>{lifestyle_list}</ul>
+                <div class="tip-title">🧘 Notes:</div>
+                <ul>{notes_list}</ul>
+            </div>
+            """
+            st.markdown(card_html, unsafe_allow_html=True)
+            # 🔹 Save prediction record for logged-in user
+            if st.session_state.logged_in:
+                record_data = user_inputs_dict_for_diab
+                save_prediction(
+                username=st.session_state.username,
+                disease="Diabetes Prediction",
+                input_data=record_data,
+                result=int(diab_prediction[0]),
+                ai_suggestions= ai_response
+                )
+                st.info("✅ Your AI health recommendation has been saved to your history.")
 
     
     
@@ -2393,43 +2391,43 @@ if st.session_state.page == "app":
                         "ca": ca,
                         "thal": thal
             }
-            if st.button('Get AI Insights'):
-                with st.spinner("Fetching health suggestions..."):
-                    ai_response = get_remedies(user_inputs_dict_for_heart, 
-                                            heart_prediction[0],
-                                            disease="heart",
-                                            username = st.session_state.username)
 
-                    # ✅ Convert Heart AI suggestions into animated HTML lists
-                    heart_diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
-                    heart_lifestyle_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("lifestyle_tips", [])])
-                    # heart_notes_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("notes", [])])
-                    heart_notes_list = ai_response.get("notes", [])
+            with st.spinner("Fetching health suggestions..."):
+                ai_response = get_remedies(user_inputs_dict_for_heart, 
+                                           heart_prediction[0],
+                                           disease="heart",
+                                           username = st.session_state.username)
 
-                    # ✅ Render animated card for Heart
-                    heart_card_html = f"""
-                    <div class="ai-card">
-                        <div class="ai-title">💡 AI-Powered Heart Health Suggestions</div>
-                        <div class="tip-title">🍽 Diet Tips:</div>
-                        <ul>{heart_diet_list}</ul>
-                        <div class="tip-title">🏃 Lifestyle Tips:</div>
-                        <ul>{heart_lifestyle_list}</ul>
-                        <div class="tip-title">🧘 Notes:</div>
-                        <ul>{heart_notes_list}</ul>
-                    </div>
-                    """
+                # ✅ Convert Heart AI suggestions into animated HTML lists
+                heart_diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
+                heart_lifestyle_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("lifestyle_tips", [])])
+                # heart_notes_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("notes", [])])
+                heart_notes_list = ai_response.get("notes", [])
 
-                    st.markdown(heart_card_html, unsafe_allow_html=True)
-                    # 🔹 Save prediction for logged-in user
-                    if st.session_state.logged_in:
-                        save_prediction(
-                            username=st.session_state.username,
-                            disease="Heart Disease",
-                            input_data=user_inputs_dict_for_heart,
-                            result=int(heart_prediction[0]),
-                            ai_suggestions=ai_response
-                        )
-                        st.info("✅ Your Heart Disease prediction and AI suggestions have been saved.")
+                # ✅ Render animated card for Heart
+                heart_card_html = f"""
+                <div class="ai-card">
+                    <div class="ai-title">💡 AI-Powered Heart Health Suggestions</div>
+                    <div class="tip-title">🍽 Diet Tips:</div>
+                    <ul>{heart_diet_list}</ul>
+                    <div class="tip-title">🏃 Lifestyle Tips:</div>
+                    <ul>{heart_lifestyle_list}</ul>
+                    <div class="tip-title">🧘 Notes:</div>
+                    <ul>{heart_notes_list}</ul>
+                </div>
+                """
+
+                st.markdown(heart_card_html, unsafe_allow_html=True)
+                # 🔹 Save prediction for logged-in user
+                if st.session_state.logged_in:
+                    save_prediction(
+                        username=st.session_state.username,
+                        disease="Heart Disease",
+                        input_data=user_inputs_dict_for_heart,
+                        result=int(heart_prediction[0]),
+                        ai_suggestions=ai_response
+                    )
+                    st.info("✅ Your Heart Disease prediction and AI suggestions have been saved.")
 
                 
     # nearby doctor's page'
@@ -2748,44 +2746,43 @@ if st.session_state.page == "app":
             "spread2": spread2,
                 "D2": D2,
                 "PPE": PPE
-                }
-            if st.button('Get AI Insights'):
-                with st.spinner("Fetching health suggestions..."):
-                    ai_response = get_remedies(user_inputs_dict_for_parkinsons, 
-                                            parkinsons_prediction[0],
-                                                disease="parkinsons",
-                                                username = st.session_state.username)
+                }       
+            with st.spinner("Fetching health suggestions..."):
+                ai_response = get_remedies(user_inputs_dict_for_parkinsons, 
+                                           parkinsons_prediction[0],
+                                            disease="parkinsons",
+                                            username = st.session_state.username)
 
-                # ✅ Convert Parkinson’s AI suggestions into animated HTML lists
-                    parkinsons_diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
-                    parkinsons_lifestyle_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("lifestyle_tips", [])])
-                    parkinsons_notes_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("notes", [])])
+            # ✅ Convert Parkinson’s AI suggestions into animated HTML lists
+                parkinsons_diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
+                parkinsons_lifestyle_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("lifestyle_tips", [])])
+                parkinsons_notes_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("notes", [])])
 
-                    # ✅ Render animated card for Parkinson's
-                    parkinsons_card_html = f"""
-                    <div class="ai-card">
-                        <div class="ai-title">💡 AI-Powered Parkinson's Health Suggestions</div>
-                        <div class="tip-title">🍽 Diet Tips:</div>
-                        <ul>{parkinsons_diet_list}</ul>
-                        <div class="tip-title">🏃 Lifestyle Tips:</div>
-                        <ul>{parkinsons_lifestyle_list}</ul>
-                        <div class="tip-title">🧘 Notes:</div>
-                        <ul>{parkinsons_notes_list}</ul>
-                    </div>
-                    """
+                # ✅ Render animated card for Parkinson's
+                parkinsons_card_html = f"""
+                <div class="ai-card">
+                    <div class="ai-title">💡 AI-Powered Parkinson's Health Suggestions</div>
+                    <div class="tip-title">🍽 Diet Tips:</div>
+                    <ul>{parkinsons_diet_list}</ul>
+                    <div class="tip-title">🏃 Lifestyle Tips:</div>
+                    <ul>{parkinsons_lifestyle_list}</ul>
+                    <div class="tip-title">🧘 Notes:</div>
+                    <ul>{parkinsons_notes_list}</ul>
+                </div>
+                """
 
-                    st.markdown(parkinsons_card_html, unsafe_allow_html=True)
-                    # 🔹 Save prediction for logged-in user
-                    if st.session_state.logged_in:
-                        save_prediction(
-                            username=st.session_state.username,
-                            disease="Parkinson's",
-                            input_data=user_inputs_dict_for_parkinsons,
-                            result=int(parkinsons_prediction[0]),
-                            ai_suggestions=ai_response
-                        )
-                        st.info("✅ Your Parkinson's prediction and AI suggestions have been saved.")
-        
+                st.markdown(parkinsons_card_html, unsafe_allow_html=True)
+                # 🔹 Save prediction for logged-in user
+                if st.session_state.logged_in:
+                    save_prediction(
+                        username=st.session_state.username,
+                        disease="Parkinson's",
+                        input_data=user_inputs_dict_for_parkinsons,
+                        result=int(parkinsons_prediction[0]),
+                        ai_suggestions=ai_response
+                    )
+                    st.info("✅ Your Parkinson's prediction and AI suggestions have been saved.")
+    
     
     
     # AI chat assitant 
@@ -2881,39 +2878,31 @@ if st.session_state.page == "app":
             Question:
             {user_prompt}
             """
-            response = None
-            for attempt in range(3):
-                try:
-                    response = model.generate_content(
-                        prompt,
-                        generation_config={
-                                "temperature": 0.2,
-                                "max_output_tokens": 80 # 🔥 THIS LIMITS LENGTH
-                            }
-                    )
-                   
 
-                    # bot_reply = response.text
-                    bot_reply = clean_chat_response(response.text)
+            try:
+                response = model.generate_content(
+                    prompt,
+                    generation_config={
+                            "temperature": 0.2,
+                            "max_output_tokens": 80 # 🔥 THIS LIMITS LENGTH
+                        }
+                )
 
-                    # Save response
-                    st.session_state.chat_history.append({
-                        "role": "assistant",
-                        "content": bot_reply
-                    })
+                # bot_reply = response.text
+                bot_reply = clean_chat_response(response.text)
 
-                    with st.chat_message("assistant"):
-                        st.markdown(bot_reply)
+                # Save response
+                st.session_state.chat_history.append({
+                    "role": "assistant",
+                    "content": bot_reply
+                })
 
-                except Exception as e:
-                    st.error(f"❌ Error: {e}")
-                    st.error(f"Attempt {attempt+1} failed:", e)
+                with st.chat_message("assistant"):
+                    st.markdown(bot_reply)
 
-                    time.sleep(2)
-
-            if response is None:
-                st.error("error AI service temporarily unavailable")
-            
+            except Exception as e:
+                st.error(f"❌ Error: {e}")
+        
     # About & Developer Page
     elif selected == "About & Developer":
         st.markdown("""
