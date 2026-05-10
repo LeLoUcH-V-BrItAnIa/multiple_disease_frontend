@@ -422,6 +422,6 @@ def generate_dashboard_insights(df):
         response = model.generate_content(prompt)
         
         cleaned = clean_dashboard_response(response.text)
-        return cleaned,response
+        return cleaned
     except Exception as e:
         return f"No AI Insights Generated ! Try Again Later ! Error : {e}"
