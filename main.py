@@ -2242,10 +2242,13 @@ if st.session_state.page == "app":
                 "Age": Age
             }
             with st.spinner("Fetching health suggestions..."):
-                ai_response = get_remedies(user_inputs_dict_for_diab, 
-                                           diab_prediction[0]
-                                           ,disease="diabetes",
-                                           username=st.session_state.username)
+                try:
+                    ai_response = get_remedies(user_inputs_dict_for_diab, 
+                                            diab_prediction[0]
+                                            ,disease="diabetes",
+                                            username=st.session_state.username)
+                except Exception as e:
+                    st.error(f"Some Error occured please try again later Error : {e}")
 
             # Build the HTML content for the card
             diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
