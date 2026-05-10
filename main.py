@@ -2504,10 +2504,13 @@ if st.session_state.page == "app":
             }
 
             with st.spinner("Fetching health suggestions..."):
-                ai_response = get_remedies(user_inputs_dict_for_heart, 
-                                           heart_prediction[0],
-                                           disease="heart",
-                                           username = st.session_state.username)
+                try:
+                    ai_response = get_remedies(user_inputs_dict_for_heart, 
+                                            heart_prediction[0],
+                                            disease="heart",
+                                            username = st.session_state.username)
+                except Exception as e:
+                    st.error("Please try Again Later some Error Occured ! Error : {e} !")
 
                 # ✅ Convert Heart AI suggestions into animated HTML lists
                 heart_diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
@@ -2859,10 +2862,13 @@ if st.session_state.page == "app":
                 "PPE": PPE
                 }       
             with st.spinner("Fetching health suggestions..."):
-                ai_response = get_remedies(user_inputs_dict_for_parkinsons, 
-                                           parkinsons_prediction[0],
-                                            disease="parkinsons",
-                                            username = st.session_state.username)
+                try:
+                    ai_response = get_remedies(user_inputs_dict_for_parkinsons, 
+                                            parkinsons_prediction[0],
+                                                disease="parkinsons",
+                                                username = st.session_state.username)
+                except Exception as e:
+                    st.error("Please try again Later some Error Occured !Error : {e} !")
 
             # ✅ Convert Parkinson’s AI suggestions into animated HTML lists
                 parkinsons_diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
