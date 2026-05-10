@@ -43,7 +43,7 @@ Return ONLY the username.
         return username
 
     except:
-        return "neo_user"
+        return "new_user"
 # History summary function 
 def build_user_history_summary(records):
     if not records:
@@ -349,9 +349,11 @@ def get_remedies(user_inputs, prediction, disease , username):
         prompt = build_thyroid_prompt(user_inputs, prediction, history_summary)
     else:
         return {"error": "Unsupported disease type"}
-
-    response = model.generate_content(prompt)
-    return extract_json(response.text)
+    try:
+        response = model.generate_content(prompt)
+        return extract_json(response.text)
+    except Exception as e:
+        return f"Please Try again Later ! Error : {e}"
 
 # -------- JSON Parser --------
 
@@ -378,7 +380,7 @@ def clean_dashboard_response(text):
     if matches:
         return matches[-1].strip()
 
-    return text.strip()
+    return text.strip( )
 
 # for dashboard insights 
 def generate_dashboard_insights(df): 
@@ -415,9 +417,11 @@ def generate_dashboard_insights(df):
         🔹 Insight 3
         💡 Advisory Note
         """
+    try:
+        model = genai.GenerativeModel("models/gemma-4-26b-a4b-it")
+        response = model.generate_content(prompt)
 
-    model = genai.GenerativeModel("models/gemma-4-26b-a4b-it")
-    response = model.generate_content(prompt)
-
-    cleaned = clean_dashboard_response(response.text)
-    return cleaned
+        cleaned = clean_dashboard_response(response.text)
+        return cleaned
+    except Exception as e:
+        return f"No AI Insights Generated ! Try Again Later ! Error : {e}"

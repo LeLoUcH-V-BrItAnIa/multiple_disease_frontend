@@ -302,30 +302,14 @@ def show_login_register_page():
     lottie_anim = load_lottie(animation_url)
     st_lottie(lottie_anim, height=250)
     # Getting small health tips !
-    # def get_health_tip():
-    #     try:
-    #         url = "https://api.adviceslip.com/advice"
-    #         res = requests.get(url)
-    #         data = res.json()
-    #         return data['slip']['advice']
-    #     except:
-    #         return "Stay hydrated 💧 and take care of your health!"
-    import random
-
-    health_tips = [
-        "Drink enough water daily 💧",
-        "Exercise regularly 🏃",
-        "Get proper sleep 😴",
-        "Avoid too much sugar 🍭",
-        "Eat more fruits and vegetables 🥗",
-        "Take short breaks while studying 📚",
-    ]
-
     def get_health_tip():
-        return random.choice(health_tips)
-
-
-
+        try:
+            url = "https://api.adviceslip.com/advice"
+            res = requests.get(url)
+            data = res.json()
+            return data['slip']['advice']
+        except:
+            return "Stay hydrated 💧 and take care of your health!"
     
     # Login/Register form
     with st.sidebar:
@@ -965,15 +949,28 @@ if st.session_state.page == "app":
         default_index=0
         )
         
-        def get_health_tip():
-            try:
-                url = "https://api.adviceslip.com/advice"
-                res = requests.get(url)
-                data = res.json()
-                return data['slip']['advice']
-            except:
-                return "Stay hydrated 💧 and take care of your health!"
+        # def get_health_tip():
+        #     try:
+        #         url = "https://api.adviceslip.com/advice"
+        #         res = requests.get(url)
+        #         data = res.json()
+        #         return data['slip']['advice']
+        #     except:
+        #         return "Stay hydrated 💧 and take care of your health!"
         # Getting small health tips !
+        import random
+        health_tips = [
+            "Drink enough water daily 💧",
+            "Exercise regularly 🏃",
+            "Get proper sleep 😴",
+            "Avoid too much sugar 🍭",
+            "Eat more fruits and vegetables 🥗",
+            "Take short breaks while studying 📚",
+        ]
+
+        def get_health_tip():
+            return random.choice(health_tips)
+
         st.divider()
         st.markdown("### 💡 Tip of the Day")
         tip = get_health_tip()
@@ -1276,7 +1273,7 @@ if st.session_state.page == "app":
                 st.write(response.text)
 
             except Exception as e:
-                st.error("Gemini error")
+                st.error("Please Try Again Later ")
     # Leukimia Risk Prediction Page
 
     elif selected == 'Leukimia Risk Prediction':
@@ -1554,10 +1551,13 @@ if st.session_state.page == "app":
 
             # Call Gemini API for AI-based suggestions
             with st.spinner("Fetching AI health recommendations..."):
-                ai_response = get_remedies(user_inputs_dict_for_leukemia, 
-                                           leukemia_prediction, 
-                                           disease="leukemia",
-                                           username = st.session_state.username)
+                try:
+                    ai_response = get_remedies(user_inputs_dict_for_leukemia, 
+                                            leukemia_prediction, 
+                                            disease="leukemia",
+                                            username = st.session_state.username)
+                except Exception as e:
+                    st.error('Please Try Again Later !')
 
             # Format AI suggestions into animated HTML card
             diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
@@ -2854,7 +2854,7 @@ if st.session_state.page == "app":
                 st.markdown(user_prompt)
 
             # -------- BUILD CONTEXT --------
-            recent_history = st.session_state.chat_history[-5:]  # last 5 messages only
+            recent_history = st.session_state.chat_history[-2:]  # last 5 messages only
 
             history_text = "\n".join([
                 f"{msg['role']}: {msg['content']}"
@@ -2900,7 +2900,7 @@ if st.session_state.page == "app":
                     st.markdown(bot_reply)
 
             except Exception as e:
-                st.error(f"❌ Error: {e}")
+                st.error(f"❌ Please try again Later Error: {e}")
         
     # About & Developer Page
     elif selected == "About & Developer":
