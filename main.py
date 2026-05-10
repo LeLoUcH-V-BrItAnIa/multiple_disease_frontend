@@ -3174,8 +3174,9 @@ if st.session_state.page == "app":
             try:
                if st.button("🧠 Generate AI Insights"):
                 with st.spinner("Analyzing your health trends..."):
-                    insight_text = generate_dashboard_insights(df)
+                    insight_text,response = generate_dashboard_insights(df)
                     st.info(insight_text)
+                    st.info(response)
             except:
                 st.warning("AI insights not available right now.")
 

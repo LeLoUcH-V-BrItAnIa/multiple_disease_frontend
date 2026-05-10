@@ -420,8 +420,8 @@ def generate_dashboard_insights(df):
     try:
         model = genai.GenerativeModel("models/gemma-4-26b-a4b-it")
         response = model.generate_content(prompt)
-        print(response)
+        
         cleaned = clean_dashboard_response(response.text)
-        return cleaned
+        return cleaned,response
     except Exception as e:
         return f"No AI Insights Generated ! Try Again Later ! Error : {e}"
