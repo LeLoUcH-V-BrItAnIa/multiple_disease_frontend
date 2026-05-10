@@ -380,7 +380,7 @@ def clean_dashboard_response(text):
     if matches:
         return matches[-1].strip()
 
-    return text.strip( )
+    return text.strip()
 
 # for dashboard insights 
 def generate_dashboard_insights(df): 
@@ -420,7 +420,7 @@ def generate_dashboard_insights(df):
     try:
         model = genai.GenerativeModel("models/gemma-4-26b-a4b-it")
         response = model.generate_content(prompt)
-
+        print(response)
         cleaned = clean_dashboard_response(response.text)
         return cleaned
     except Exception as e:
