@@ -1711,6 +1711,60 @@ if st.session_state.page == "app":
                     disease="thyroid",
                     username=st.session_state.username
                 )
+            st.markdown("""
+                <style>
+                @keyframes fadeIn {
+                    0% { opacity: 0; transform: translateY(20px); }
+                    100% { opacity: 1; transform: translateY(0); }
+                }
+
+                @keyframes glowPulse {
+                    0% { box-shadow: 0 0 10px #FF4B4B, 0 0 20px #4CAF50, 0 0 30px #2196F3; }
+                    50% { box-shadow: 0 0 20px #FF4B4B, 0 0 30px #4CAF50, 0 0 40px #2196F3; }
+                    100% { box-shadow: 0 0 10px #FF4B4B, 0 0 20px #4CAF50, 0 0 30px #2196F3; }
+                }
+
+                .ai-card {
+                    background: rgba(0, 0, 0, 0.45);
+                    border-radius: 18px;
+                    padding: 22px;
+                    margin-top: 20px;
+                    color: #fff;
+                    animation: fadeIn 1s ease-in-out, glowPulse 3s infinite alternate;
+                    border: 2px solid rgba(255,255,255,0.2);
+                }
+
+                .ai-title {
+                    text-align: center;
+                    background: linear-gradient(270deg, #FF4B4B, #4CAF50, #2196F3);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    font-size: 24px;
+                    font-weight: bold;
+                    text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+                }
+
+                .tip-title {
+                    font-size: 18px;
+                    color: #00FFEA;
+                    margin-top: 15px;
+                    font-weight: 600;
+                }
+                ul { margin-left: 20px; padding-left: 10px; list-style-type: disc; }
+
+                ul li {
+                    opacity: 0;
+                    animation: fadeIn 0.6s forwards;
+                }
+
+                /* Staggered delay */
+                ul li:nth-child(1) { animation-delay: 0.3s; }
+                ul li:nth-child(2) { animation-delay: 0.6s; }
+                ul li:nth-child(3) { animation-delay: 0.9s; }
+                ul li:nth-child(4) { animation-delay: 1.2s; }
+                ul li:nth-child(5) { animation-delay: 1.5s; }
+                </style>
+            """, unsafe_allow_html=True)
 
             # Display
             diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
@@ -1855,6 +1909,60 @@ if st.session_state.page == "app":
                         disease="kidney",
                         username=st.session_state.username
                     )
+                st.markdown("""
+                <style>
+                @keyframes fadeIn {
+                    0% { opacity: 0; transform: translateY(20px); }
+                    100% { opacity: 1; transform: translateY(0); }
+                }
+
+                @keyframes glowPulse {
+                    0% { box-shadow: 0 0 10px #FF4B4B, 0 0 20px #4CAF50, 0 0 30px #2196F3; }
+                    50% { box-shadow: 0 0 20px #FF4B4B, 0 0 30px #4CAF50, 0 0 40px #2196F3; }
+                    100% { box-shadow: 0 0 10px #FF4B4B, 0 0 20px #4CAF50, 0 0 30px #2196F3; }
+                }
+
+                .ai-card {
+                    background: rgba(0, 0, 0, 0.45);
+                    border-radius: 18px;
+                    padding: 22px;
+                    margin-top: 20px;
+                    color: #fff;
+                    animation: fadeIn 1s ease-in-out, glowPulse 3s infinite alternate;
+                    border: 2px solid rgba(255,255,255,0.2);
+                }
+
+                .ai-title {
+                    text-align: center;
+                    background: linear-gradient(270deg, #FF4B4B, #4CAF50, #2196F3);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    font-size: 24px;
+                    font-weight: bold;
+                    text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+                }
+
+                .tip-title {
+                    font-size: 18px;
+                    color: #00FFEA;
+                    margin-top: 15px;
+                    font-weight: 600;
+                }
+                ul { margin-left: 20px; padding-left: 10px; list-style-type: disc; }
+
+                ul li {
+                    opacity: 0;
+                    animation: fadeIn 0.6s forwards;
+                }
+
+                /* Staggered delay */
+                ul li:nth-child(1) { animation-delay: 0.3s; }
+                ul li:nth-child(2) { animation-delay: 0.6s; }
+                ul li:nth-child(3) { animation-delay: 0.9s; }
+                ul li:nth-child(4) { animation-delay: 1.2s; }
+                ul li:nth-child(5) { animation-delay: 1.5s; }
+                </style>
+            """, unsafe_allow_html=True)
 
                 # Format AI suggestions into animated HTML card
                 diet_list = "".join([f"<li>{tip}</li>" for tip in ai_response.get("diet_tips", [])])
