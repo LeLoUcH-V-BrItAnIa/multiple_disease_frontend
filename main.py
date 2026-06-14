@@ -2997,10 +2997,10 @@ if st.session_state.page == "app":
             try:
                 response = model.generate_content(
                     prompt,
-                    generation_config={
-                            "temperature": 0.2,
-                            "max_output_tokens": 80 # 🔥 THIS LIMITS LENGTH
-                        }
+                    # generation_config={
+                    #         "temperature": 0.2,
+                    #         "max_output_tokens": 80 # 🔥 THIS LIMITS LENGTH
+                    #     }
                 )
 
                 # bot_reply = response.text
