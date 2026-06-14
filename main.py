@@ -2914,7 +2914,7 @@ if st.session_state.page == "app":
         import google.generativeai as gen_ai
         gen_ai.configure(api_key=API_KEY)
 
-        model = gen_ai.GenerativeModel("models/gemma-4-26b-a4b-it")
+        model = gen_ai.GenerativeModel("models/gemini-2.5-flash")
 
         # -------- CHAT MEMORY --------
         if "chat_history" not in st.session_state:
@@ -2980,6 +2980,7 @@ if st.session_state.page == "app":
 
             # -------- INTELLIGENT PROMPT --------
             prompt = f"""
+            rule : just gimme the answer do not show your chain of thought process.
             - Answer the user's question
             - Then provide 2 short health suggestions maximum 5 words
             - Keep responses natural and short maximum 5 words
