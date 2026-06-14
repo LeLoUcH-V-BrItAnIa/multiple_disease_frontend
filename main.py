@@ -2980,7 +2980,7 @@ if st.session_state.page == "app":
 
             # -------- INTELLIGENT PROMPT --------
             prompt = f"""
-            rule : just gimme the answer do not show your chain of thought process.
+            Rule:
             - Answer the user's question
             - Then provide 2 short health suggestions maximum 5 words
             - Keep responses natural and short maximum 5 words
